@@ -1,45 +1,38 @@
 import { Routes, Route } from "react-router";
 import Layout from './Layout.jsx'
-
-function Home() {
-  return <>
-    Home
-  </>;
-}
-
-function Tasks() {
-  return <>
-    Tasks
-  </>;
-}
+import Home from './Home.jsx'
+import { useState, useEffect } from 'react'
+import useNeomeStore from './useNeomeStore.js'
+import Tasks from './Tasks/Tasks.jsx'
+import NewTask from './Tasks/NewTask.jsx'
 
 function Habits() {
   return <>
-    Habits
+    Habits TODO
   </>;
 }
 
 function Statistics() {
   return <>
-    Statistics
+    Statistics TODO
   </>;
 }
 
 function Settings() {
   return <>
-    Settings
+    Settings TODO
   </>;
 }
 
 function Page404() {
   return <>
-    Page404
+    Page404 TODO
   </>;
 }
 
 function About() {
   return <>
-    About
+    About TODO
   </>;
 }
 
@@ -48,7 +41,10 @@ export default function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<Home />} />
-        <Route path="tasks" element={<Tasks />} />
+        <Route path="tasks">
+          <Route index element={<Tasks />} />
+          <Route path="new" element={<NewTask />} />
+        </Route>
         <Route path="habits" element={<Habits />} />
         <Route path="statistics" element={<Statistics />} />
         <Route path="settings" element={<Settings />} />

@@ -5,6 +5,11 @@ body {
     color: white;
 }
 
+@theme {
+  --color-neome-pink: #e87c7c;
+  --color-neome-dark-pink: #e35656;
+}
+
 #root {
     padding: 0;
     margin: 0;
