@@ -8,6 +8,8 @@ body {
 @theme {
   --color-neome-pink: #e87c7c;
   --color-neome-dark-pink: #e35656;
+  --color-neome-grey: #17262b;
+  --color-neome-light-grey: #1b3035;
 }
 
 #root {

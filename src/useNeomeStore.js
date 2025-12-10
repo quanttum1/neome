@@ -30,15 +30,56 @@ const useNeomeStore = create(persist((set, get) => ({
 
   tasks: [],
 
-  addTask: (task) => {
-    set({tasks: [...get().tasks, task]});
+  addTask: (taskName) => {
+    set({tasks: [...get().tasks, {
+      name: taskName,
+      isPinned: false,
+      id: crypto.randomUUID(),
+    }]});
   },
 
-  removeTask: (taskIndex) => {
-    const newTasks = get().tasks;
-    newTasks.splice(taskIndex, 1);
-    set({tasks: newTasks})
+  removeTask: (taskId) => {
+    set({
+      tasks: get().tasks.filter((task) => task.id !== taskId)
+    });
+  },
+
+  taskTogglePinned: (taskId) => {
+    set({
+      tasks: get().tasks.map(
+        (task) => (task.id === taskId) ? {...task, isPinned: !task.isPinned} : task
+      ),
+    });
   }
-}), { name: 'neome' }));
+
+}), {
+    name: 'neome',
+    version: 0.13,
+    migrate: (state, oldVersion) => {
+      // Don't worry, these are temporary migrations, until I make a stable version
+      if (oldVersion < 0.11) {
+        for (let i = 0; i < state.tasks.length; i++) {
+          const e = state.tasks[i];
+          state.tasks[i] = {name: e, isPinned: true};
+        }
+      }
+
+      if (oldVersion < 0.12) {
+        for (let i = 0; i < state.tasks.length; i++) {
+          const e = state.tasks[i];
+          state.tasks[i] = {name: e.name, isPinned: false};
+        }
+      }
+
+      if (oldVersion < 0.13) {
+        for (let i = 0; i < state.tasks.length; i++) {
+          const e = state.tasks[i];
+          state.tasks[i] = {...e, id: crypto.randomUUID()};
+        }
+      }
+
+      return state;
+    }
+}));
 
 export default useNeomeStore;
