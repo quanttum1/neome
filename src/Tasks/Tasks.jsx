@@ -28,11 +28,10 @@ export default function Tasks() {
               : <img src={Pin}></img>}
             </div>
 
-            {/* TODO: fix removing, it doesn't work btw*/}
-            <div className="group flex cursor-pointer flex-col" onClick={() => removeTask(task.id)}>
+            <Link className="group flex cursor-pointer flex-col" to={task.id}>
               <span className="group-hover:underline">{task.name}</span>
-              <span className="text-gray-400 text-[15px] italic">until TODO</span>
-            </div>
+              <span className="text-gray-400 text-[15px] italic">until {task.deadline}</span>
+            </Link>
           </div>
         ))}
       </div>

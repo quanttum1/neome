@@ -54,7 +54,7 @@ const useNeomeStore = create(persist((set, get) => ({
 
 }), {
     name: 'neome',
-    version: 0.13,
+    version: 0.14,
     migrate: (state, oldVersion) => {
       // Don't worry, these are temporary migrations, until I make a stable version
       if (oldVersion < 0.11) {
@@ -75,6 +75,19 @@ const useNeomeStore = create(persist((set, get) => ({
         for (let i = 0; i < state.tasks.length; i++) {
           const e = state.tasks[i];
           state.tasks[i] = {...e, id: crypto.randomUUID()};
+        }
+      }
+
+      if (oldVersion < 0.14) {
+        for (let i = 0; i < state.tasks.length; i++) {
+          state.tasks[i] = {...state.tasks[i], deadline: "2025-12-24T15:00"};
+        }
+      }
+
+      // Oopsie, that wasn't UTC 😅
+      if (oldVersion < 0.15) {
+        for (let i = 0; i < state.tasks.length; i++) {
+          state.tasks[i] = {...state.tasks[i], deadline: "2025-12-24T15:00:00.000Z"};
         }
       }
 

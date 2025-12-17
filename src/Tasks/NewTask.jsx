@@ -9,7 +9,7 @@ export default function NewTask() {
 
   function createTask() {
     addTask(inputRef.current.value);
-    navigate(-1);
+    navigate("/tasks");
   }
 
   return (

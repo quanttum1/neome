@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import useNeomeStore from './useNeomeStore.js'
 import Tasks from './Tasks/Tasks.jsx'
 import NewTask from './Tasks/NewTask.jsx'
+import OpenTask from './Tasks/OpenTask.jsx'
 
 function Habits() {
   return <>
@@ -44,6 +45,7 @@ export default function App() {
         <Route path="tasks">
           <Route index element={<Tasks />} />
           <Route path="new" element={<NewTask />} />
+          <Route path=":taskId" element={<OpenTask />}/>
         </Route>
         <Route path="habits" element={<Habits />} />
         <Route path="statistics" element={<Statistics />} />
