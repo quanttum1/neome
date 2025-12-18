@@ -37,7 +37,7 @@ def get_todos_from_file(path, name):
 
         def add_todo_line(todo_line):
             nonlocal todo_lines
-            todo_lines += [(todo_line, f'{path}:{linenumber}')]
+            todo_lines += [(todo_line, f'{path}:{linenumber + 1}')]
 
         if name.endswith('.js') or name.endswith('.jsx'):
             if '//' in line:
