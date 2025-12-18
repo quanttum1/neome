@@ -4,7 +4,7 @@ export default function OpenTask() {
   const { taskId } = useParams();
 
   return <div>
-    {/* TODO */}
+    {/* TODO(2025-12-17 23:15:34): implement OpenTask */}
     {taskId}
   </div>
 }

@@ -54,7 +54,7 @@ const useNeomeStore = create(persist((set, get) => ({
 
 }), {
     name: 'neome',
-    version: 0.14,
+    version: 0.15,
     migrate: (state, oldVersion) => {
       // Don't worry, these are temporary migrations, until I make a stable version
       if (oldVersion < 0.11) {

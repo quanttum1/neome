@@ -1,0 +1,46 @@
+# In this project we use TODOs to plan things we want to do ahead
+# and to help maintainers find something to do. A TODO is just a
+# comment starting with `TODO(YYYY-MM-DD HH:MM:SS):` or simply `TODO:`
+# (the first option is prefered unless it's difficult to generate it
+# in your text editor). The timezone doesn't matter as long as we don't
+# experience any troubles. In theory, you can use anything as a TODO
+# label (e.g. a UUID), but this is the prefered label type.
+#
+# But in this file anything that starts from `(YYYY-MM-DD HH:MM:SS):` or
+# `():` is considered a TODO. TODOs can have several lines (the first one
+# is the title).
+# If a line starts with `deps:` comma-separated TODO labels are expected.
+# For example:
+#
+# deps: (2025-12-17 21:11:33), (2025-12-17 21:12:48)
+#
+# This means that the TODO can only be implemented when the referenced
+# TODOs are implemented.
+#
+# You can list all of the TODOs by running `python3 list-todos.py` in
+# the root of the project. It will hide TODOs whose deps are still present.
+
+(2025-12-17 21:19:28): show carrots the dumb way
+just show the number and the carrot icon
+
+(2025-12-17 21:20:34): show the carrots earned today the nice way
+deps: (2025-12-17 21:19:28)
+
+(2025-12-17 21:26:51): add reward and penalty to tasks
+
+(2025-12-17 21:37:47): make the reward and penalty actually work
+deps: (2025-12-17 21:26:51)
+
+(2025-12-17 21:45:58): add basic habits to the store
+stores the task name, and the days of the week on which the task should be done
+
+(2025-12-17 21:48:09): make the habits page and minimal habit creation page
+deps: (2025-12-17 21:45:58)
+
+(2025-12-17 21:49:22): make the habits actually work
+deps: (2025-12-17 21:45:58)
+
+(2025-12-17 21:49:54): make a good page for adding new habits
+deps: (2025-12-17 21:45:58)
+
+(2025-12-17 21:50:24): add quick tasks
