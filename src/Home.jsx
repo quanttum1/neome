@@ -1,44 +1,36 @@
 import forest_location from './assets/map-locations/0001-forest.svg'
+import CarrotIcon from './assets/icons/carrot.svg'
+import TaskCard from './TaskCard.jsx'
 import useNeomeStore from './useNeomeStore.js'
 import selectOrderedTasks from "./selectOrderedTasks.js";
-import Pin from './assets/icons/pin.svg'
-import PinActive from './assets/icons/pin_active.svg'
-import { Link } from 'react-router'
 
 function Home() {
   const tasks = useNeomeStore(selectOrderedTasks);
-  const taskTogglePinned = useNeomeStore((s) => s.taskTogglePinned);
 
   return (
     <div className="flex w-full">
-      <div className="lg:w-1/2 w-full pr-1">
+      <div className="lg:w-1/2 flex flex-col items-center w-full pr-1">
         <img src={forest_location} className="w-auto h-screen object-cover" />
       </div>
 
-      <div className="w-1/2 pl-1">
-        <div className="pt-2 lg hidden lg:block pb-2">
+      {/* (2025-12-17 21:20:34): show the carrots earned today the nice way */}
+      {/* deps: (2025-12-17 21:19:28) */}
+      <div className="w-1/2 hidden lg:block pl-1">
+        <div className="pt-2 pb-2">
           <div className="grid grid-cols-1 gap-3">
-            {tasks.map((task) => (
-              <div
-                className="text-[24px] pt-2 pb-3 pl-4 rounded-[1.5vw] bg-neome-grey flex items-center gap-2"
-                key={task.id}
-              >
-
-                <div
-                  className="hover:bg-neome-light-grey hover:rounded-[50%] cursor-pointer p-1"
-                  onClick={() => taskTogglePinned(task.id)}
-                >
-                  {task.isPinned ? <img src={PinActive}></img>
-                  : <img src={Pin}></img>}
-                </div>
-
-                <Link 
-                  className="group flex cursor-pointer flex-col" to={`tasks/${task.id}`}
-                >
-                  <span className="group-hover:underline">{task.name}</span>
-                  <span className="text-gray-400 text-[15px] italic">until {task.deadline}</span>
-                </Link>
+            <div className="flex justify-between">
+              <div className="flex text-[2.1rem] items-center">
+                This Week {32}
+                <img src={CarrotIcon} className="h-[2.8rem]" />
               </div>
+              <div className="flex text-[2.1rem] items-center">
+                Total {42}
+                <img src={CarrotIcon} className="h-[2.8rem]" />
+              </div>
+            </div>
+
+            {tasks.map((task) => (
+              <TaskCard task={task} key={task.id}/>
             ))}
 
           </div>

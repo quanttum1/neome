@@ -20,13 +20,6 @@
 # You can list all of the TODOs by running `python3 list-todos.py` in
 # the root of the project. It will hide TODOs whose deps are still present.
 
-(2025-12-17 21:19:28): show carrots the dumb way
-just show the number and the carrot icon
-deps: (2025-12-18 21:35:30)
-
-(2025-12-17 21:20:34): show the carrots earned today the nice way
-deps: (2025-12-17 21:19:28)
-
 (2025-12-17 21:26:51): add reward and penalty to tasks
 
 (2025-12-17 21:37:47): make the reward and penalty actually work
