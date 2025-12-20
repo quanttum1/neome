@@ -6,6 +6,8 @@ import selectOrderedTasks from "./selectOrderedTasks.js";
 
 function Home() {
   const tasks = useNeomeStore(selectOrderedTasks);
+  const totalCarrots = useNeomeStore(s => s.total);
+  const dailyCarrots = useNeomeStore(s => s.daily);
 
   return (
     <div className="flex w-full">
@@ -18,14 +20,21 @@ function Home() {
       <div className="w-1/2 hidden lg:block pl-1">
         <div className="pt-2 pb-2">
           <div className="grid grid-cols-1 gap-3">
-            <div className="flex justify-between">
-              <div className="flex text-[2.1rem] items-center">
-                This Week {32}
-                <img src={CarrotIcon} className="h-[2.8rem]" />
+
+            <div>
+              <div className="flex justify-between">
+                <div className="flex text-[2.1rem] items-center">
+                  This Week {32}
+                  <img src={CarrotIcon} className="h-[2.8rem]" />
+                </div>
+                <div className="flex text-[2.1rem] items-center">
+                  Total {totalCarrots}
+                  <img src={CarrotIcon} className="h-[2.8rem]" />
+                </div>
               </div>
-              <div className="flex text-[2.1rem] items-center">
-                Total {42}
-                <img src={CarrotIcon} className="h-[2.8rem]" />
+
+              <div className="text-[2.1rem] ">
+                Carrots today: {dailyCarrots}
               </div>
             </div>
 

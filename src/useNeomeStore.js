@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 const useNeomeStore = create(persist((set, get) => ({
+  // Should it be renamed to totalCarrots and dailyCarrots?
   total: 0,
   daily: 0,
   progress: 0, // The same as total, but it doesn't decrease when you lose carrots

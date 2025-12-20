@@ -39,7 +39,7 @@ export default function Tasks() {
 
       {/* TODO: Maybe add a shadow coloured with `neome-dark-pink` */}
       {/* TODO: Add `Shift+N` shortcut for this button */}
-      {/* TODO: Make a separate class out of it */}
+      {/* TODO: Make a separate component out of it? */}
       <Link
         to="new"
         className="fixed bottom-6 right-6 flex items-center gap-2 rounded-full bg-neome-pink text-black px-4 py-3 shadow-lg cursor-pointer">
