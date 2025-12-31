@@ -23,7 +23,10 @@ function TaskCard(props) {
       <Link 
         className="group flex cursor-pointer flex-col" to={`tasks/${task.id}`}
       >
-        <span className="group-hover:underline">{task.name}</span>
+        {/* TODO(2025-12-31 12:22): show the reward and the penalty of the task */}
+        {/* and remove the temporary solution i implemented */}
+        {/* deps: (2025-12-17 21:26:51) */}
+        <span className="group-hover:underline">{task.name} ({task.reward}, {task.penalty})</span>
         <span className="text-gray-400 text-[15px] italic">until {task.deadline}</span>
       </Link>
     </div>

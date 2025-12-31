@@ -20,8 +20,6 @@
 # You can list all of the TODOs by running `python3 list-todos.py` in
 # the root of the project. It will hide TODOs whose deps are still present.
 
-(2025-12-17 21:26:51): add reward and penalty to tasks
-
 (2025-12-17 21:37:47): make the reward and penalty actually work
 deps: (2025-12-17 21:26:51)
 
