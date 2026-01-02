@@ -9,7 +9,7 @@ function TaskCard(props) {
 
   return (
     <div
-      className="text-[24px] pt-2 pb-3 pl-4 rounded-[1.5vw] bg-neome-grey flex items-center gap-2"
+      className="text-[24px] pt-2 pb-3 pl-4 pr-4 rounded-[1.5vw] bg-neome-grey flex items-center gap-2"
     >
 
       <div
@@ -23,12 +23,13 @@ function TaskCard(props) {
       <Link 
         className="group flex cursor-pointer flex-col" to={`tasks/${task.id}`}
       >
-        {/* TODO(2025-12-31 12:22): show the reward and the penalty of the task */}
-        {/* and remove the temporary solution i implemented */}
-        {/* deps: (2025-12-17 21:26:51) */}
-        <span className="group-hover:underline">{task.name} ({task.reward}, {task.penalty})</span>
+        <span className="group-hover:underline">{task.name}</span>
         <span className="text-gray-400 text-[15px] italic">until {task.deadline}</span>
       </Link>
+      <div className="ml-auto flex gap-2 text-[1.5em]">
+        <span className="text-[#00FF00]">{task.reward}</span>
+        <span className="text-[#FF0000]">{task.penalty}</span>
+      </div>
     </div>
   );
 }
