@@ -1,6 +1,6 @@
-import useNeomeStore from './useNeomeStore.js'
-import Pin from './assets/icons/pin.svg'
-import PinActive from './assets/icons/pin_active.svg'
+import useNeomeStore from '../useNeomeStore.js'
+import Pin from '../assets/icons/pin.svg'
+import PinActive from '../assets/icons/pin_active.svg'
 import { Link } from 'react-router'
 
 function TaskCard(props) {

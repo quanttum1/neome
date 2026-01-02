@@ -1,6 +1,6 @@
 import forest_location from './assets/map-locations/0001-forest.svg'
 import CarrotIcon from './assets/icons/carrot.svg'
-import TaskCard from './TaskCard.jsx'
+import TaskCard from './Tasks/TaskCard.jsx'
 import useNeomeStore from './useNeomeStore.js'
 import selectOrderedTasks from "./selectOrderedTasks.js";
 
