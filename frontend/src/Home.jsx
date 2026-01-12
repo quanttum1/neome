@@ -15,7 +15,7 @@ function Home() {
         <img src={forest_location} className="w-auto h-screen object-cover" />
       </div>
 
-      {/* (2025-12-17 21:20:34): show the carrots earned today the nice way */}
+      {/* TODO(2025-12-17 21:20:34): show the carrots earned today the nice way */}
       {/* deps: (2025-12-17 21:19:28) */}
       <div className="w-1/2 hidden lg:block pl-1">
         <div className="pt-2 pb-2">

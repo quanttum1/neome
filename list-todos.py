@@ -45,10 +45,7 @@ def get_todos_from_file(path, name):
                 comment = '//'.join(line.split('//')[1:])
                 comment = comment.strip()
 
-                if comment.startswith('TODO'):
-                    add_todo_line(comment.removeprefix('TODO'))
-                else:
-                    add_todo_line(comment)
+                add_todo_line(comment)
 
         if name.endswith('.jsx'):
             if '{/*' in line:
@@ -56,14 +53,13 @@ def get_todos_from_file(path, name):
                 comment = comment.split('*/}')[0]
                 comment = comment.strip()
 
-                if comment.startswith('TODO'):
-                    add_todo_line(comment.removeprefix('TODO'))
-                else:
-                    add_todo_line(comment)
+                add_todo_line(comment)
 
         if name == 'TODOs':
             if not line.startswith('#'):
                 add_todo_line(line)
+            if line.startswith('('):
+                add_todo_line(f'TODO{line}')
 
     return todo_lines
 
@@ -88,14 +84,14 @@ def get_todos(todo_lines):
         todo = Todo()
         todo.file = file
 
-        if line.startswith('(') and '):' in line:
-            todo.label = line.split('):')[0].removeprefix('(')
+        if line.startswith('TODO(') and '):' in line:
+            todo.label = line.split('):')[0].removeprefix('TODO(')
             todo.title = line.split('):')[1].strip()
             todos += [todo]
             continue
 
-        if line.startswith(':'):
-            todo.title = line.removeprefix(':').strip()
+        if line.startswith('TODO:'):
+            todo.title = line.removeprefix('TODO:').strip()
             todos += [todo]
             continue
 
