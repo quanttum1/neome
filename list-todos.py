@@ -12,8 +12,8 @@ class Todo:
 
 def is_file_supported(path, name):
     if path.startswith('./.git') or \
-        path.startswith('./node_modules/') or \
-        path.startswith('./dist/') or \
+        path.startswith('./frontend/node_modules/') or \
+        path.startswith('./frontend/dist/') or \
         name.startswith('.'):
             return False
 
