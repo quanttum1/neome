@@ -10,34 +10,29 @@ class Todo:
     def __init__(self):
         self.deps = []
 
-def is_file_supported(path, name):
+def is_file_ignored(path, name):
     if path.startswith('./.git') or \
         path.startswith('./frontend/node_modules/') or \
         path.startswith('./frontend/dist/') or \
         name.startswith('.'):
-            return False
-
-    if name.endswith('.js') or \
-        name.endswith('.jsx') or \
-        name == 'TODOs':
             return True
 
     return False
 
 
 def get_todos_from_file(path, name):
-    if not is_file_supported(path, name):
+    if is_file_ignored(path, name):
         return []
 
     lines = open(path).read().splitlines()
-    todo_lines = []
+    comment_lines = []
 
     for linenumber in range(len(lines)):
         line = lines[linenumber]
 
-        def add_todo_line(todo_line):
-            nonlocal todo_lines
-            todo_lines += [(todo_line, f'{path}:{linenumber + 1}')]
+        def add_comment_line(comment_line):
+            nonlocal comment_lines
+            comment_lines += [(comment_line, f'{path}:{linenumber + 1}')]
 
         if name.endswith('.js') or name.endswith('.jsx'):
             if '//' in line:
@@ -45,23 +40,34 @@ def get_todos_from_file(path, name):
                 comment = '//'.join(line.split('//')[1:])
                 comment = comment.strip()
 
-                add_todo_line(comment)
+                add_comment_line(comment)
 
         if name.endswith('.jsx'):
+            # TODO(2026-01-12 20:13:34): support multiline comments enclosed in {/* */}
             if '{/*' in line:
                 comment = line.split('{/*')[1]
                 comment = comment.split('*/}')[0]
                 comment = comment.strip()
 
-                add_todo_line(comment)
+                add_comment_line(comment)
+
+        if name.endswith('.cs'):
+            # TODO(2026-01-12 19:57:30): add support for C# files in `list-todos.py`
+            pass
+
+        if name.endswith('.py'):
+            if line.strip().startswith('#'):
+                comment = '#'.join(line.split('#')[1:])
+                comment = comment.strip()
+                add_comment_line(comment)
 
         if name == 'TODOs':
             if not line.startswith('#'):
-                add_todo_line(line)
+                add_comment_line(line)
             if line.startswith('('):
-                add_todo_line(f'TODO{line}')
+                add_comment_line(f'TODO{line}')
 
-    return todo_lines
+    return comment_lines
 
 
 def get_todo_lines():
