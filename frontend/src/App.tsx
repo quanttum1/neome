@@ -2,8 +2,7 @@ import { Routes, Route } from "react-router";
 import Layout from './Layout.jsx'
 import Home from './Home.jsx'
 import { useState, useEffect } from 'react'
-import useNeomeStore from './useNeomeStore.js'
-import Tasks from './Tasks/Tasks.jsx'
+import Tasks from './Tasks/Tasks'
 import NewTask from './Tasks/NewTask.jsx'
 import OpenTask from './Tasks/OpenTask.jsx'
 

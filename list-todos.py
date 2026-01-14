@@ -34,7 +34,8 @@ def get_todos_from_file(path, name):
             nonlocal comment_lines
             comment_lines += [(comment_line, f'{path}:{linenumber + 1}')]
 
-        if name.endswith('.js') or name.endswith('.jsx'):
+        if name.endswith('.js') or name.endswith('.jsx') or \
+            name.endswith('.ts') or name.endswith('.tsx'):
             if '//' in line:
                 # It looks scary, but it just extracts the comment
                 comment = '//'.join(line.split('//')[1:])
@@ -42,7 +43,7 @@ def get_todos_from_file(path, name):
 
                 add_comment_line(comment)
 
-        if name.endswith('.jsx'):
+        if name.endswith('.jsx') or name.endswith('.tsx'):
             # TODO(2026-01-12 20:13:34): support multiline comments enclosed in {/* */}
             if '{/*' in line:
                 comment = line.split('{/*')[1]

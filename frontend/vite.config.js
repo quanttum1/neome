@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite';
+import checker from 'vite-plugin-checker'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -8,6 +9,7 @@ export default defineConfig({
     react(),
     tailwindcss({
       config: './tailwind.config.js'
-    })
+    }),
+    checker({ typescript: true }),
   ],
 })
