@@ -1,9 +1,13 @@
-import useNeomeStore from '../useNeomeStore.js'
+import useNeomeStore from '../useNeomeStore'
 import Pin from '../assets/icons/pin.svg'
 import PinActive from '../assets/icons/pin_active.svg'
 import { Link } from 'react-router'
 
-function TaskCard(props) {
+interface TaskCardProps {
+  task: Task;
+}
+
+function TaskCard(props: TaskCardProps) {
   let task = props.task;
   const taskTogglePinned = useNeomeStore((s) => s.taskTogglePinned);
 
