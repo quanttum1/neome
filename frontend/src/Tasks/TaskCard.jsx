@@ -21,7 +21,7 @@ function TaskCard(props) {
       </div>
 
       <Link 
-        className="group flex cursor-pointer flex-col" to={`tasks/${task.id}`}
+        className="group flex cursor-pointer flex-col" to={`/tasks/${task.id}`}
       >
         <span className="group-hover:underline">{task.name}</span>
         <span className="text-gray-400 text-[15px] italic">until {task.deadline}</span>

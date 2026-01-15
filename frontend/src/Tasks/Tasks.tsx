@@ -2,7 +2,7 @@ import useNeomeStore from '../useNeomeStore.js'
 import { Link } from 'react-router'
 import Pin from '../assets/icons/pin.svg'
 import PinActive from '../assets/icons/pin_active.svg'
-import selectOrderedTasks from "../selectOrderedTasks.js";
+import selectOrderedTasks from "../selectOrderedTasks";
 import TaskCard from './TaskCard.jsx'
 
 export default function Tasks() {
