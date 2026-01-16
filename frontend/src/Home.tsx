@@ -1,8 +1,8 @@
 import forest_location from './assets/map-locations/0001-forest.svg'
 import CarrotIcon from './assets/icons/carrot.svg'
 import TaskCard from './Tasks/TaskCard'
-import useNeomeStore from './useNeomeStore.js'
-import selectOrderedTasks from "./selectOrderedTasks.js";
+import useNeomeStore from './useNeomeStore'
+import selectOrderedTasks from "./selectOrderedTasks";
 
 function Home() {
   const tasks = useNeomeStore(selectOrderedTasks);

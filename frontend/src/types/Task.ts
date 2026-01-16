@@ -1,11 +1,11 @@
 type TaskId = string;
-type UtcString = string;
+type UTCString = string;
 
 interface Task {
   id: TaskId;
   name: string;
   isPinned: boolean;
-  deadline: UtcString;
-  penalty: number;
+  deadline: UTCString;
   reward: number;
+  penalty: number;
 }

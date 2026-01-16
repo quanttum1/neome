@@ -1,10 +1,10 @@
 import { Routes, Route } from "react-router";
-import Layout from './Layout.jsx'
-import Home from './Home.jsx'
+import Layout from './Layout'
+import Home from './Home'
 import { useState, useEffect } from 'react'
 import Tasks from './Tasks/Tasks'
-import NewTask from './Tasks/NewTask.jsx'
-import OpenTask from './Tasks/OpenTask.jsx'
+import NewTask from './Tasks/NewTask'
+import OpenTask from './Tasks/OpenTask'
 
 function Habits() {
   return <>
