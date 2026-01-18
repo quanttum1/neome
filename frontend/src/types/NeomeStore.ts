@@ -1,16 +1,17 @@
 interface NeomeStore {
-  total: number;
-  daily: number;
-  progress: number;
+  events: NeomeEvent[]; // MUST be sorted by time
 
-  resetDaily: () => void;
-  addCarrots: (n: number) => void;
-  loseCarrots: (n: number) => void;
+  currentState: State;
+  stateLastUpdated?: UTCString;
+  // TODO(2026-01-16 15:04:01): add `initialState` and `initialStateTime`
+  // to store the snapshot
 
-  tasks: Task[];
+  updateCurrentState: () => void; // Applies events with time > stateLastUpdated
+  recomputeCurrentState: () => void; // Replays from scratch
 
   addTask: (task: Task) => void;
-  removeTask: (taskId: TaskId) => void;
-  taskTogglePinned: (taskId: TaskId) => void;
+
+  getSortedTasks: () => Task[];
+  getTaskById: (id: TaskId) => Task | undefined;
 }
 

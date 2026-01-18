@@ -2,8 +2,8 @@ import { useRef } from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import useNeomeStore from '../useNeomeStore';
-import createTask from '../createTask'
-import isISOString from '../isISOString'
+import createTask from '../factories/createTask'
+import { isUTCString } from '../utc'
 
 export default function NewTask() {
   const nameRef = useRef<HTMLInputElement>(null);
@@ -11,6 +11,7 @@ export default function NewTask() {
   const rewardRef = useRef<HTMLInputElement>(null);
   const penaltyRef = useRef<HTMLInputElement>(null);
 
+  // TODO(2026-01-16 14:31:13): actually add tasks
   const addTask = useNeomeStore((s) => s.addTask);
   const navigate = useNavigate();
   const [error, setError] = useState("");
@@ -29,7 +30,7 @@ export default function NewTask() {
     if (Number.isNaN(reward)) return setError("Reward is not a number");
     if (Number.isNaN(penalty)) return setError("Penalty is not a number");
 
-    if (!isISOString(deadlineRef.current.value)) return setError("Invalid deadline");
+    if (!isUTCString(deadlineRef.current.value)) return setError("Invalid deadline");
 
     addTask(createTask({
       name: nameRef.current.value,

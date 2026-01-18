@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import Tasks from './Tasks/Tasks'
 import NewTask from './Tasks/NewTask'
 import OpenTask from './Tasks/OpenTask'
+import Page404 from './Page404'
 
 function Habits() {
   return <>
@@ -21,12 +22,6 @@ function Statistics() {
 function Settings() {
   return <>
     Settings TODO
-  </>;
-}
-
-function Page404() {
-  return <>
-    Page404 TODO
   </>;
 }
 

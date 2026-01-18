@@ -2,12 +2,11 @@ import forest_location from './assets/map-locations/0001-forest.svg'
 import CarrotIcon from './assets/icons/carrot.svg'
 import TaskCard from './Tasks/TaskCard'
 import useNeomeStore from './useNeomeStore'
-import selectOrderedTasks from "./selectOrderedTasks";
 
 function Home() {
-  const tasks = useNeomeStore(selectOrderedTasks);
-  const totalCarrots = useNeomeStore(s => s.total);
-  const dailyCarrots = useNeomeStore(s => s.daily);
+  const tasks = useNeomeStore(s => s.getSortedTasks());
+  const totalCarrots = useNeomeStore(s => s.currentState.totalCarrots);
+  const dailyCarrots = useNeomeStore(s => s.currentState.dailyCarrots);
 
   return (
     <div className="flex w-full">
@@ -28,13 +27,14 @@ function Home() {
                   <img src={CarrotIcon} className="h-[2.8rem]" />
                 </div>
                 <div className="flex text-[2.1rem] items-center">
-                  Total {totalCarrots}
+                  {/* TODO(2026-01-16 14:29:44): show carrots count */}
+                  Total: TODO
                   <img src={CarrotIcon} className="h-[2.8rem]" />
                 </div>
               </div>
 
               <div className="text-[2.1rem] ">
-                Carrots today: {dailyCarrots}
+                Carrots today: TODO
               </div>
             </div>
 

@@ -2,11 +2,10 @@ import useNeomeStore from '../useNeomeStore'
 import { Link } from 'react-router'
 import Pin from '../assets/icons/pin.svg'
 import PinActive from '../assets/icons/pin_active.svg'
-import selectOrderedTasks from "../selectOrderedTasks";
 import TaskCard from './TaskCard'
 
 export default function Tasks() {
-  const tasks = useNeomeStore(selectOrderedTasks);
+  const tasks = useNeomeStore(s => s.getSortedTasks());
 
   return (
     <div className="pt-2 pb-2">

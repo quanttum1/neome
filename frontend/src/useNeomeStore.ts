@@ -1,61 +1,82 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { now } from "./utc";
+import { createNewTaskEvent } from "./factories/createEvents";
+
+function compareEvents(a: NeomeEvent, b: NeomeEvent): number {
+  if (a.time < b.time) return -1;
+  if (a.time > b.time) return 1;
+  return a.id.localeCompare(b.id); // tie-breaker, just in case
+}
+
+function getRelevantEventsSorted(store: NeomeStore) {
+  return store.events.filter(e => e.time < now()).sort(compareEvents);
+}
+
+function assertEventHandled(x: never): never {
+  throw new Error(`Unhandled event: ${JSON.stringify(x)}`);
+}
+
+function applyEvent(event: NeomeEvent, state: State): State {
+  switch (event.type) {
+    case "NEW_TASK":
+      state.tasks.push(event.task);
+      return state;
+
+    case "TASK_COMPLETED":
+      state.tasks = state.tasks.filter(e => e.id != event.taskId);
+      return state;
+
+    default:
+      return assertEventHandled(event);
+  }
+}
+
+const initialState: State = {
+  totalCarrots: 0,
+  dailyCarrots: 0,
+  progress: 0,
+
+  tasks: [],
+};
 
 const useNeomeStore = create<NeomeStore>()(
   persist(
     (set, get) => ({
-      // Should it be renamed to totalCarrots and dailyCarrots?
-      total: 0,
-      daily: 0,
-      progress: 0, // The same as total, but it doesn't decrease when you lose carrots
+      events: [],
 
-      resetDaily: () => set({ daily: 0 }),
+      currentState: initialState,
 
-      addCarrots: (n) => {
-        const newDaily = Math.min(10, get().daily + n);
-        const newTotal = get().total + (newDaily - get().daily);
-
-        set({
-          total: newTotal,
-          daily: newDaily,
-          progress: Math.max(newTotal, get().progress),
-        });
+      updateCurrentState: () => {
+        // TODO(2026-01-18 20:18:40): updateCurrentState
+        get().recomputeCurrentState();
       },
 
-      loseCarrots: (n) => {
-        const newTotal = Math.max(0, get().daily - n);
+      recomputeCurrentState: () => {
+        let state = initialState;
 
-        set({
-          total: newTotal,
-          daily: get().daily - (get().total - newTotal),
-        });
+        for (const e of getRelevantEventsSorted(get())) {
+          state = applyEvent(e, state);
+        }
+
+        set({ currentState: state, stateLastUpdated: now() });
       },
 
-      tasks: [],
-
-      addTask: (task) => {
+      addTask: (task: Task) => {
         set({
-          tasks: [
-            ...get().tasks,
-            task,
-          ],
+          // TODO(2026-01-18 19:38): create a future Task with deadline
+          events: [...get().events, createNewTaskEvent(task)],
         });
+        get().updateCurrentState();
       },
 
-      removeTask: (taskId) => {
-        set({
-          tasks: get().tasks.filter((task) => task.id !== taskId),
-        });
+      getSortedTasks: () => {
+        // TODO(2026-01-18 20:18:31): getSortedTasks
+        return get().currentState.tasks;
       },
 
-      taskTogglePinned: (taskId) => {
-        set({
-          tasks: get().tasks.map((task) =>
-            task.id === taskId
-              ? { ...task, isPinned: !task.isPinned }
-              : task
-          ),
-        });
+      getTaskById: (id) => {
+        return get().currentState.tasks.filter(t => t.id == id)[0];
       },
     }),
     {
