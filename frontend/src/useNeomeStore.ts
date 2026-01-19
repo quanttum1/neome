@@ -96,8 +96,18 @@ const useNeomeStore = create<NeomeStore>()(
       currentState: getInitialState(),
 
       updateCurrentState: () => {
-        // TODO(2026-01-18 20:18:40): updateCurrentState
-        get().recomputeCurrentState();
+        const stateLastUpdated = get().stateLastUpdated;
+        if (stateLastUpdated == undefined) return get().recomputeCurrentState();
+
+        let state = get().currentState;
+
+        for (const e of getRelevantEventsSorted(get())) {
+          if (e.time < stateLastUpdated) continue;
+          state = applyEvent(e, state);
+        }
+
+        state = sortTasks(state);
+        set({ currentState: state, stateLastUpdated: now() });
       },
 
       recomputeCurrentState: () => {
