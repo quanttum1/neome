@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import { now } from "./utc";
 import { createNewTaskEvent } from "./factories/createEvents";
 import { createTaskCompletedEvent } from "./factories/createEvents";
+import { produce } from "immer";
 
 function compareEvents(a: NeomeEvent, b: NeomeEvent): number {
   if (a.time < b.time) return -1;
@@ -23,26 +24,35 @@ function assertEventHandled(x: never): never {
 }
 
 function applyEvent(event: NeomeEvent, state: State): State {
-  switch (event.type) {
-    case "NEW_TASK":
-      state.tasks.push(event.task);
-      return state;
-
-    case "TASK_COMPLETED":
-      const task = getTaskById(event.taskId, state);
-      if (task == undefined) {
-        return state; // The event has already been completed
+  // They told that in high-level languages like JS we don't need to think about memory
+  // management. So here we go. We need to use immer's `produce` to make sure we don't
+  // accidentaly change the state by reference. Nice
+  return produce(state, draft => {
+    switch (event.type) {
+      case "NEW_TASK": {
+        draft.tasks.push(event.task);
+        break;
       }
 
-      state.dailyCarrots += task.reward;
-      state.totalCarrots += task.reward;
+      case "TASK_COMPLETED": {
+        const task = getTaskById(event.taskId, draft);
+        if (!task) {
+          // The event has already been completed
+          break;
+        }
 
-      state.tasks = state.tasks.filter(e => e.id != event.taskId);
-      return state;
+        draft.dailyCarrots += task.reward;
+        draft.totalCarrots += task.reward;
 
-    default:
-      return assertEventHandled(event);
-  }
+        draft.tasks = draft.tasks.filter(t => t.id !== event.taskId);
+        break;
+      }
+
+      default: {
+        assertEventHandled(event);
+      }
+    }
+  });
 }
 
 function getInitialState(): State {
