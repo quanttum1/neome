@@ -27,14 +27,13 @@ function Home() {
                   <img src={CarrotIcon} className="h-[2.8rem]" />
                 </div>
                 <div className="flex text-[2.1rem] items-center">
-                  {/* TODO(2026-01-16 14:29:44): show carrots count */}
-                  Total: TODO
+                  Total: {totalCarrots}
                   <img src={CarrotIcon} className="h-[2.8rem]" />
                 </div>
               </div>
 
               <div className="text-[2.1rem] ">
-                Carrots today: TODO
+                Carrots today: {dailyCarrots}
               </div>
             </div>
 

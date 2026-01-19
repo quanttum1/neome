@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { now } from "./utc";
 import { createNewTaskEvent } from "./factories/createEvents";
+import { createTaskCompletedEvent } from "./factories/createEvents";
 
 function compareEvents(a: NeomeEvent, b: NeomeEvent): number {
   if (a.time < b.time) return -1;
@@ -10,7 +11,11 @@ function compareEvents(a: NeomeEvent, b: NeomeEvent): number {
 }
 
 function getRelevantEventsSorted(store: NeomeStore) {
-  return store.events.filter(e => e.time < now()).sort(compareEvents);
+  return store.events.filter(e => e.time <= now()).sort(compareEvents);
+}
+
+function getTaskById(id: TaskId, state: State) {
+  return state.tasks.filter(t => t.id == id)[0];
 }
 
 function assertEventHandled(x: never): never {
@@ -24,6 +29,14 @@ function applyEvent(event: NeomeEvent, state: State): State {
       return state;
 
     case "TASK_COMPLETED":
+      const task = getTaskById(event.taskId, state);
+      if (task == undefined) {
+        return state; // The event has already been completed
+      }
+
+      state.dailyCarrots += task.reward;
+      state.totalCarrots += task.reward;
+
       state.tasks = state.tasks.filter(e => e.id != event.taskId);
       return state;
 
@@ -32,20 +45,22 @@ function applyEvent(event: NeomeEvent, state: State): State {
   }
 }
 
-const initialState: State = {
-  totalCarrots: 0,
-  dailyCarrots: 0,
-  progress: 0,
+function getInitialState(): State {
+  return {
+    totalCarrots: 0,
+    dailyCarrots: 0,
+    progress: 0,
 
-  tasks: [],
-};
+    tasks: [],
+  };
+}
 
 const useNeomeStore = create<NeomeStore>()(
   persist(
     (set, get) => ({
       events: [],
 
-      currentState: initialState,
+      currentState: getInitialState(),
 
       updateCurrentState: () => {
         // TODO(2026-01-18 20:18:40): updateCurrentState
@@ -53,7 +68,7 @@ const useNeomeStore = create<NeomeStore>()(
       },
 
       recomputeCurrentState: () => {
-        let state = initialState;
+        let state = getInitialState();
 
         for (const e of getRelevantEventsSorted(get())) {
           state = applyEvent(e, state);
@@ -62,12 +77,20 @@ const useNeomeStore = create<NeomeStore>()(
         set({ currentState: state, stateLastUpdated: now() });
       },
 
-      addTask: (task: Task) => {
+      addEvents: (events) => {
         set({
-          // TODO(2026-01-18 19:38): create a future Task with deadline
-          events: [...get().events, createNewTaskEvent(task)],
+          events: [...get().events, ...events],
         });
         get().updateCurrentState();
+      },
+
+      addTask: (task: Task) => {
+        // TODO(2026-01-18 19:38): create a future Task with deadline
+        get().addEvents([createNewTaskEvent(task)]);
+      },
+
+      completeTask: (id) => {
+        get().addEvents([createTaskCompletedEvent(id)]);
       },
 
       getSortedTasks: () => {
@@ -76,7 +99,7 @@ const useNeomeStore = create<NeomeStore>()(
       },
 
       getTaskById: (id) => {
-        return get().currentState.tasks.filter(t => t.id == id)[0];
+        return getTaskById(id, get().currentState);
       },
     }),
     {

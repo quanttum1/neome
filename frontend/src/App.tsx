@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import Tasks from './Tasks/Tasks'
 import NewTask from './Tasks/NewTask'
 import OpenTask from './Tasks/OpenTask'
+import CompletedTask from './Tasks/Completed'
 import Page404 from './Page404'
 
 function Habits() {
@@ -39,6 +40,7 @@ export default function App() {
         <Route path="tasks">
           <Route index element={<Tasks />} />
           <Route path="new" element={<NewTask />} />
+          <Route path="completed" element={<CompletedTask />}/>
           <Route path=":taskId" element={<OpenTask />}/>
         </Route>
         <Route path="habits" element={<Habits />} />
