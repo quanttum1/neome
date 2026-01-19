@@ -4,7 +4,7 @@ import TaskCard from './Tasks/TaskCard'
 import useNeomeStore from './useNeomeStore'
 
 function Home() {
-  const tasks = useNeomeStore(s => s.getSortedTasks());
+  const tasks = useNeomeStore(s => s.currentState.tasks);
   const totalCarrots = useNeomeStore(s => s.currentState.totalCarrots);
   const dailyCarrots = useNeomeStore(s => s.currentState.dailyCarrots);
 

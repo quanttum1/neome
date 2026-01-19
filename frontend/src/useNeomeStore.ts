@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import { now } from "./utc";
 import { createNewTaskEvent } from "./factories/createEvents";
 import { createTaskCompletedEvent } from "./factories/createEvents";
+import { createTaskPinToggleEvent } from "./factories/createEvents";
 import { produce } from "immer";
 
 function compareEvents(a: NeomeEvent, b: NeomeEvent): number {
@@ -15,8 +16,12 @@ function getRelevantEventsSorted(store: NeomeStore) {
   return store.events.filter(e => e.time <= now()).sort(compareEvents);
 }
 
+function getTaskIndexById(id: TaskId, state: State) {
+  return state.tasks.findIndex(t => t.id === id);
+}
+
 function getTaskById(id: TaskId, state: State) {
-  return state.tasks.filter(t => t.id == id)[0];
+  return state.tasks.find(t => t.id == id);
 }
 
 function assertEventHandled(x: never): never {
@@ -48,6 +53,14 @@ function applyEvent(event: NeomeEvent, state: State): State {
         break;
       }
 
+      case "TASK_PIN_TOGGLE": {
+        const index = getTaskIndexById(event.taskId, draft);
+        if (!draft.tasks[index]) break; // Sus, but okay
+
+        draft.tasks[index].isPinned = !draft.tasks[index].isPinned;
+        break;
+      }
+
       default: {
         assertEventHandled(event);
       }
@@ -63,6 +76,16 @@ function getInitialState(): State {
 
     tasks: [],
   };
+}
+
+function sortTasks(state: State) {
+  const newTasks = [...state.tasks];
+  newTasks.sort((a, b) => {
+    if (a.isPinned != b.isPinned) return Number(b.isPinned) - Number(a.isPinned);
+    return a.deadline.localeCompare(b.deadline) || a.id.localeCompare(b.id);
+  })
+
+  return {...state, tasks: newTasks};
 }
 
 const useNeomeStore = create<NeomeStore>()(
@@ -84,10 +107,12 @@ const useNeomeStore = create<NeomeStore>()(
           state = applyEvent(e, state);
         }
 
+        state = sortTasks(state);
         set({ currentState: state, stateLastUpdated: now() });
       },
 
-      addEvents: (events) => {
+
+      addEventsAndUpdateState: (events) => {
         set({
           events: [...get().events, ...events],
         });
@@ -96,17 +121,17 @@ const useNeomeStore = create<NeomeStore>()(
 
       addTask: (task: Task) => {
         // TODO(2026-01-18 19:38): create a future Task with deadline
-        get().addEvents([createNewTaskEvent(task)]);
+        get().addEventsAndUpdateState([createNewTaskEvent(task)]);
       },
 
       completeTask: (id) => {
-        get().addEvents([createTaskCompletedEvent(id)]);
+        get().addEventsAndUpdateState([createTaskCompletedEvent(id)]);
       },
 
-      getSortedTasks: () => {
-        // TODO(2026-01-18 20:18:31): getSortedTasks
-        return get().currentState.tasks;
+      taskTogglePinned: (id) => {
+        get().addEventsAndUpdateState([createTaskPinToggleEvent(id)]);
       },
+
 
       getTaskById: (id) => {
         return getTaskById(id, get().currentState);

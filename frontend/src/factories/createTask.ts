@@ -13,8 +13,8 @@ function createTask(input: {
   }
 
   return {
-    id: crypto.randomUUID(),
     ...input,
+    id: crypto.randomUUID(),
     deadline: localInputToUTC(input.deadline),
     isPinned: input.isPinned ?? false,
   };

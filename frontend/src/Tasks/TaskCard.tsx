@@ -10,20 +10,19 @@ interface TaskCardProps {
 function TaskCard(props: TaskCardProps) {
   let task = props.task;
   // TODO(2026-01-16 14:34:18): make tasks pinnable
-  // const taskTogglePinned = useNeomeStore((s) => s.taskTogglePinned);
+  const taskTogglePinned = useNeomeStore((s) => s.taskTogglePinned);
 
   return (
     <div
       className="text-[24px] pt-2 pb-3 pl-4 pr-4 rounded-[1.5vw] bg-neome-grey flex items-center gap-2"
     >
 
-      {/* <div */}
-      {/*   className="hover:bg-neome-light-grey hover:rounded-[50%] cursor-pointer p-1" */}
-      {/*   onClick={() => taskTogglePinned(task.id)} */}
-      {/* > */}
-      {/*   {task.isPinned ? <img src={PinActive}></img> */}
-      {/*   : <img src={Pin}></img>} */}
-      {/* </div> */}
+      <div
+        className="hover:bg-neome-light-grey hover:rounded-[50%] cursor-pointer p-1"
+        onClick={() => taskTogglePinned(task.id)}
+      >
+        <img src={task.isPinned ? PinActive : Pin}></img>
+      </div>
 
       <Link 
         className="group flex cursor-pointer flex-col" to={`/tasks/${task.id}`}

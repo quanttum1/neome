@@ -10,6 +10,11 @@ interface NewTaskEvent extends BaseEvent {
   task: Task;
 }
 
+interface TaskPinToggleEvent extends BaseEvent {
+  type: "TASK_PIN_TOGGLE";
+  taskId: TaskId;
+}
+
 interface TaskCompletedEvent extends BaseEvent {
   type: "TASK_COMPLETED";
   taskId: TaskId;
@@ -20,4 +25,5 @@ interface TaskCompletedEvent extends BaseEvent {
 
 type NeomeEvent =
   | NewTaskEvent
+  | TaskPinToggleEvent
   | TaskCompletedEvent;
