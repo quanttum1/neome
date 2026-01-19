@@ -1,5 +1,5 @@
-export function isUTCString(value: string): boolean {
-  return !Number.isNaN(Date.parse(value));
+export function isValidDate(date: string) {
+  return !Number.isNaN(new Date(date));
 }
 
 export function localInputToUTC(value: string): UTCString {

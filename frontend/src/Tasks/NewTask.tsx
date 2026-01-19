@@ -3,7 +3,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import useNeomeStore from '../useNeomeStore';
 import createTask from '../factories/createTask'
-import { isUTCString } from '../utc'
+import { getCreateTaskError } from '../factories/createTask'
+import { isValidDate } from '../utc'
+import { localInputToUTC } from '../utc'
+import { now } from '../utc'
 
 export default function NewTask() {
   const nameRef = useRef<HTMLInputElement>(null);
@@ -11,7 +14,6 @@ export default function NewTask() {
   const rewardRef = useRef<HTMLInputElement>(null);
   const penaltyRef = useRef<HTMLInputElement>(null);
 
-  // TODO(2026-01-16 14:31:13): actually add tasks
   const addTask = useNeomeStore((s) => s.addTask);
   const navigate = useNavigate();
   const [error, setError] = useState("");
@@ -24,32 +26,37 @@ export default function NewTask() {
     if (!rewardRef.current) return setError("Reward is not set");
     if (!penaltyRef.current) return setError("Penalty is not set");
 
-    const reward = Number(rewardRef.current.value);
-    const penalty = Number(penaltyRef.current.value);
-
-    if (Number.isNaN(reward)) return setError("Reward is not a number");
-    if (Number.isNaN(penalty)) return setError("Penalty is not a number");
-
-    if (!isUTCString(deadlineRef.current.value)) return setError("Invalid deadline");
-
-    addTask(createTask({
+    const task = {
       name: nameRef.current.value,
       deadline: deadlineRef.current.value,
-      reward: reward,
-      penalty: -penalty,
-    }));
+      reward: Number(rewardRef.current.value),
+      penalty: -Number(penaltyRef.current.value),
+    };
+
+    const error = getCreateTaskError(task);
+    if (error) return setError(error);
+
+    addTask(createTask(task));
     navigate('/tasks');
   }
+
+  const now_ = new Date();
+  const pad = (n: number) => n.toString().padStart(2, "0");
+
+  // Format YYYY-MM-DDTHH:mm
+  const localDatetime = `${now_.getFullYear()}-${pad(now_.getMonth() + 1)}-${pad(
+    now_.getDate()
+  )}T${pad(now_.getHours())}:${pad(now_.getMinutes())}`;
 
   return (
     <div>
       {/* TODO(2026-01-16 12:33:29): make a sane UI for `NewTask` */}
-      Name: <input ref={nameRef} />
-      Reward: <input type="number" ref={rewardRef} />
-      Penalty: <input type="number" ref={penaltyRef} />
-      Deadline: <input type="datetime-local" ref={deadlineRef} />
+      Name: <input ref={nameRef} /><br />
+      Reward: <input type="text" ref={rewardRef} /><br />
+      Penalty: <input type="text" ref={penaltyRef} /><br />
+      Deadline: <input type="datetime-local" defaultValue={localDatetime} ref={deadlineRef} /><br />
 
-      <button onClick={create}>Create</button>
+      <button onClick={create}>Create</button><br />
       {error}
     </div>
   );
