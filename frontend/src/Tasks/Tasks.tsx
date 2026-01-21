@@ -5,7 +5,7 @@ import PinActive from '../assets/icons/pin_active.svg'
 import TaskCard from './TaskCard'
 
 export default function Tasks() {
-  const tasks = useNeomeStore(s => s.currentState.tasks);
+  const tasks = useNeomeStore(s => s.getState().tasks);
 
   return (
     <div className="pt-2 pb-2">

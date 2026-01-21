@@ -6,6 +6,8 @@ interface NeomeStore {
   // TODO(2026-01-16 15:04:01): add `initialState` and `initialStateTime`
   // to store the snapshot
 
+  getState: () => State;
+
   updateCurrentState: () => void; // Applies events with time > stateLastUpdated
   recomputeCurrentState: () => void; // Replays from scratch
 

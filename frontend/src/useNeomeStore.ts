@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { now } from "./utc";
-import { createNewTaskEvent } from "./factories/createEvents";
+import { createTaskAndDeadlineEvents } from "./factories/createEvents";
 import { createTaskCompletedEvent } from "./factories/createEvents";
 import { createTaskPinToggleEvent } from "./factories/createEvents";
 import { produce } from "immer";
@@ -24,6 +24,29 @@ function getTaskById(id: TaskId, state: State) {
   return state.tasks.find(t => t.id == id);
 }
 
+function clamp(n: number, min: number, max: number): number {
+  return Math.max(min, Math.min(n, max));
+}
+
+// Despite the name it can be used to both add and subtract the carrots
+function addCarrots(delta: number, state: State) {
+  // You never lose or gain more than 10 carrots per day
+  const clampedDaily = clamp(state.dailyCarrots + delta, -10, 10);
+  const totalCarrotsBefore = state.totalCarrots;
+
+  // Adjust totalCarrots to match the actual clamped gain/loss
+  state.totalCarrots += (clampedDaily - state.dailyCarrots);
+
+  // totalCarrots never go below 0
+  state.totalCarrots = Math.max(state.totalCarrots, 0);
+
+  // If we floored totalCarrots, we need to adjust dailyCarrots to match the actual loss
+  state.dailyCarrots += (state.totalCarrots - totalCarrotsBefore);
+
+  // progress never descreases
+  state.progress = Math.max(state.progress, state.totalCarrots);
+}
+
 function assertEventHandled(x: never): never {
   throw new Error(`Unhandled event: ${JSON.stringify(x)}`);
 }
@@ -41,14 +64,9 @@ function applyEvent(event: NeomeEvent, state: State): State {
 
       case "TASK_COMPLETED": {
         const task = getTaskById(event.taskId, draft);
-        if (!task) {
-          // The event has already been completed
-          break;
-        }
+        if (!task) break; // The event has already been completed
 
-        draft.dailyCarrots += task.reward;
-        draft.totalCarrots += task.reward;
-
+        addCarrots(task.reward, draft);
         draft.tasks = draft.tasks.filter(t => t.id !== event.taskId);
         break;
       }
@@ -58,6 +76,18 @@ function applyEvent(event: NeomeEvent, state: State): State {
         if (!draft.tasks[index]) break; // Sus, but okay
 
         draft.tasks[index].isPinned = !draft.tasks[index].isPinned;
+        break;
+      }
+
+      case "TASK_DEADLINE": {
+        // TODO(2026-01-21 16:22:58): add information about the carrot loss to notifications
+        // to show it to the user when the app is opened
+        const task = getTaskById(event.taskId, state);
+        if (!task) break; // Task has already been completed
+
+        // We add the penalty, because it's supposed to be negative itself
+        addCarrots(task.penalty, draft);
+        draft.tasks = draft.tasks.filter(t => t.id !== event.taskId);
         break;
       }
 
@@ -88,12 +118,23 @@ function sortTasks(state: State) {
   return {...state, tasks: newTasks};
 }
 
+let updatedState = false;
+
 const useNeomeStore = create<NeomeStore>()(
   persist(
     (set, get) => ({
       events: [],
 
+      // Don't read the state directly outside useNeomeStore, use getState instead
       currentState: getInitialState(),
+
+      getState: () => {
+        if (!updatedState) {
+          get().updateCurrentState();
+          updatedState = true;
+        }
+        return get().currentState;
+      },
 
       updateCurrentState: () => {
         const stateLastUpdated = get().stateLastUpdated;
@@ -130,8 +171,7 @@ const useNeomeStore = create<NeomeStore>()(
       },
 
       addTask: (task: Task) => {
-        // TODO(2026-01-18 19:38): create a future Task with deadline
-        get().addEventsAndUpdateState([createNewTaskEvent(task)]);
+        get().addEventsAndUpdateState(createTaskAndDeadlineEvents(task));
       },
 
       completeTask: (id) => {

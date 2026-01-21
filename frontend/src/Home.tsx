@@ -4,9 +4,12 @@ import TaskCard from './Tasks/TaskCard'
 import useNeomeStore from './useNeomeStore'
 
 function Home() {
-  const tasks = useNeomeStore(s => s.currentState.tasks);
-  const totalCarrots = useNeomeStore(s => s.currentState.totalCarrots);
-  const dailyCarrots = useNeomeStore(s => s.currentState.dailyCarrots);
+  const tasks = useNeomeStore(s => s.getState().tasks);
+  const totalCarrots = useNeomeStore(s => s.getState().totalCarrots);
+  const dailyCarrots = useNeomeStore(s => s.getState().dailyCarrots);
+
+  // Sometimes it's useful for debugging
+  // window.recomputeCurrentState = useNeomeStore(s => s.recomputeCurrentState);
 
   return (
     <div className="flex w-full">
