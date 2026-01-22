@@ -183,14 +183,28 @@ const useNeomeStore = create<NeomeStore>()(
 
       updateCurrentState: () => {
         return get().recomputeCurrentState();
+
+        // TODO(2026-01-22 18:35:06): updateCurrentState
+        // if you try to uncomment the current version, you'll see weird bugs when trying
+        // to toggle the pin
+
         // const stateLastUpdated = get().stateLastUpdated;
         // if (stateLastUpdated == undefined) return get().recomputeCurrentState();
         //
-        // let state = get().currentState;
+        // let state = getInitialState(get().initialDate);
+        // let lastEventId: string | undefined;
         //
-        // for (const e of getRelevantEventsSorted(get())) {
-        //   if (e.time < stateLastUpdated) continue;
-        //   state = applyEvent(e, state);
+        // while (true) {
+        //   const e = getNextRelevantEvent(get(), lastEventId);
+        //
+        //   if (!e) break;
+        //   if (e.time < stateLastUpdated) {
+        //     lastEventId = e.id;
+        //     continue;
+        //   }
+        //
+        //   state = get().applyEvent(e, state);
+        //   lastEventId = e.id;
         // }
         //
         // state = sortTasks(state);
@@ -211,7 +225,6 @@ const useNeomeStore = create<NeomeStore>()(
 
         state = sortTasks(state);
         set({ currentState: state, stateLastUpdated: now() });
-        console.log("Recomputed")
       },
 
 
