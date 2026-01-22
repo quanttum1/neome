@@ -25,10 +25,15 @@ interface TaskDeadlineEvent extends BaseEvent {
   taskId: TaskId;
 }
 
-// TODO(2026-01-16 14:13:42): add DayRolloverEvent
+interface DayRolloverEvent extends BaseEvent {
+  type: "DAY_ROLLOVER";
+  oldDate: UTCDateString;
+  newDate: UTCDateString;
+}
 
 type NeomeEvent =
   | NewTaskEvent
   | TaskPinToggleEvent
   | TaskDeadlineEvent
+  | DayRolloverEvent
   | TaskCompletedEvent;

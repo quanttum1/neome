@@ -16,8 +16,33 @@ export function now(): UTCString {
   // Uncomment the following when testing/debugging to "travel in time"
   //
   // const d = new Date();
-  // d.setUTCDate(d.getUTCDate() + 1); // Adds 1 day
+  // d.setUTCDate(d.getUTCDate() + 2); // Adds 1 day
   // return d.toISOString();
 
   return new Date().toISOString();
+}
+
+export function startOfUTCDay(time: UTCString): UTCDateString {
+  const d = new Date(time);
+  d.setUTCHours(0, 0, 0, 0);
+  return d.toISOString();
+}
+
+export function nextUTCDay(day: UTCDateString): UTCDateString {
+  const d = new Date(day);
+  d.setUTCDate(d.getUTCDate() + 1);
+  return startOfUTCDay(d.toISOString());
+}
+
+export function localMidnightOf(date: UTCDateString): UTCString {
+  const d = new Date(date);
+
+  const localMidnight = new Date(
+    d.getFullYear(),
+    d.getMonth(),
+    d.getDate(),
+    0, 0, 0, 0
+  );
+
+  return localMidnight.toISOString();
 }

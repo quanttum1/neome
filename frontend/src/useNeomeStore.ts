@@ -1,9 +1,11 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { now } from "./utc";
+import { startOfUTCDay } from "./utc";
 import { createTaskAndDeadlineEvents } from "./factories/createEvents";
 import { createTaskCompletedEvent } from "./factories/createEvents";
 import { createTaskPinToggleEvent } from "./factories/createEvents";
+import { createDayRolloverEvent } from "./factories/createEvents";
 import { produce } from "immer";
 
 function compareEvents(a: NeomeEvent, b: NeomeEvent): number {
@@ -12,8 +14,21 @@ function compareEvents(a: NeomeEvent, b: NeomeEvent): number {
   return a.id.localeCompare(b.id); // tie-breaker, just in case
 }
 
-function getRelevantEventsSorted(store: NeomeStore) {
-  return store.events.filter(e => e.time <= now()).sort(compareEvents);
+function getNextRelevantEvent
+(store: NeomeStore, lastEventId: string | undefined): NeomeEvent | undefined {
+  let relevantEvents = store.getEvents().filter(e => e.time <= now()).sort(compareEvents);
+
+  if (lastEventId == undefined) {
+    return relevantEvents[0];
+  }
+
+  for (const [index, event] of relevantEvents.entries()) {
+    if (event.id == lastEventId) {
+      return relevantEvents[index + 1];
+    }
+  }
+
+  throw new Error("Event with this id doesn't exist");
 }
 
 function getTaskIndexById(id: TaskId, state: State) {
@@ -51,55 +66,10 @@ function assertEventHandled(x: never): never {
   throw new Error(`Unhandled event: ${JSON.stringify(x)}`);
 }
 
-function applyEvent(event: NeomeEvent, state: State): State {
-  // They told that in high-level languages like JS we don't need to think about memory
-  // management. So here we go. We need to use immer's `produce` to make sure we don't
-  // accidentaly change the state by reference. Nice
-  return produce(state, draft => {
-    switch (event.type) {
-      case "NEW_TASK": {
-        draft.tasks.push(event.task);
-        break;
-      }
-
-      case "TASK_COMPLETED": {
-        const task = getTaskById(event.taskId, draft);
-        if (!task) break; // The event has already been completed
-
-        addCarrots(task.reward, draft);
-        draft.tasks = draft.tasks.filter(t => t.id !== event.taskId);
-        break;
-      }
-
-      case "TASK_PIN_TOGGLE": {
-        const index = getTaskIndexById(event.taskId, draft);
-        if (!draft.tasks[index]) break; // Sus, but okay
-
-        draft.tasks[index].isPinned = !draft.tasks[index].isPinned;
-        break;
-      }
-
-      case "TASK_DEADLINE": {
-        // TODO(2026-01-21 16:22:58): add information about the carrot loss to notifications
-        // to show it to the user when the app is opened
-        const task = getTaskById(event.taskId, state);
-        if (!task) break; // Task has already been completed
-
-        // We add the penalty, because it's supposed to be negative itself
-        addCarrots(task.penalty, draft);
-        draft.tasks = draft.tasks.filter(t => t.id !== event.taskId);
-        break;
-      }
-
-      default: {
-        assertEventHandled(event);
-      }
-    }
-  });
-}
-
-function getInitialState(): State {
+function getInitialState(initialDate: UTCDateString): State {
   return {
+    date: initialDate,
+
     totalCarrots: 0,
     dailyCarrots: 0,
     progress: 0,
@@ -123,10 +93,13 @@ let updatedState = false;
 const useNeomeStore = create<NeomeStore>()(
   persist(
     (set, get) => ({
-      events: [],
+      initialDate: startOfUTCDay(now()),
+      // Don't read the events directly, use getEvents instead
+      events: undefined,
 
       // Don't read the state directly outside useNeomeStore, use getState instead
-      currentState: getInitialState(),
+      // TODO(2026-01-22 16:49:29): maybe make it undefined by default
+      currentState: getInitialState(startOfUTCDay(now())),
 
       getState: () => {
         if (!updatedState) {
@@ -136,36 +109,115 @@ const useNeomeStore = create<NeomeStore>()(
         return get().currentState;
       },
 
-      updateCurrentState: () => {
-        const stateLastUpdated = get().stateLastUpdated;
-        if (stateLastUpdated == undefined) return get().recomputeCurrentState();
+      getEvents: () => {
+        let events = get().events;
 
-        let state = get().currentState;
-
-        for (const e of getRelevantEventsSorted(get())) {
-          if (e.time < stateLastUpdated) continue;
-          state = applyEvent(e, state);
+        if (events == undefined) {
+          // Bootstrap the day rollover event
+          events = [createDayRolloverEvent(startOfUTCDay(now()))];
+          set({ events: events })
         }
 
-        state = sortTasks(state);
-        set({ currentState: state, stateLastUpdated: now() });
+        return events;
+      },
+
+      applyEvent: (event: NeomeEvent, state: State): State => {
+        // They told that in high-level languages like JS we don't need to think about
+        // memory management. So here we go. We need to use immer's `produce` to make sure
+        // we don't accidentaly change the state by reference. Nice
+        return produce(state, draft => {
+          switch (event.type) {
+            case "NEW_TASK": {
+              draft.tasks.push(event.task);
+              break;
+            }
+
+            case "TASK_COMPLETED": {
+              const task = getTaskById(event.taskId, draft);
+              if (!task) break; // The event has already been completed
+
+              addCarrots(task.reward, draft);
+              draft.tasks = draft.tasks.filter(t => t.id !== event.taskId);
+              break;
+            }
+
+            case "TASK_PIN_TOGGLE": {
+              const index = getTaskIndexById(event.taskId, draft);
+              if (!draft.tasks[index]) break; // Sus, but okay
+
+              draft.tasks[index].isPinned = !draft.tasks[index].isPinned;
+              break;
+            }
+
+            case "TASK_DEADLINE": {
+              // TODO(2026-01-21 16:22:58): add info about carrot loss to notifications
+              // to show it to the user when the app is opened
+              const task = getTaskById(event.taskId, state);
+              if (!task) break; // Task has already been completed
+
+              // We add the penalty, because it's supposed to be negative itself
+              addCarrots(task.penalty, draft);
+              draft.tasks = draft.tasks.filter(t => t.id !== event.taskId);
+              break;
+            }
+
+            case "DAY_ROLLOVER": {
+                if (startOfUTCDay(event.oldDate) != startOfUTCDay(draft.date)) 
+                  break;
+
+                draft.date = event.newDate;
+                draft.dailyCarrots = 0;
+
+                set({
+                  events: [...get().getEvents(), createDayRolloverEvent(event.newDate)]
+                });
+              break;
+            }
+
+            default: {
+              assertEventHandled(event);
+            }
+          }
+        });
+      },
+
+      updateCurrentState: () => {
+        return get().recomputeCurrentState();
+        // const stateLastUpdated = get().stateLastUpdated;
+        // if (stateLastUpdated == undefined) return get().recomputeCurrentState();
+        //
+        // let state = get().currentState;
+        //
+        // for (const e of getRelevantEventsSorted(get())) {
+        //   if (e.time < stateLastUpdated) continue;
+        //   state = applyEvent(e, state);
+        // }
+        //
+        // state = sortTasks(state);
+        // set({ currentState: state, stateLastUpdated: now() });
       },
 
       recomputeCurrentState: () => {
-        let state = getInitialState();
+        let state = getInitialState(get().initialDate);
+        let lastEventId: string | undefined;
 
-        for (const e of getRelevantEventsSorted(get())) {
-          state = applyEvent(e, state);
+        while (true) {
+          const e = getNextRelevantEvent(get(), lastEventId);
+          if (!e) break;
+
+          state = get().applyEvent(e, state);
+          lastEventId = e.id;
         }
 
         state = sortTasks(state);
         set({ currentState: state, stateLastUpdated: now() });
+        console.log("Recomputed")
       },
 
 
       addEventsAndUpdateState: (events) => {
         set({
-          events: [...get().events, ...events],
+          events: [...get().getEvents(), ...events],
         });
         get().updateCurrentState();
       },

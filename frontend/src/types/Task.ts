@@ -1,5 +1,4 @@
 type TaskId = string;
-type UTCString = string;
 
 interface Task {
   id: TaskId;

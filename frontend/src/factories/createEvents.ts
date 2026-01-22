@@ -1,4 +1,6 @@
 import { now } from "../utc";
+import { nextUTCDay } from "../utc";
+import { localMidnightOf } from "../utc";
 
 export function createTaskAndDeadlineEvents(task: Task): NeomeEvent[] {
   const taskEvent: NewTaskEvent = {
@@ -33,5 +35,17 @@ export function createTaskCompletedEvent(taskId: TaskId): TaskCompletedEvent {
     time: now(),
     type: "TASK_COMPLETED",
     taskId: taskId,
+  };
+}
+
+export function createDayRolloverEvent(oldDate: UTCDateString): DayRolloverEvent {
+  const newDate = nextUTCDay(oldDate);
+
+  return {
+    id: crypto.randomUUID(),
+    time: localMidnightOf(newDate),
+    type: "DAY_ROLLOVER",
+    oldDate: oldDate,
+    newDate: newDate,
   };
 }

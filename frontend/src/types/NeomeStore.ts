@@ -1,5 +1,6 @@
 interface NeomeStore {
-  events: NeomeEvent[]; // MUST be sorted by time
+  initialDate: UTCDateString;
+  events: NeomeEvent[] | undefined; // MUST be sorted by time
 
   currentState: State;
   stateLastUpdated?: UTCString;
@@ -8,6 +9,9 @@ interface NeomeStore {
 
   getState: () => State;
 
+  getEvents: () => NeomeEvent[];
+
+  applyEvent: (event: NeomeEvent, state: State) => State,
   updateCurrentState: () => void; // Applies events with time > stateLastUpdated
   recomputeCurrentState: () => void; // Replays from scratch
 
