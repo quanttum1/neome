@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+Ôªøimport { useRef } from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import useNeomeStore from '../useNeomeStore';
@@ -49,42 +49,80 @@ export default function NewTask() {
     navigate('/tasks');
   }
 
-  return (
-    <div className="task-container">
-      <h3>Create new task</h3>
-      <form onSubmit={create}>
-        <div className="field">
-          <label>Õ‡Á‚‡</label>
-          <input ref={nameRef} type="text" placeholder="What you need to do?" />
-        </div>
+    return (
+        <div className="min-h-screen bg-[#11080b] flex items-center justify-center p-4 font-sans text-[#f0ced4]">
+            <div className="w-full max-w-md bg-[#1e0f12] border-4 border-[#411a21] rounded-[2rem] p-8 shadow-2xl">
 
-        <div className="row">
-          <div className="field">
-            <label>Prize</label>
-            <input ref={rewardRef} type="number" defaultValue="0" />
-          </div>
-          <div className="field">
-            <label>Fine</label>
-            <input ref={penaltyRef} type="number" defaultValue="0" />
-          </div>
-        </div>
+                <header className="mb-8 text-center">
+                    <h1 className="text-3xl font-black text-[#ff6b81] tracking-widest uppercase">üìú New Quest</h1>
+                    <p className="text-sm opacity-60 mt-2">Map out your next milestone on the path</p>
+                </header>
 
-        <div className="field">
-          <label>Deadline</label>
-          <input
-            ref={deadlineRef}
-            type="datetime-local"
-            defaultValue={localDatetime}
-          />
-        </div>
+                <form onSubmit={create} className="space-y-6">
+                    <div className="flex flex-col">
+                        <label className="text-[0.7rem] font-bold text-[#e2d12e] uppercase mb-2 ml-1">Quest Name</label>
+                        <input
+                            ref={nameRef}
+                            className="bg-[#2d161b] border-2 border-[#411a21] rounded-xl p-4 text-white focus:outline-none focus:border-[#00d232] transition-all placeholder:opacity-30"
+                            placeholder="What is your next challenge?"
+                            autoFocus
+                        />
+                    </div>
 
-        {error && <p className="error">{error}</p>}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="flex flex-col">
+                            <label className="text-[0.7rem] font-bold text-[#e2d12e] uppercase mb-2 ml-1">Reward ü•ï</label>
+                            <input
+                                ref={rewardRef}
+                                type="number"
+                                defaultValue="5"
+                                className="bg-[#2d161b] border-2 border-[#411a21] rounded-xl p-4 text-white focus:outline-none focus:border-[#00d232]"
+                            />
+                        </div>
+                        <div className="flex flex-col">
+                            <label className="text-[0.7rem] font-bold text-[#e2d12e] uppercase mb-2 ml-1">Penalty ‚òÅÔ∏è</label>
+                            <input
+                                ref={penaltyRef}
+                                type="number"
+                                defaultValue="2"
+                                className="bg-[#2d161b] border-2 border-[#411a21] rounded-xl p-4 text-white focus:outline-none focus:border-[#00d232]"
+                            />
+                        </div>
+                    </div>
 
-        <div className="form-footer">
-          <button type="button" onClick={() => navigate('/tasks')}>Cancel</button>
-          <button type="submit" className="submit-btn">Add task</button>
+                    <div className="flex flex-col">
+                        <label className="text-[0.7rem] font-bold text-[#e2d12e] uppercase mb-2 ml-1">Time Limit</label>
+                        <input
+                            ref={deadlineRef}
+                            type="datetime-local"
+                            defaultValue={localDatetime}
+                            className="bg-[#2d161b] border-2 border-[#411a21] rounded-xl p-4 text-white focus:outline-none focus:border-[#00d232] [color-scheme:dark]"
+                        />
+                    </div>
+
+                    {error && (
+                        <div className="bg-red-500/10 border border-red-500 text-[#ff6b81] p-3 rounded-xl text-sm animate-pulse">
+                            ‚ö†Ô∏è {error}
+                        </div>
+                    )}
+
+                    <div className="flex gap-4 pt-4">
+                        <button
+                            type="button"
+                            onClick={() => navigate('/tasks')}
+                            className="flex-1 bg-[#411a21] text-white font-bold py-4 rounded-2xl hover:bg-[#5a252d] transition-colors uppercase text-sm"
+                        >
+                            Back
+                        </button>
+                        <button
+                            type="submit"
+                            className="flex-1 bg-[#00d232] text-black font-black py-4 rounded-2xl hover:scale-105 active:scale-95 transition-all uppercase text-sm shadow-[0_0_15px_rgba(0,210,50,0.4)]"
+                        >
+                            Forge Quest
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-      </form>
-    </div>
-  );
+    );
 }
