@@ -51,7 +51,7 @@ export default function NewTask() {
 
   return (
     <div className="task-container">
-      <h3>Створити нове завдання</h3>
+      <h3>Create new task</h3>
       <form onSubmit={create}>
         <div className="field">
           <label>Назва</label>
