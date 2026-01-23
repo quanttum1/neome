@@ -14,11 +14,20 @@ export default function NewTask() {
   const rewardRef = useRef<HTMLInputElement>(null);
   const penaltyRef = useRef<HTMLInputElement>(null);
 
-  const addTask = useNeomeStore((s) => s.addTask);
+  const addTask = useNeomeStore((s: NeomeStore) => s.addTask);
   const navigate = useNavigate();
   const [error, setError] = useState("");
 
-  function create(): void {
+  const now_ = new Date();
+  const pad = (n: number) => n.toString().padStart(2, "0");
+
+  // Format YYYY-MM-DDTHH:mm
+  const localDatetime = `${now_.getFullYear()}-${pad(now_.getMonth() + 1)}-${pad(
+    now_.getDate()
+  )}T${pad(now_.getHours())}:${pad(now_.getMinutes())}`;
+
+   function create(e: React.FormEvent): void {
+    e.preventDefault();
     setError("");
 
     if (!nameRef.current) return setError("Name is not set");
@@ -40,24 +49,42 @@ export default function NewTask() {
     navigate('/tasks');
   }
 
-  const now_ = new Date();
-  const pad = (n: number) => n.toString().padStart(2, "0");
-
-  // Format YYYY-MM-DDTHH:mm
-  const localDatetime = `${now_.getFullYear()}-${pad(now_.getMonth() + 1)}-${pad(
-    now_.getDate()
-  )}T${pad(now_.getHours())}:${pad(now_.getMinutes())}`;
-
   return (
-    <div>
-      {/* TODO(2026-01-16 12:33:29): make a sane UI for `NewTask` */}
-      Name: <input ref={nameRef} /><br />
-      Reward: <input type="text" ref={rewardRef} /><br />
-      Penalty: <input type="text" ref={penaltyRef} /><br />
-      Deadline: <input type="datetime-local" defaultValue={localDatetime} ref={deadlineRef} /><br />
+    <div className="task-container">
+      <h3>Створити нове завдання</h3>
+      <form onSubmit={create}>
+        <div className="field">
+          <label>Назва</label>
+          <input ref={nameRef} type="text" placeholder="What you need to do?" />
+        </div>
 
-      <button onClick={create}>Create</button><br />
-      {error}
+        <div className="row">
+          <div className="field">
+            <label>Prize</label>
+            <input ref={rewardRef} type="number" defaultValue="0" />
+          </div>
+          <div className="field">
+            <label>Fine</label>
+            <input ref={penaltyRef} type="number" defaultValue="0" />
+          </div>
+        </div>
+
+        <div className="field">
+          <label>Deadline</label>
+          <input
+            ref={deadlineRef}
+            type="datetime-local"
+            defaultValue={localDatetime}
+          />
+        </div>
+
+        {error && <p className="error">{error}</p>}
+
+        <div className="form-footer">
+          <button type="button" onClick={() => navigate('/tasks')}>Cancel</button>
+          <button type="submit" className="submit-btn">Add task</button>
+        </div>
+      </form>
     </div>
   );
 }
