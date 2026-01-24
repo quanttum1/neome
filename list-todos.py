@@ -1,7 +1,5 @@
 import os
 
-in_multiline_jsx = False
-
 class Todo:
     label = ''
     file = ''
@@ -28,6 +26,7 @@ def get_todos_from_file(path, name):
 
     lines = open(path).read().splitlines()
     comment_lines = []
+    in_multiline_jsx = False
 
     for linenumber in range(len(lines)):
         line = lines[linenumber]
@@ -60,7 +59,7 @@ def get_todos_from_file(path, name):
                         comment = line.split('{/*')[1]
                         comment = comment.strip()
                         add_comment_line(comment)
-            else:   
+            else:
                 if '*/}' in line:
                     in_multiline_jsx = False
                     comment = line.split('*/}')[0]
