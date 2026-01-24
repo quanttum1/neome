@@ -50,58 +50,55 @@ export default function NewTask() {
   }
 
     return (
-        <div className="min-h-screen bg-[#11080b] flex items-center justify-center p-4 font-sans text-[#f0ced4]">
-            <div className="w-full max-w-md bg-[#1e0f12] border-4 border-[#411a21] rounded-[2rem] p-8 shadow-2xl">
-
-                <header className="mb-8 text-center">
-                    <h1 className="text-3xl font-black text-[#ff6b81] tracking-widest uppercase">📜 New Quest</h1>
-                    <p className="text-sm opacity-60 mt-2">Map out your next milestone on the path</p>
-                </header>
+        <div className="min-h-screen flex items-center justify-center p-4">
+            <div className="w-full max-w-md p-8">
 
                 <form onSubmit={create} className="space-y-6">
                     <div className="flex flex-col">
-                        <label className="text-[0.7rem] font-bold text-[#e2d12e] uppercase mb-2 ml-1">Quest Name</label>
+                        <label className="text-[0.7rem] font-bold text-neome-pink mb-2 ml-1">Task Name</label>
                         <input
                             ref={nameRef}
-                            className="bg-[#2d161b] border-2 border-[#411a21] rounded-xl p-4 text-white focus:outline-none focus:border-[#00d232] transition-all placeholder:opacity-30"
-                            placeholder="What is your next challenge?"
+                            className="bg-neome-light-grey border-2 border-neome-light-grey rounded-xl p-4 text-white focus:outline-none focus:border-neome-pink transition-all placeholder:opacity-30"
+                            placeholder='e.g. "Finish homework"'
                             autoFocus
                         />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="flex flex-col">
-                            <label className="text-[0.7rem] font-bold text-[#e2d12e] uppercase mb-2 ml-1">Reward 🥕</label>
+                            <label className="text-[0.7rem] font-bold text-neome-pink mb-2 ml-1">Reward</label>
                             <input
                                 ref={rewardRef}
                                 type="number"
-                                defaultValue="5"
-                                className="bg-[#2d161b] border-2 border-[#411a21] rounded-xl p-4 text-white focus:outline-none focus:border-[#00d232]"
+                                defaultValue="0"
+                                step="0.1"
+                                className="bg-neome-light-grey border-2 border-neome-light-grey rounded-xl p-4 text-white focus:outline-none focus:border-neome-pink"
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label className="text-[0.7rem] font-bold text-[#e2d12e] uppercase mb-2 ml-1">Penalty ☁️</label>
+                            <label className="text-[0.7rem] font-bold text-neome-pink mb-2 ml-1">Penalty</label>
                             <input
                                 ref={penaltyRef}
                                 type="number"
-                                defaultValue="2"
-                                className="bg-[#2d161b] border-2 border-[#411a21] rounded-xl p-4 text-white focus:outline-none focus:border-[#00d232]"
+                                step="0.1"
+                                defaultValue="0"
+                                className="bg-neome-light-grey border-2 border-neome-light-grey rounded-xl p-4 text-white focus:outline-none focus:border-neome-pink"
                             />
                         </div>
                     </div>
 
                     <div className="flex flex-col">
-                        <label className="text-[0.7rem] font-bold text-[#e2d12e] uppercase mb-2 ml-1">Time Limit</label>
+                        <label className="text-[0.7rem] font-bold text-neome-pink mb-2 ml-1">Deadline</label>
                         <input
                             ref={deadlineRef}
                             type="datetime-local"
                             defaultValue={localDatetime}
-                            className="bg-[#2d161b] border-2 border-[#411a21] rounded-xl p-4 text-white focus:outline-none focus:border-[#00d232] [color-scheme:dark]"
+                            className="bg-neome-light-grey border-2 border-neome-light-grey rounded-xl p-4 text-white focus:outline-none focus:border-neome-pink"
                         />
                     </div>
 
                     {error && (
-                        <div className="bg-red-500/10 border border-red-500 text-[#ff6b81] p-3 rounded-xl text-sm animate-pulse">
+                        <div className="bg-red-500/10 border border-red-500 text-[#ff6b81] p-3 rounded-xl text-sm">
                             ⚠️ {error}
                         </div>
                     )}
@@ -110,15 +107,15 @@ export default function NewTask() {
                         <button
                             type="button"
                             onClick={() => navigate('/tasks')}
-                            className="flex-1 bg-[#411a21] text-white font-bold py-4 rounded-2xl hover:bg-[#5a252d] transition-colors uppercase text-sm"
+                            className="flex-1 bg-neome-dark-red text-white py-4 rounded-2xl cursor-pointer text-sm"
                         >
                             Back
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 bg-[#00d232] text-black font-black py-4 rounded-2xl hover:scale-105 active:scale-95 transition-all uppercase text-sm shadow-[0_0_15px_rgba(0,210,50,0.4)]"
+                            className="flex-1 bg-neome-pink text-black rounded-2xl cursor-pointer"
                         >
-                            Forge Quest
+                            Add task
                         </button>
                     </div>
                 </form>
