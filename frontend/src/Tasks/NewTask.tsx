@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+﻿import { useRef } from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import useNeomeStore from '../useNeomeStore';
@@ -14,11 +14,20 @@ export default function NewTask() {
   const rewardRef = useRef<HTMLInputElement>(null);
   const penaltyRef = useRef<HTMLInputElement>(null);
 
-  const addTask = useNeomeStore((s) => s.addTask);
+  const addTask = useNeomeStore((s: NeomeStore) => s.addTask);
   const navigate = useNavigate();
   const [error, setError] = useState("");
 
-  function create(): void {
+  const now_ = new Date();
+  const pad = (n: number) => n.toString().padStart(2, "0");
+
+  // Format YYYY-MM-DDTHH:mm
+  const localDatetime = `${now_.getFullYear()}-${pad(now_.getMonth() + 1)}-${pad(
+    now_.getDate()
+  )}T${pad(now_.getHours())}:${pad(now_.getMinutes())}`;
+
+   function create(e: React.FormEvent): void {
+    e.preventDefault();
     setError("");
 
     if (!nameRef.current) return setError("Name is not set");
@@ -40,24 +49,77 @@ export default function NewTask() {
     navigate('/tasks');
   }
 
-  const now_ = new Date();
-  const pad = (n: number) => n.toString().padStart(2, "0");
+    return (
+        <div className="min-h-screen flex items-center justify-center p-4">
+            <div className="w-full max-w-md p-8">
 
-  // Format YYYY-MM-DDTHH:mm
-  const localDatetime = `${now_.getFullYear()}-${pad(now_.getMonth() + 1)}-${pad(
-    now_.getDate()
-  )}T${pad(now_.getHours())}:${pad(now_.getMinutes())}`;
+                <form onSubmit={create} className="space-y-6">
+                    <div className="flex flex-col">
+                        <label className="text-[0.7rem] font-bold text-neome-pink mb-2 ml-1">Task Name</label>
+                        <input
+                            ref={nameRef}
+                            className="bg-neome-light-grey border-2 border-neome-light-grey rounded-xl p-4 text-white focus:outline-none focus:border-neome-pink transition-all placeholder:opacity-30"
+                            placeholder='e.g. "Finish homework"'
+                            autoFocus
+                        />
+                    </div>
 
-  return (
-    <div>
-      {/* TODO(2026-01-16 12:33:29): make a sane UI for `NewTask` */}
-      Name: <input ref={nameRef} /><br />
-      Reward: <input type="text" ref={rewardRef} /><br />
-      Penalty: <input type="text" ref={penaltyRef} /><br />
-      Deadline: <input type="datetime-local" defaultValue={localDatetime} ref={deadlineRef} /><br />
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="flex flex-col">
+                            <label className="text-[0.7rem] font-bold text-neome-pink mb-2 ml-1">Reward</label>
+                            <input
+                                ref={rewardRef}
+                                type="number"
+                                defaultValue="0"
+                                step="0.1"
+                                className="bg-neome-light-grey border-2 border-neome-light-grey rounded-xl p-4 text-white focus:outline-none focus:border-neome-pink"
+                            />
+                        </div>
+                        <div className="flex flex-col">
+                            <label className="text-[0.7rem] font-bold text-neome-pink mb-2 ml-1">Penalty</label>
+                            <input
+                                ref={penaltyRef}
+                                type="number"
+                                step="0.1"
+                                defaultValue="0"
+                                className="bg-neome-light-grey border-2 border-neome-light-grey rounded-xl p-4 text-white focus:outline-none focus:border-neome-pink"
+                            />
+                        </div>
+                    </div>
 
-      <button onClick={create}>Create</button><br />
-      {error}
-    </div>
-  );
+                    <div className="flex flex-col">
+                        <label className="text-[0.7rem] font-bold text-neome-pink mb-2 ml-1">Deadline</label>
+                        <input
+                            ref={deadlineRef}
+                            type="datetime-local"
+                            defaultValue={localDatetime}
+                            className="bg-neome-light-grey border-2 border-neome-light-grey rounded-xl p-4 text-white focus:outline-none focus:border-neome-pink"
+                        />
+                    </div>
+
+                    {error && (
+                        <div className="bg-red-500/10 border border-red-500 text-[#ff6b81] p-3 rounded-xl text-sm">
+                            ⚠️ {error}
+                        </div>
+                    )}
+
+                    <div className="flex gap-4 pt-4">
+                        <button
+                            type="button"
+                            onClick={() => navigate('/tasks')}
+                            className="flex-1 bg-neome-dark-red text-white py-4 rounded-2xl cursor-pointer text-sm"
+                        >
+                            Back
+                        </button>
+                        <button
+                            type="submit"
+                            className="flex-1 bg-neome-pink text-black rounded-2xl cursor-pointer"
+                        >
+                            Add task
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
 }

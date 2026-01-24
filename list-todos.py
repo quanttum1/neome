@@ -1,5 +1,7 @@
 import os
 
+in_multiline_jsx = False
+
 class Todo:
     label = ''
     file = ''
@@ -35,7 +37,8 @@ def get_todos_from_file(path, name):
             comment_lines += [(comment_line, f'{path}:{linenumber + 1}')]
 
         if name.endswith('.js') or name.endswith('.jsx') or \
-            name.endswith('.ts') or name.endswith('.tsx'):
+            name.endswith('.ts') or name.endswith('.tsx') or \
+             name.endswith('.cs'):
             if '//' in line:
                 # It looks scary, but it just extracts the comment
                 comment = '//'.join(line.split('//')[1:])
@@ -44,17 +47,31 @@ def get_todos_from_file(path, name):
                 add_comment_line(comment)
 
         if name.endswith('.jsx') or name.endswith('.tsx'):
-            # TODO(2026-01-12 20:13:34): support multiline comments enclosed in {/* */}
-            if '{/*' in line:
-                comment = line.split('{/*')[1]
-                comment = comment.split('*/}')[0]
-                comment = comment.strip()
+            if not in_multiline_jsx:
+                if '{/*' in line:
+                    if '*/}' in line:
+                        comment = line.split('{/*')[1]
+                        comment = comment.split('*/}')[0]
+                        comment = comment.strip()
 
-                add_comment_line(comment)
+                        add_comment_line(comment)
+                    else:
+                        in_multiline_jsx = True
+                        comment = line.split('{/*')[1]
+                        comment = comment.strip()
+                        add_comment_line(comment)
+            else:   
+                if '*/}' in line:
+                    in_multiline_jsx = False
+                    comment = line.split('*/}')[0]
+                    comment = comment.strip()
+                    add_comment_line(comment)
+                else:
+                    add_comment_line(line.strip())
 
-        if name.endswith('.cs'):
-            # TODO(2026-01-12 19:57:30): add support for C# files in `list-todos.py`
-            pass
+        # if name.endswith('.cs'):
+        #     /// same as js,jsx,ts,tsx
+        #     pass
 
         if name.endswith('.py'):
             if line.strip().startswith('#'):
