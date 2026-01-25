@@ -6,4 +6,5 @@ interface State {
   progress: number; // Same as totalCarrots, but doesn't descrease if you lose carrots
 
   tasks: Task[];
+  habits: Habit[];
 }

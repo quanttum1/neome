@@ -31,9 +31,15 @@ interface DayRolloverEvent extends BaseEvent {
   newDate: UTCDateString;
 }
 
+interface NewHabitEvent extends BaseEvent {
+  type: "NEW_HABIT";
+  habit: Habit;
+}
+
 type NeomeEvent =
   | NewTaskEvent
   | TaskPinToggleEvent
   | TaskDeadlineEvent
   | DayRolloverEvent
+  | NewHabitEvent
   | TaskCompletedEvent;

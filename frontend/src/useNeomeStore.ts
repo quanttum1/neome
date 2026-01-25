@@ -75,6 +75,7 @@ function getInitialState(initialDate: UTCDateString): State {
     progress: 0,
 
     tasks: [],
+    habits: [],
   };
 }
 
@@ -162,15 +163,20 @@ const useNeomeStore = create<NeomeStore>()(
             }
 
             case "DAY_ROLLOVER": {
-                if (startOfUTCDay(event.oldDate) != startOfUTCDay(draft.date)) 
-                  break;
+              if (startOfUTCDay(event.oldDate) != startOfUTCDay(draft.date)) 
+                break;
 
-                draft.date = event.newDate;
-                draft.dailyCarrots = 0;
+              draft.date = event.newDate;
+              draft.dailyCarrots = 0;
 
-                set({
-                  events: [...get().getEvents(), createDayRolloverEvent(event.newDate)]
-                });
+              set({
+                events: [...get().getEvents(), createDayRolloverEvent(event.newDate)]
+              });
+              break;
+            }
+
+            case "NEW_HABIT": {
+              draft.habits.push(event.habit);
               break;
             }
 
