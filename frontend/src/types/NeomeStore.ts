@@ -3,7 +3,7 @@ interface NeomeStore {
   events: NeomeEvent[] | undefined; // MUST be sorted by time
 
   currentState: State;
-  stateLastUpdated?: UTCString;
+  stateLastUpdated?: UTCString | undefined;
   // TODO(2026-01-16 15:04:01): add `initialState` and `initialStateTime`
   // to store the snapshot
 

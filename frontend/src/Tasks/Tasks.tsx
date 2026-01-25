@@ -1,8 +1,8 @@
 import useNeomeStore from '../useNeomeStore'
-import { Link } from 'react-router'
 import Pin from '../assets/icons/pin.svg'
 import PinActive from '../assets/icons/pin_active.svg'
 import TaskCard from './TaskCard'
+import NewButton from '../NewButton'
 
 export default function Tasks() {
   const tasks = useNeomeStore(s => s.getState().tasks);
@@ -15,16 +15,7 @@ export default function Tasks() {
         ))}
       </div>
 
-
-      {/* TODO: Maybe add a shadow coloured with `neome-dark-pink` */}
-      {/* TODO: Add `Shift+N` shortcut for this button */}
-      {/* TODO: Make a separate component out of it? */}
-      <Link
-        to="new"
-        className="fixed bottom-6 right-6 flex items-center gap-2 rounded-full bg-neome-pink text-black px-4 py-3 shadow-lg cursor-pointer">
-        <span className="text-xl leading-none">+</span>
-        <span>New</span>
-      </Link>
+    <NewButton />
     </div>
   );
 }

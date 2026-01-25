@@ -7,12 +7,7 @@ import NewTask from './Tasks/NewTask'
 import OpenTask from './Tasks/OpenTask'
 import CompletedTask from './Tasks/Completed'
 import Page404 from './Page404'
-
-function Habits() {
-  return <>
-    Habits TODO
-  </>;
-}
+import Habits from './Habits/Habits'
 
 function Statistics() {
   return <>

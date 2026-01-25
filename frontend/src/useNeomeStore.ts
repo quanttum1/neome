@@ -254,8 +254,12 @@ const useNeomeStore = create<NeomeStore>()(
     }),
     {
       name: 'neome',
-      version: 0.16,
+      version: 0.17,
       migrate: (state, oldVersion) => {
+        if (oldVersion == 0.16) {
+          // Force to recomputeCurrentState
+          (state as NeomeStore).stateLastUpdated = undefined;
+        }
         return state as NeomeStore;
       },
     }
