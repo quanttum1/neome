@@ -16,9 +16,12 @@ interface NeomeStore {
   recomputeCurrentState: () => void; // Replays from scratch
 
   addEventsAndUpdateState: (events: NeomeEvent[]) => void;
+
   addTask: (task: Task) => void;
   completeTask: (id: TaskId) => void;
   taskTogglePinned: (id: TaskId) => void;
+
+  addHabit: (habit: Habit) => void;
 
   getTaskById: (id: TaskId) => Task | undefined;
 }

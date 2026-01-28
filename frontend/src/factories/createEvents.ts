@@ -49,3 +49,12 @@ export function createDayRolloverEvent(oldDate: UTCDateString): DayRolloverEvent
     newDate: newDate,
   };
 }
+
+export function createNewHabitEvent(habit: Habit): NewHabitEvent {
+  return {
+    id: crypto.randomUUID(),
+    time: now(),
+    type: "NEW_HABIT",
+    habit: habit
+  };
+}

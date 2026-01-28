@@ -6,6 +6,7 @@ import { createTaskAndDeadlineEvents } from "./factories/createEvents";
 import { createTaskCompletedEvent } from "./factories/createEvents";
 import { createTaskPinToggleEvent } from "./factories/createEvents";
 import { createDayRolloverEvent } from "./factories/createEvents";
+import { createNewHabitEvent } from "./factories/createEvents";
 import { produce } from "immer";
 
 function compareEvents(a: NeomeEvent, b: NeomeEvent): number {
@@ -235,6 +236,7 @@ const useNeomeStore = create<NeomeStore>()(
         get().updateCurrentState();
       },
 
+
       addTask: (task: Task) => {
         get().addEventsAndUpdateState(createTaskAndDeadlineEvents(task));
       },
@@ -245,6 +247,11 @@ const useNeomeStore = create<NeomeStore>()(
 
       taskTogglePinned: (id) => {
         get().addEventsAndUpdateState([createTaskPinToggleEvent(id)]);
+      },
+
+
+      addHabit: (habit: Habit) => {
+        get().addEventsAndUpdateState([createNewHabitEvent(habit)]);
       },
 
 

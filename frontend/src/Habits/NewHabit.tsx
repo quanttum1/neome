@@ -2,15 +2,19 @@ import { useRef } from 'react';
 import { localInputToUTC } from '../utc'
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { getCreateHabitError } from '../factories/createHabit';
+import useNeomeStore from '../useNeomeStore'
+import createHabit from '../factories/createHabit';
 
 function NewHabit() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const addHabit = useNeomeStore(s => s.addHabit);
 
   const nameRef = useRef<HTMLInputElement>(null);
-  const [daysOfWeek, setDaysOfWeek] = useState(0);
   const rewardRef = useRef<HTMLInputElement>(null);
   const penaltyRef = useRef<HTMLInputElement>(null);
+  const [daysOfWeek, setDaysOfWeek] = useState(0);
 
   const now_ = new Date();
   const pad = (n: number) => n.toString().padStart(2, "0");
@@ -20,12 +24,34 @@ function NewHabit() {
     now_.getDate()
   )}T${pad(now_.getHours())}:${pad(now_.getMinutes())}`;
 
+  function create(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+
+    if (!nameRef.current) return setError("Name is not set");
+    if (!rewardRef.current) return setError("Reward is not set");
+    if (!penaltyRef.current) return setError("Penalty is not set");
+
+    const habit = {
+      name: nameRef.current.value,
+      daysOfWeek: daysOfWeek,
+      reward: Number(rewardRef.current.value),
+      penalty: -Number(penaltyRef.current.value),
+    };
+
+    const error = getCreateHabitError(habit);
+    if (error) return setError(error);
+
+    addHabit(createHabit(habit));
+    navigate('/habits');
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-md p-8">
 
         {/* TODO(2026-01-25 23:03:45): actually create habits */}
-        <form onSubmit={(e) => { e.preventDefault(); alert("TODO") }} className="space-y-6">
+        <form onSubmit={create} className="space-y-6">
           <div className="flex flex-col">
             <label className="text-[0.7rem] font-bold text-neome-pink mb-2 ml-1">Habit Name</label>
             <input
@@ -63,7 +89,7 @@ function NewHabit() {
             <label className="text-[0.7rem] font-bold text-neome-pink mb-2 ml-1">Deadline</label>
             <div className="grid grid-cols-7 gap-1 w-full">
               {(["M","T","W","T","F","S","S"] as const).map((label, i) => {
-                const checked = (daysOfWeek & (1 << i)) !== 0;
+                const checked = (daysOfWeek & (1 << i)) != 0;
 
                 return (
                   <button

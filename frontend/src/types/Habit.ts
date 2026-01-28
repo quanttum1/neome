@@ -8,7 +8,7 @@ type HabitId = string;
 interface Habit {
   id: HabitId;
   name: string;
-  days: WeekMask;
+  daysOfWeek: WeekMask;
   reward: number;
   penalty: number;
 }
