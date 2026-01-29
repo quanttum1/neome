@@ -1,8 +1,8 @@
-import useNeomeStore from '../useNeomeStore'
-import Pin from '../assets/icons/pin.svg'
-import PinActive from '../assets/icons/pin_active.svg'
-import TaskCard from './TaskCard'
-import NewButton from '../NewButton'
+import useNeomeStore from '../useNeomeStore';
+import Pin from '../assets/icons/pin.svg';
+import PinActive from '../assets/icons/pin_active.svg';
+import TaskCard from './TaskCard';
+import NewButton from '../NewButton';
 
 export default function Tasks() {
   const tasks = useNeomeStore(s => s.getState().tasks);

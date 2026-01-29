@@ -85,7 +85,7 @@ function sortTasks(state: State) {
   newTasks.sort((a, b) => {
     if (a.isPinned != b.isPinned) return Number(b.isPinned) - Number(a.isPinned);
     return a.deadline.localeCompare(b.deadline) || a.id.localeCompare(b.id);
-  })
+  });
 
   return {...state, tasks: newTasks};
 }
@@ -117,7 +117,7 @@ const useNeomeStore = create<NeomeStore>()(
         if (events == undefined) {
           // Bootstrap the day rollover event
           events = [createDayRolloverEvent(startOfUTCDay(now()))];
-          set({ events: events })
+          set({ events: events });
         }
 
         return events;

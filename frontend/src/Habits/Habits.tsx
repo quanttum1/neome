@@ -1,5 +1,5 @@
-import useNeomeStore from '../useNeomeStore'
-import NewButton from '../NewButton'
+import useNeomeStore from '../useNeomeStore';
+import NewButton from '../NewButton';
 
 function Habits() {
   let habits = useNeomeStore(s => s.getState().habits);

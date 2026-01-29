@@ -1,14 +1,13 @@
 import { Routes, Route } from "react-router";
-import Layout from './Layout'
-import Home from './Home'
-import { useState, useEffect } from 'react'
-import Tasks from './Tasks/Tasks'
-import NewTask from './Tasks/NewTask'
-import OpenTask from './Tasks/OpenTask'
-import CompletedTask from './Tasks/Completed'
-import Page404 from './Page404'
-import Habits from './Habits/Habits'
-import NewHabit from './Habits/NewHabit'
+import Layout from './Layout';
+import Home from './Home';
+import Tasks from './Tasks/Tasks';
+import NewTask from './Tasks/NewTask';
+import OpenTask from './Tasks/OpenTask';
+import CompletedTask from './Tasks/Completed';
+import Page404 from './Page404';
+import Habits from './Habits/Habits';
+import NewHabit from './Habits/NewHabit';
 
 function Statistics() {
   return <>

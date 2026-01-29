@@ -1,11 +1,11 @@
 import logo from './assets/logo.svg';
 import { Link, Outlet } from "react-router";
 
-import home_icon from './assets/icons/home.svg'
-import tasks_icon from './assets/icons/tasks.svg'
-import habits_icon from './assets/icons/habits.svg'
-import statistics_icon from './assets/icons/statistics.svg'
-import settings_icon from './assets/icons/settings.svg'
+import home_icon from './assets/icons/home.svg';
+import tasks_icon from './assets/icons/tasks.svg';
+import habits_icon from './assets/icons/habits.svg';
+import statistics_icon from './assets/icons/statistics.svg';
+import settings_icon from './assets/icons/settings.svg';
 
 function Layout() {
   return (
@@ -54,5 +54,5 @@ function Layout() {
   );
 }
 
-export default Layout
+export default Layout;
 

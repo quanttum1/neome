@@ -1,4 +1,4 @@
-import { Link } from 'react-router'
+import { Link } from 'react-router';
 
 {/* TODO: Maybe add a shadow coloured with `neome-dark-pink` */}
 {/* TODO: Add `Shift+N` shortcut for this button */}

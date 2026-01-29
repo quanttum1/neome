@@ -26,5 +26,5 @@ export default function OpenTask() {
     <span>Name: {task.name}</span><br />
     <span>Deadline: {task.deadline}</span><br />
     <button onClick={complete}>Mark as completed</button>
-  </div>
+  </div>;
 }

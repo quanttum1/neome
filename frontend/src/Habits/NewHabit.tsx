@@ -1,9 +1,8 @@
 import { useRef } from 'react';
-import { localInputToUTC } from '../utc'
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { getCreateHabitError } from '../factories/createHabit';
-import useNeomeStore from '../useNeomeStore'
+import useNeomeStore from '../useNeomeStore';
 import createHabit from '../factories/createHabit';
 
 function NewHabit() {
@@ -15,14 +14,6 @@ function NewHabit() {
   const rewardRef = useRef<HTMLInputElement>(null);
   const penaltyRef = useRef<HTMLInputElement>(null);
   const [daysOfWeek, setDaysOfWeek] = useState(0);
-
-  const now_ = new Date();
-  const pad = (n: number) => n.toString().padStart(2, "0");
-
-  // Format YYYY-MM-DDTHH:mm
-  const localDatetime = `${now_.getFullYear()}-${pad(now_.getMonth() + 1)}-${pad(
-    now_.getDate()
-  )}T${pad(now_.getHours())}:${pad(now_.getMinutes())}`;
 
   function create(e: React.FormEvent) {
     e.preventDefault();
@@ -141,7 +132,7 @@ function NewHabit() {
         </form>
       </div>
     </div>
-  )
+  );
 }
 
 export default NewHabit;

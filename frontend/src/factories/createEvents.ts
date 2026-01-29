@@ -15,7 +15,7 @@ export function createTaskAndDeadlineEvents(task: Task): NeomeEvent[] {
     time: task.deadline,
     type: "TASK_DEADLINE",
     taskId: task.id,
-  }
+  };
 
   return [taskEvent, deadlineEvent];
 }

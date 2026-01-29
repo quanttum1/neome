@@ -13,7 +13,7 @@ function Completed() {
   return <div>
     You got {reward} carrots!
     <Link to="/">Go home</Link>
-  </div>
+  </div>;
 }
 
 export default Completed;

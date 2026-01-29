@@ -1,7 +1,7 @@
-import useNeomeStore from '../useNeomeStore'
-import Pin from '../assets/icons/pin.svg'
-import PinActive from '../assets/icons/pin_active.svg'
-import { Link } from 'react-router'
+import useNeomeStore from '../useNeomeStore';
+import Pin from '../assets/icons/pin.svg';
+import PinActive from '../assets/icons/pin_active.svg';
+import { Link } from 'react-router';
 
 interface TaskCardProps {
   task: Task;
@@ -9,7 +9,6 @@ interface TaskCardProps {
 
 function TaskCard(props: TaskCardProps) {
   let task = props.task;
-  // TODO(2026-01-16 14:34:18): make tasks pinnable
   const taskTogglePinned = useNeomeStore((s) => s.taskTogglePinned);
 
   return (

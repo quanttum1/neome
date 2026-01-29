@@ -1,7 +1,7 @@
-import forest_location from './assets/map-locations/0001-forest.svg'
-import CarrotIcon from './assets/icons/carrot.svg'
-import TaskCard from './Tasks/TaskCard'
-import useNeomeStore from './useNeomeStore'
+import forest_location from './assets/map-locations/0001-forest.svg';
+import CarrotIcon from './assets/icons/carrot.svg';
+import TaskCard from './Tasks/TaskCard';
+import useNeomeStore from './useNeomeStore';
 
 function Home() {
   const tasks = useNeomeStore(s => s.getState().tasks);
