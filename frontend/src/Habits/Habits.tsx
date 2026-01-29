@@ -1,6 +1,7 @@
 import useNeomeStore from '../useNeomeStore';
 import NewButton from '../NewButton';
 import { Link } from 'react-router';
+import { isWeekMaskDay } from '../weekMask';
 
 function Habits() {
   let habits = useNeomeStore(s => s.getState().habits);
@@ -22,7 +23,7 @@ function Habits() {
                 {habit.daysOfWeek == 255 
                   ? "Everyday" 
                   : ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].filter((label, index) => 
-                    (habit.daysOfWeek >> index) % 2).join(" ,")}
+                    isWeekMaskDay(habit.daysOfWeek, index)).join(", ")}
               </span>
             </Link>
             <div className="ml-auto flex gap-2 text-[1.5em]">

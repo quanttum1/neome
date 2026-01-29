@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import { getCreateHabitError } from '../factories/createHabit';
 import useNeomeStore from '../useNeomeStore';
 import createHabit from '../factories/createHabit';
+import { isWeekMaskDay, setWeekMaskDay } from '../weekMask';
 
 function NewHabit() {
   const [error, setError] = useState("");
@@ -80,18 +81,14 @@ function NewHabit() {
             <label className="text-[0.7rem] font-bold text-neome-pink mb-2 ml-1">Deadline</label>
             <div className="grid grid-cols-7 gap-1 w-full">
               {(["M","T","W","T","F","S","S"] as const).map((label, i) => {
-                const checked = (daysOfWeek & (1 << i)) != 0;
+                const checked = isWeekMaskDay(daysOfWeek, i);
 
                 return (
                   <button
                     key={i}
                     type="button"
                     onClick={() =>
-                      setDaysOfWeek(
-                        checked
-                          ? daysOfWeek & ~(1 << i)
-                          : daysOfWeek | (1 << i)
-                      )
+                      setDaysOfWeek(setWeekMaskDay(daysOfWeek, i, !checked))
                     }
                     className={[
                       "aspect-square w-full rounded-xl text-sm font-medium",
