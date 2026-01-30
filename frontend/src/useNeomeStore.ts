@@ -2,12 +2,15 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { now } from "./utc";
 import { startOfUTCDay } from "./utc";
+import { nextUTCDay } from "./utc";
+import { getWeekdayOfDate } from "./utc";
 import { createTaskAndDeadlineEvents } from "./factories/createEvents";
 import { createTaskCompletedEvent } from "./factories/createEvents";
 import { createTaskPinToggleEvent } from "./factories/createEvents";
 import { createDayRolloverEvent } from "./factories/createEvents";
 import { createNewHabitEvent } from "./factories/createEvents";
 import { produce } from "immer";
+import { isWeekMaskDay } from "./weekMask";
 
 function compareEvents(a: NeomeEvent, b: NeomeEvent): number {
   if (a.time < b.time) return -1;
@@ -170,6 +173,35 @@ const useNeomeStore = create<NeomeStore>()(
               draft.date = event.newDate;
               draft.dailyCarrots = 0;
 
+              const dayOfWeek = getWeekdayOfDate(event.newDate);
+              for (const habit of draft.habits) {
+                if (isWeekMaskDay(habit.daysOfWeek, dayOfWeek)) {
+                  const taskId = crypto.randomUUID();
+
+                  // We don't use `./factories/createTask.ts` because it takes local time
+                  draft.tasks.push({
+                    id: taskId,
+                    name: habit.name,
+                    reward: habit.reward,
+                    penalty: habit.penalty,
+                    deadline: nextUTCDay(event.newDate),
+                    isPinned: false,
+                  });
+
+                  // TODO(2026-01-30 20:41:52): Check if the event already been added
+                  set({events: [
+                    ...get().getEvents(),
+                    {
+                      id: crypto.randomUUID(),
+                      time: nextUTCDay(event.newDate),
+                      type: "TASK_DEADLINE",
+                      taskId: taskId,
+                    }
+                  ]});
+                }
+              }
+
+              // TODO(2026-01-30 20:41:52): Check if the event already been added
               set({
                 events: [...get().getEvents(), createDayRolloverEvent(event.newDate)]
               });

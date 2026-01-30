@@ -9,7 +9,8 @@ function Home() {
   const dailyCarrots = useNeomeStore(s => s.getState().dailyCarrots);
 
   // Sometimes it's useful for debugging
-  // window.recomputeCurrentState = useNeomeStore(s => s.recomputeCurrentState);
+  window.recomputeCurrentState = useNeomeStore(s => s.recomputeCurrentState);
+  // window.events = useNeomeStore(s => s.events);
 
   return (
     <div className="flex w-full">

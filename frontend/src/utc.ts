@@ -17,7 +17,7 @@ export function now(): UTCString {
   // Uncomment the following when testing/debugging to "travel in time"
   //
   // const d = new Date();
-  // d.setUTCDate(d.getUTCDate() + 1); // Adds 1 day
+  // d.setUTCDate(d.getUTCDate() + 3); // Adds 1 day
   // return d.toISOString();
 
   return new Date().toISOString();
@@ -46,4 +46,12 @@ export function localMidnightOf(date: UTCDateString): UTCString {
   );
 
   return localMidnight.toISOString();
+}
+
+
+export function getWeekdayOfDate(date: UTCDateString): number {
+  if (!isValidDate(date)) throw new Error(`Invalid UTC string: ${date}`);
+
+  // Convert to: 0 = Monday ... 6 = Sunday
+  return (new Date(date).getUTCDay() + 6) % 7;
 }
