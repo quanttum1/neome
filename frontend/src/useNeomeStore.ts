@@ -2,37 +2,26 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { now } from "./utc";
 import { startOfUTCDay } from "./utc";
-import { nextUTCDay } from "./utc";
-import { getWeekdayOfDate } from "./utc";
-import { createTaskAndDeadlineEvents } from "./factories/createEvents";
 import { createTaskCompletedEvent } from "./factories/createEvents";
 import { createTaskPinToggleEvent } from "./factories/createEvents";
-import { createDayRolloverEvent } from "./factories/createEvents";
+import { createNewTaskDeadlineEvent } from "./factories/createEvents";
+import { createNewTaskEvent } from "./factories/createEvents";
 import { createNewHabitEvent } from "./factories/createEvents";
 import { produce } from "immer";
-import { isWeekMaskDay } from "./weekMask";
 
-function compareEvents(a: NeomeEvent, b: NeomeEvent): number {
+function compareEvents(a: LogicalEvent, b: LogicalEvent): number {
   if (a.time < b.time) return -1;
   if (a.time > b.time) return 1;
-  return a.id.localeCompare(b.id); // tie-breaker, just in case
-}
 
-function getNextRelevantEvent
-(store: NeomeStore, lastEventId: string | undefined): NeomeEvent | undefined {
-  let relevantEvents = store.getEvents().filter(e => e.time <= now()).sort(compareEvents);
+  if ("id" in a && "id" in b) return a.id.localeCompare(b.id);
 
-  if (lastEventId == undefined) {
-    return relevantEvents[0];
-  }
+  if (a.type == "TASK_DEADLINE" && b.type == "TASK_DEADLINE")
+    return a.taskId.localeCompare(b.taskId);
+  if (a.type == "DAY_ROLLOVER" && b.type == "DAY_ROLLOVER")
+    return a.newDate.localeCompare(b.newDate);
 
-  for (const [index, event] of relevantEvents.entries()) {
-    if (event.id == lastEventId) {
-      return relevantEvents[index + 1];
-    }
-  }
-
-  throw new Error("Event with this id doesn't exist");
+  if (a.type == b.type) throw new Error("Unknown event type");
+  return a.type.localeCompare(b.type);
 }
 
 function getTaskIndexById(id: TaskId, state: State) {
@@ -66,10 +55,6 @@ function addCarrots(delta: number, state: State) {
   state.progress = Math.max(state.progress, state.totalCarrots);
 }
 
-function assertEventHandled(x: never): never {
-  throw new Error(`Unhandled event: ${JSON.stringify(x)}`);
-}
-
 function getInitialState(initialDate: UTCDateString): State {
   return {
     date: initialDate,
@@ -91,6 +76,75 @@ function sortTasks(state: State) {
   });
 
   return {...state, tasks: newTasks};
+}
+
+function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] {
+  function assertEventHandled(x: never): never {
+    throw new Error(`Unhandled event: ${JSON.stringify(x)}`);
+  }
+
+  let newEvents: LogicalEvent[] = [];
+
+  // They told that in high-level languages like JS we don't need to think about
+  // memory management. So here we go. We need to use immer's `produce` to make sure
+  // we don't accidentaly change the state by reference. Nice
+  let newState: State = produce(state, draft => {
+    switch (event.type) {
+      case "NEW_TASK": {
+        draft.tasks.push(event.task);
+        newEvents.push(createNewTaskDeadlineEvent(event.task));
+        break;
+      }
+
+      case "TASK_COMPLETED": {
+        const task = getTaskById(event.taskId, draft);
+        if (!task) break; // The event has already been completed
+
+        addCarrots(task.reward, draft);
+        draft.tasks = draft.tasks.filter(t => t.id !== event.taskId);
+        break;
+      }
+
+      case "TASK_PIN_TOGGLE": {
+        const index = getTaskIndexById(event.taskId, draft);
+        if (!draft.tasks[index]) break; // Sus, but okay
+
+        draft.tasks[index].isPinned = !draft.tasks[index].isPinned;
+        break;
+      }
+
+      case "TASK_DEADLINE": {
+        if (!("version" in event)) break;
+
+        const task = getTaskById(event.taskId, state);
+        if (!task) break; // Task has already been completed
+
+        // We add the penalty, because it's supposed to be negative itself
+        addCarrots(task.penalty, draft);
+        draft.tasks = draft.tasks.filter(t => t.id !== event.taskId);
+        break;
+      }
+
+      case "DAY_ROLLOVER": {
+        if (!("version" in event)) break; // Deprecated
+
+        // TODO(2026-02-02 22:39:57): make DAY_ROLLOVER work
+        // deps: (2026-02-01 20:20)
+        break;
+      }
+
+      case "NEW_HABIT": {
+        draft.habits.push(event.habit);
+        break;
+      }
+
+      default: {
+        assertEventHandled(event);
+      }
+    }
+  });
+
+  return [newState, newEvents];
 }
 
 let updatedState = false;
@@ -118,126 +172,36 @@ const useNeomeStore = create<NeomeStore>()(
         let events = get().events;
 
         if (events == undefined) {
-          // Bootstrap the day rollover event
-          events = [createDayRolloverEvent(startOfUTCDay(now()))];
+          // TODO(2026-02-01 20:20): seed the timezone
+          // deps: (2026-02-01 20:21)
+          events = [];
           set({ events: events });
         }
 
         return events;
       },
 
-      applyEvent: (event: NeomeEvent, state: State): State => {
-        // They told that in high-level languages like JS we don't need to think about
-        // memory management. So here we go. We need to use immer's `produce` to make sure
-        // we don't accidentaly change the state by reference. Nice
-        return produce(state, draft => {
-          switch (event.type) {
-            case "NEW_TASK": {
-              draft.tasks.push(event.task);
-              break;
-            }
-
-            case "TASK_COMPLETED": {
-              const task = getTaskById(event.taskId, draft);
-              if (!task) break; // The event has already been completed
-
-              addCarrots(task.reward, draft);
-              draft.tasks = draft.tasks.filter(t => t.id !== event.taskId);
-              break;
-            }
-
-            case "TASK_PIN_TOGGLE": {
-              const index = getTaskIndexById(event.taskId, draft);
-              if (!draft.tasks[index]) break; // Sus, but okay
-
-              draft.tasks[index].isPinned = !draft.tasks[index].isPinned;
-              break;
-            }
-
-            case "TASK_DEADLINE": {
-              // TODO(2026-01-21 16:22:58): add info about carrot loss to notifications
-              // to show it to the user when the app is opened
-              const task = getTaskById(event.taskId, state);
-              if (!task) break; // Task has already been completed
-
-              // We add the penalty, because it's supposed to be negative itself
-              addCarrots(task.penalty, draft);
-              draft.tasks = draft.tasks.filter(t => t.id !== event.taskId);
-              break;
-            }
-
-            case "DAY_ROLLOVER": {
-              if (startOfUTCDay(event.oldDate) != startOfUTCDay(draft.date)) 
-                break;
-
-              draft.date = event.newDate;
-              draft.dailyCarrots = 0;
-
-              const dayOfWeek = getWeekdayOfDate(event.newDate);
-              for (const habit of draft.habits) {
-                if (isWeekMaskDay(habit.daysOfWeek, dayOfWeek)) {
-                  const taskId = crypto.randomUUID();
-
-                  // We don't use `./factories/createTask.ts` because it takes local time
-                  draft.tasks.push({
-                    id: taskId,
-                    name: habit.name,
-                    reward: habit.reward,
-                    penalty: habit.penalty,
-                    deadline: nextUTCDay(event.newDate),
-                    isPinned: false,
-                  });
-
-                  // TODO(2026-01-30 20:41:52): Check if the event already been added
-                  set({events: [
-                    ...get().getEvents(),
-                    {
-                      id: crypto.randomUUID(),
-                      time: nextUTCDay(event.newDate),
-                      type: "TASK_DEADLINE",
-                      taskId: taskId,
-                    }
-                  ]});
-                }
-              }
-
-              // TODO(2026-01-30 20:41:52): Check if the event already been added
-              set({
-                events: [...get().getEvents(), createDayRolloverEvent(event.newDate)]
-              });
-              break;
-            }
-
-            case "NEW_HABIT": {
-              draft.habits.push(event.habit);
-              break;
-            }
-
-            default: {
-              assertEventHandled(event);
-            }
-          }
-        });
-      },
 
       updateCurrentState: () => {
         const stateLastUpdated = get().stateLastUpdated;
         if (stateLastUpdated == undefined) return get().recomputeCurrentState();
 
+        let events: LogicalEvent[] = get().getEvents();
         let state = get().currentState;
-        let lastEventId: string | undefined;
 
-        while (true) {
-          const e = getNextRelevantEvent(get(), lastEventId);
-
+        for (let i = 0; i < events.length; i++) {
+          const e = events[i];
           if (!e) break;
-          if (e.time < stateLastUpdated) {
-            lastEventId = e.id;
-            continue;
-          }
 
-          state = get().applyEvent(e, state);
-          lastEventId = e.id;
+          if (e.time > now()) break;
+          if (e.time < stateLastUpdated) continue;
+
+          const [newState, newEvents] = applyEvent(e, state);
+          state = newState;
+
+          // TODO(2026-02-04 21:08): make sure we don't change the past events
+          events = [...events, ...newEvents];
+          events.sort(compareEvents);
         }
 
         state = sortTasks(state);
@@ -245,15 +209,21 @@ const useNeomeStore = create<NeomeStore>()(
       },
 
       recomputeCurrentState: () => {
+        let events: LogicalEvent[] = get().getEvents();
         let state = getInitialState(get().initialDate);
-        let lastEventId: string | undefined;
 
-        while (true) {
-          const e = getNextRelevantEvent(get(), lastEventId);
+        for (let i = 0; i < events.length; i++) {
+          const e = events[i];
           if (!e) break;
 
-          state = get().applyEvent(e, state);
-          lastEventId = e.id;
+          if (e.time > now()) break;
+
+          const [newState, newEvents] = applyEvent(e, state);
+          state = newState;
+
+          // TODO(2026-02-04 21:08): make sure we don't change the past events
+          events = [...events, ...newEvents];
+          events.sort(compareEvents);
         }
 
         state = sortTasks(state);
@@ -261,29 +231,29 @@ const useNeomeStore = create<NeomeStore>()(
       },
 
 
-      addEventsAndUpdateState: (events) => {
+      addEventAndUpdateState: (event) => {
         set({
-          events: [...get().getEvents(), ...events],
+          events: [...get().getEvents(), event],
         });
         get().updateCurrentState();
       },
 
 
       addTask: (task: Task) => {
-        get().addEventsAndUpdateState(createTaskAndDeadlineEvents(task));
+        get().addEventAndUpdateState(createNewTaskEvent(task));
       },
 
       completeTask: (id) => {
-        get().addEventsAndUpdateState([createTaskCompletedEvent(id)]);
+        get().addEventAndUpdateState(createTaskCompletedEvent(id));
       },
 
       taskTogglePinned: (id) => {
-        get().addEventsAndUpdateState([createTaskPinToggleEvent(id)]);
+        get().addEventAndUpdateState(createTaskPinToggleEvent(id));
       },
 
 
       addHabit: (habit: Habit) => {
-        get().addEventsAndUpdateState([createNewHabitEvent(habit)]);
+        get().addEventAndUpdateState(createNewHabitEvent(habit));
       },
 
 

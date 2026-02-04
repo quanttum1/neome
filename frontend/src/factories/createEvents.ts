@@ -2,22 +2,22 @@ import { now } from "../utc";
 import { nextUTCDay } from "../utc";
 import { localMidnightOf } from "../utc";
 
-export function createTaskAndDeadlineEvents(task: Task): NeomeEvent[] {
-  const taskEvent: NewTaskEvent = {
+export function createNewTaskEvent(task: Task): NewTaskEvent {
+  return {
     id: crypto.randomUUID(),
     time: now(),
     type: "NEW_TASK",
     task: task,
   };
+}
 
-  const deadlineEvent: TaskDeadlineEvent = {
-    id: crypto.randomUUID(),
+export function createNewTaskDeadlineEvent(task: Task): TaskDeadlineEvent {
+  return {
     time: task.deadline,
     type: "TASK_DEADLINE",
+    version: 2,
     taskId: task.id,
   };
-
-  return [taskEvent, deadlineEvent];
 }
 
 export function createTaskPinToggleEvent(taskId: TaskId): TaskPinToggleEvent {
@@ -42,9 +42,9 @@ export function createDayRolloverEvent(oldDate: UTCDateString): DayRolloverEvent
   const newDate = nextUTCDay(oldDate);
 
   return {
-    id: crypto.randomUUID(),
     time: localMidnightOf(newDate),
     type: "DAY_ROLLOVER",
+    version: 2,
     oldDate: oldDate,
     newDate: newDate,
   };

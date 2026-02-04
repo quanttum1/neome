@@ -1,45 +1,71 @@
 type EventId = string; // UUID
 
 interface BaseEvent {
-  id: EventId;
   time: UTCString;
 }
 
-interface NewTaskEvent extends BaseEvent {
+interface BaseStoredEvent extends BaseEvent {
+  id: EventId;
+}
+
+interface NewTaskEvent extends BaseStoredEvent {
   type: "NEW_TASK";
   task: Task;
 }
 
-interface TaskPinToggleEvent extends BaseEvent {
+interface TaskPinToggleEvent extends BaseStoredEvent {
   type: "TASK_PIN_TOGGLE";
   taskId: TaskId;
 }
 
-interface TaskCompletedEvent extends BaseEvent {
+interface TaskCompletedEvent extends BaseStoredEvent {
   type: "TASK_COMPLETED";
   taskId: TaskId;
 }
 
-interface TaskDeadlineEvent extends BaseEvent {
+// Deprecated
+interface OldTaskDeadlineEvent extends BaseStoredEvent {
   type: "TASK_DEADLINE";
   taskId: TaskId;
 }
 
-interface DayRolloverEvent extends BaseEvent {
+// Deprecated
+interface OldDayRolloverEvent extends BaseStoredEvent {
   type: "DAY_ROLLOVER";
   oldDate: UTCDateString;
   newDate: UTCDateString;
 }
 
-interface NewHabitEvent extends BaseEvent {
+interface NewHabitEvent extends BaseStoredEvent {
   type: "NEW_HABIT";
   habit: Habit;
 }
 
-type NeomeEvent =
+// TODO(2026-02-01 20:21): add TimeZoneChangeEvent
+// deps: (2026-01-16 15:04:01)
+
+type StoredEvent =
   | NewTaskEvent
   | TaskPinToggleEvent
-  | TaskDeadlineEvent
-  | DayRolloverEvent
+  | OldTaskDeadlineEvent
+  | OldDayRolloverEvent
   | NewHabitEvent
   | TaskCompletedEvent;
+
+interface DayRolloverEvent extends BaseEvent {
+  type: "DAY_ROLLOVER";
+  version: 2;
+  oldDate: UTCDateString;
+  newDate: UTCDateString;
+}
+
+interface TaskDeadlineEvent extends BaseEvent {
+  type: "TASK_DEADLINE";
+  version: 2;
+  taskId: TaskId;
+}
+
+type LogicalEvent =
+  | DayRolloverEvent
+  | TaskDeadlineEvent
+  | StoredEvent;
