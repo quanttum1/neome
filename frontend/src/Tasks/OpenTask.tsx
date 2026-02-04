@@ -11,7 +11,7 @@ export default function OpenTask() {
   const completeTask = useNeomeStore(s => s.completeTask);
   const task = useNeomeStore(s => s.getTaskById(taskId));
   if (!task) {
-    // TODO(2026-01-18 21:09:37): nice error message
+    // TODO(2026-01-18 21:09:37): nice error message if task doesn't exist in OpenTask
     return "Task doesn't exist";
   }
 

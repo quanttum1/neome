@@ -18,7 +18,6 @@ function Habits() {
               className="group flex cursor-pointer flex-col" to={`/habits/${habit.id}`}
             >
               <span className="group-hover:underline">{habit.name}</span>
-              {/* TODO(2026-01-29 21:23:08): show days of week */}
               <span className="text-gray-400 text-[15px] italic">
                 {habit.daysOfWeek == 255 
                   ? "Everyday" 

@@ -42,7 +42,6 @@ function NewHabit() {
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-md p-8">
 
-        {/* TODO(2026-01-25 23:03:45): actually create habits */}
         <form onSubmit={create} className="space-y-6">
           <div className="flex flex-col">
             <label className="text-[0.7rem] font-bold text-neome-pink mb-2 ml-1">Habit Name</label>

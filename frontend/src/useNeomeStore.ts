@@ -157,7 +157,6 @@ const useNeomeStore = create<NeomeStore>()(
       events: undefined,
 
       // Don't read the state directly outside useNeomeStore, use getState instead
-      // TODO(2026-01-22 16:49:29): maybe make it undefined by default
       currentState: getInitialState(startOfUTCDay(now())),
 
       getState: () => {
