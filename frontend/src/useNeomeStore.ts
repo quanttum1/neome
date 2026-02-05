@@ -262,7 +262,7 @@ const useNeomeStore = create<NeomeStore>()(
     }),
     {
       name: 'neome',
-      version: 0.17,
+      version: 0.18,
       migrate: (state, oldVersion) => {
         oldVersion; // To make JS linter shut up
         (state as NeomeStore).stateLastUpdated = undefined; // Force full recompute
