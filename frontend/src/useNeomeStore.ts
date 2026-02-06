@@ -78,6 +78,27 @@ function sortTasks(state: State) {
   return {...state, tasks: newTasks};
 }
 
+// This function ensures old events are not affected
+function mergeEvents(oldEvents: LogicalEvent[], newEvents: LogicalEvent[]) {
+  let oldEventsSorted = [...oldEvents]; // To avoid changing oldEvents by reference
+  oldEventsSorted.sort(compareEvents);
+
+  let newEventsSorted = [...newEvents];
+  newEventsSorted.sort(compareEvents);
+
+  const firstNewEvent = newEventsSorted[0];
+  const lastOldEvent = oldEventsSorted[oldEventsSorted.length];
+
+  if (firstNewEvent && lastOldEvent) {
+    if (firstNewEvent.time <= lastOldEvent.time) {
+      throw new Error("Tried to change past events");
+    }
+  }
+
+  let events = [...oldEventsSorted, ...newEventsSorted];
+  return events.sort(compareEvents);
+}
+
 function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] {
   function assertEventHandled(x: never): never {
     throw new Error(`Unhandled event: ${JSON.stringify(x)}`);
@@ -198,9 +219,7 @@ const useNeomeStore = create<NeomeStore>()(
           const [newState, newEvents] = applyEvent(e, state);
           state = newState;
 
-          // TODO(2026-02-04 21:08): make sure we don't change the past events
-          events = [...events, ...newEvents];
-          events.sort(compareEvents);
+          events = mergeEvents(events, newEvents);
         }
 
         state = sortTasks(state);
@@ -220,9 +239,7 @@ const useNeomeStore = create<NeomeStore>()(
           const [newState, newEvents] = applyEvent(e, state);
           state = newState;
 
-          // TODO(2026-02-04 21:08): make sure we don't change the past events
-          events = [...events, ...newEvents];
-          events.sort(compareEvents);
+          events = mergeEvents(events, newEvents);
         }
 
         state = sortTasks(state);
