@@ -1,15 +1,13 @@
 interface NeomeStore {
+  initialTimezone: TimezoneString;
   initialDate: UTCDateString;
-  events: StoredEvent[] | undefined;
+  events: StoredEvent[];
 
   currentState: State;
   stateLastUpdated?: UTCString | undefined;
-  // TODO(2026-01-16 15:04:01): add `initialState` and `initialStateTime`
-  // to store the snapshot
+  // TODO(2026-01-16 15:04:01): add `snapshot` and `snapshotTime` to `NeomeStore`
 
   getState: () => State;
-
-  getEvents: () => StoredEvent[];
 
   updateCurrentState: () => void; // Applies events with time > stateLastUpdated
   recomputeCurrentState: () => void; // Replays from scratch

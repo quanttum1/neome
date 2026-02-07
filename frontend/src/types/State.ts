@@ -1,6 +1,6 @@
 interface State {
   date: UTCDateString;
-  // TODO(2026-02-01 20:22): add timezone info to the state
+  timezone: TimezoneString;
 
   totalCarrots: number;
   dailyCarrots: number;

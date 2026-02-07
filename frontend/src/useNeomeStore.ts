@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { now } from "./utc";
+import { getTimezone } from "./utc";
 import { startOfUTCDay } from "./utc";
 import { createTaskCompletedEvent } from "./factories/createEvents";
 import { createTaskPinToggleEvent } from "./factories/createEvents";
@@ -55,9 +56,10 @@ function addCarrots(delta: number, state: State) {
   state.progress = Math.max(state.progress, state.totalCarrots);
 }
 
-function getInitialState(initialDate: UTCDateString): State {
+function getInitialState(initialDate: UTCDateString, initialTZ: TimezoneString): State {
   return {
     date: initialDate,
+    timezone: initialTZ,
 
     totalCarrots: 0,
     dailyCarrots: 0,
@@ -173,12 +175,12 @@ let updatedState = false;
 const useNeomeStore = create<NeomeStore>()(
   persist(
     (set, get) => ({
+      initialTimezone: getTimezone(),
       initialDate: startOfUTCDay(now()),
-      // Don't read the events directly, use getEvents instead
-      events: undefined,
+      events: [],
 
       // Don't read the state directly outside useNeomeStore, use getState instead
-      currentState: getInitialState(startOfUTCDay(now())),
+      currentState: getInitialState(startOfUTCDay(now()), getTimezone()),
 
       getState: () => {
         if (!updatedState) {
@@ -188,25 +190,12 @@ const useNeomeStore = create<NeomeStore>()(
         return get().currentState;
       },
 
-      getEvents: () => {
-        let events = get().events;
-
-        if (events == undefined) {
-          // TODO(2026-02-01 20:20): seed the timezone
-          // deps: (2026-02-01 20:21)
-          events = [];
-          set({ events: events });
-        }
-
-        return events;
-      },
-
 
       updateCurrentState: () => {
         const stateLastUpdated = get().stateLastUpdated;
         if (stateLastUpdated == undefined) return get().recomputeCurrentState();
 
-        let events: LogicalEvent[] = get().getEvents();
+        let events: LogicalEvent[] = get().events;
         let state = get().currentState;
 
         for (let i = 0; i < events.length; i++) {
@@ -227,8 +216,8 @@ const useNeomeStore = create<NeomeStore>()(
       },
 
       recomputeCurrentState: () => {
-        let events: LogicalEvent[] = get().getEvents();
-        let state = getInitialState(get().initialDate);
+        let events: LogicalEvent[] = get().events;
+        let state = getInitialState(get().initialDate, get().initialTimezone);
 
         for (let i = 0; i < events.length; i++) {
           const e = events[i];
@@ -249,7 +238,7 @@ const useNeomeStore = create<NeomeStore>()(
 
       addEventAndUpdateState: (event) => {
         set({
-          events: [...get().getEvents(), event],
+          events: [...get().events, event],
         });
         get().updateCurrentState();
       },
@@ -279,9 +268,17 @@ const useNeomeStore = create<NeomeStore>()(
     }),
     {
       name: 'neome',
-      version: 0.18,
+      version: 0.20,
       migrate: (state, oldVersion) => {
-        oldVersion; // To make JS linter shut up
+
+        if (oldVersion == 0.18) {
+          (state as NeomeStore).initialTimezone = getTimezone();
+        }
+
+        if (oldVersion == 0.19 && (state as NeomeStore).events === undefined) {
+          (state as NeomeStore).events = [];
+        }
+
         (state as NeomeStore).stateLastUpdated = undefined; // Force full recompute
         return state as NeomeStore;
       },

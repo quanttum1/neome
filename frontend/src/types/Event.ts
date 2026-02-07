@@ -42,7 +42,6 @@ interface NewHabitEvent extends BaseStoredEvent {
 }
 
 // TODO(2026-02-01 20:21): add TimeZoneChangeEvent
-// deps: (2026-01-16 15:04:01)
 
 type StoredEvent =
   | NewTaskEvent

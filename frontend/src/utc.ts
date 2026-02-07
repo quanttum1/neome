@@ -55,3 +55,7 @@ export function getWeekdayOfDate(date: UTCDateString): number {
   // Convert to: 0 = Monday ... 6 = Sunday
   return (new Date(date).getUTCDay() + 6) % 7;
 }
+
+export function getTimezone() {
+  return Intl.DateTimeFormat().resolvedOptions().timeZone;
+}
