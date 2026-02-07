@@ -12,6 +12,7 @@ function Habits() {
         {habits.map((habit) => (
           <div
             className="text-[24px] pt-2 pb-3 pl-4 pr-4 rounded-[1.5vw] bg-neome-grey flex items-center gap-2"
+            key={habit.id}
           >
 
             <Link 

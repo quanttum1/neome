@@ -11,6 +11,7 @@ export function createNewTaskEvent(task: Task): NewTaskEvent {
   };
 }
 
+// TODO(2026-02-07 16:22): rename `createNewTaskDeadlineEvent` to `createTaskDeadlineEvent`
 export function createNewTaskDeadlineEvent(task: Task): TaskDeadlineEvent {
   return {
     time: task.deadline,
