@@ -1,6 +1,6 @@
 import { now } from "../utc";
 import { nextUTCDay } from "../utc";
-import { localMidnightOf } from "../utc";
+import { localTime } from "../utc";
 
 export function createNewTaskEvent(task: Task): NewTaskEvent {
   return {
@@ -38,11 +38,12 @@ export function createTaskCompletedEvent(taskId: TaskId): TaskCompletedEvent {
   };
 }
 
-export function createDayRolloverEvent(oldDate: UTCDateString): DayRolloverEvent {
+export function createDayRolloverEvent(oldDate: UTCDateString, timezone: TimezoneString)
+: DayRolloverEvent {
   const newDate = nextUTCDay(oldDate);
 
   return {
-    time: localMidnightOf(newDate),
+    time: localTime(newDate, timezone),
     type: "DAY_ROLLOVER",
     version: 2,
     oldDate: oldDate,

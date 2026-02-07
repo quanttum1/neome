@@ -35,17 +35,35 @@ export function nextUTCDay(day: UTCDateString): UTCDateString {
   return startOfUTCDay(d.toISOString());
 }
 
-export function localMidnightOf(date: UTCDateString): UTCString {
-  const d = new Date(date);
+export function localTime(time: UTCString, timezone: TimezoneString): UTCString {
+  const date = new Date(time);
 
-  const localMidnight = new Date(
-    d.getFullYear(),
-    d.getMonth(),
-    d.getDate(),
-    0, 0, 0, 0
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: timezone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).formatToParts(date);
+
+  const get = (type: string) =>
+    parts.find(p => p.type === type)!.value;
+
+  const localAsUTC = new Date(
+    Date.UTC(
+      Number(get("year")),
+      Number(get("month")) - 1,
+      Number(get("day")),
+      Number(get("hour")),
+      Number(get("minute")),
+      Number(get("second")),
+    )
   );
 
-  return localMidnight.toISOString();
+  return localAsUTC.toISOString();
 }
 
 

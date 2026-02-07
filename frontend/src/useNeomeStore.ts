@@ -8,6 +8,7 @@ import { createTaskPinToggleEvent } from "./factories/createEvents";
 import { createNewTaskDeadlineEvent } from "./factories/createEvents";
 import { createNewTaskEvent } from "./factories/createEvents";
 import { createNewHabitEvent } from "./factories/createEvents";
+import { createDayRolloverEvent } from "./factories/createEvents";
 import { produce } from "immer";
 
 function compareEvents(a: LogicalEvent, b: LogicalEvent): number {
@@ -149,10 +150,15 @@ function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] 
       }
 
       case "DAY_ROLLOVER": {
+        console.log("Applied DayRolloverEvent");
         if (!("version" in event)) break; // Deprecated
+        if (event.oldDate != draft.date) break;
 
-        // TODO(2026-02-02 22:39:57): make DAY_ROLLOVER work
-        // deps: (2026-02-01 20:20)
+        draft.date = event.newDate;
+        draft.dailyCarrots = 0;
+        // TODO(2026-02-07 12:56:53): make habits work
+
+        newEvents.push(createDayRolloverEvent(event.oldDate, draft.timezone));
         break;
       }
 
@@ -190,12 +196,24 @@ const useNeomeStore = create<NeomeStore>()(
         return get().currentState;
       },
 
+      // Returns sorted events, but also adds initial DayRolloverEvent
+      getLogicalEvents: () => {
+        let events = [
+          ...get().events,
+          createDayRolloverEvent(get().initialDate, get().initialTimezone)
+        ];
+
+        return events.sort(compareEvents);
+      },
+
 
       updateCurrentState: () => {
         const stateLastUpdated = get().stateLastUpdated;
         if (stateLastUpdated == undefined) return get().recomputeCurrentState();
+        // "Time-travel" was probably involved
+        if (stateLastUpdated > now()) return get().recomputeCurrentState();
 
-        let events: LogicalEvent[] = get().events;
+        let events: LogicalEvent[] = get().getLogicalEvents();
         let state = get().currentState;
 
         for (let i = 0; i < events.length; i++) {
@@ -216,7 +234,7 @@ const useNeomeStore = create<NeomeStore>()(
       },
 
       recomputeCurrentState: () => {
-        let events: LogicalEvent[] = get().events;
+        let events: LogicalEvent[] = get().getLogicalEvents();
         let state = getInitialState(get().initialDate, get().initialTimezone);
 
         for (let i = 0; i < events.length; i++) {
@@ -268,7 +286,7 @@ const useNeomeStore = create<NeomeStore>()(
     }),
     {
       name: 'neome',
-      version: 0.20,
+      version: 0.21,
       migrate: (state, oldVersion) => {
 
         if (oldVersion == 0.18) {

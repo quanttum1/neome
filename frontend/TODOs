@@ -20,13 +20,6 @@
 # You can list all of the TODOs by running `python3 list-todos.py` in
 # the root of the project. It will hide TODOs whose deps are still present.
 
-2025-12-17 21:45:58): add basic habits to the store
-tores the task name, and the days of the week on which the task should be done
-
-2025-12-17 21:48:09): make the habits page and minimal habit creation page
-eps: (2025-12-17 21:45:58)
-
-2025-12-17 21:49:54): make a good page for adding new habits
-eps: (2025-12-17 21:45:58)
-
 (2025-12-17 21:50:24): add quick tasks
+
+(2026-02-07 12:54:59): add a way to export/import the entire store for debugging
