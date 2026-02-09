@@ -12,9 +12,6 @@
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
 
-    "allowJs": true,
-    "checkJs": false,
-
     "isolatedModules": true,
     "noEmit": true,
 

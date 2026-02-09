@@ -154,7 +154,6 @@ function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] 
       }
 
       case "DAY_ROLLOVER": {
-        console.log("Applied DayRolloverEvent");
         if (!("version" in event)) break; // Deprecated
         if (event.oldDate != draft.date) break;
 
@@ -164,6 +163,8 @@ function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] 
         for (const habit of draft.habits) {
           if (isWeekMaskDay(habit.daysOfWeek, getWeekdayOfDate(event.newDate))) {
             const task = {
+              // TODO(2026-02-09 21:16:33): make a way to complete habit events
+              // if I try to complete such an event with a random UUID, it won't work 🤡
               id: crypto.randomUUID(),
               name: habit.name,
               reward: habit.reward,
