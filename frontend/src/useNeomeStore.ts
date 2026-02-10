@@ -14,6 +14,7 @@ import { createNewTaskEvent } from "./factories/createEvents";
 import { createNewHabitEvent } from "./factories/createEvents";
 import { createDayRolloverEvent } from "./factories/createEvents";
 import { produce } from "immer";
+import { v5 as uuidv5 } from "uuid";
 
 function compareEvents(a: LogicalEvent, b: LogicalEvent): number {
   if (a.time < b.time) return -1;
@@ -107,6 +108,8 @@ function mergeEvents(oldEvents: LogicalEvent[], newEvents: LogicalEvent[]) {
 }
 
 function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] {
+  const HABIT_NAMESPACE = "bbd04581-46ed-4e61-96d6-6b7dc7b044e3";
+
   function assertEventHandled(x: never): never {
     throw new Error(`Unhandled event: ${JSON.stringify(x)}`);
   }
@@ -163,9 +166,7 @@ function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] 
         for (const habit of draft.habits) {
           if (isWeekMaskDay(habit.daysOfWeek, getWeekdayOfDate(event.newDate))) {
             const task = {
-              // TODO(2026-02-09 21:16:33): make a way to complete habit events
-              // if I try to complete such an event with a random UUID, it won't work 🤡
-              id: crypto.randomUUID(),
+              id: uuidv5(`${habit.id} ${event.newDate}`, HABIT_NAMESPACE),
               name: habit.name,
               reward: habit.reward,
               penalty: habit.penalty,
