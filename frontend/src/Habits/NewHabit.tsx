@@ -77,7 +77,20 @@ function NewHabit() {
           </div>
 
           <div className="flex flex-col">
-            <label className="text-[0.7rem] font-bold text-neome-pink mb-2 ml-1">Deadline</label>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-[0.7rem] font-bold text-neome-pink ml-1">
+                Days of week
+              </label>
+
+              <button
+                type="button"
+                onClick={() => setDaysOfWeek(daysOfWeek ? 0 : 0b1111111)}
+                className="text-[0.65rem] font-medium text-neome-pink cursor-pointer"
+              >
+                {daysOfWeek ? "Clear" : "Everyday"}
+              </button>
+            </div>
+
             <div className="grid grid-cols-7 gap-1 w-full">
               {(["M","T","W","T","F","S","S"] as const).map((label, i) => {
                 const checked = isWeekMaskDay(daysOfWeek, i);
