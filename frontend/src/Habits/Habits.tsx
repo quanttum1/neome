@@ -20,8 +20,8 @@ function Habits() {
             >
               <span className="group-hover:underline">{habit.name}</span>
               <span className="text-gray-400 text-[15px] italic">
-                {habit.daysOfWeek == 255 
-                  ? "Everyday" 
+                {habit.daysOfWeek == 0b1111111
+                  ? "Everyday"
                   : ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].filter((label, index) => 
                     isWeekMaskDay(habit.daysOfWeek, index)).join(", ")}
               </span>
