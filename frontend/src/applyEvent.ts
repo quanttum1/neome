@@ -116,6 +116,21 @@ function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] 
 
       case "NEW_HABIT": {
         draft.habits.push(event.habit);
+
+        if (isWeekMaskDay(event.habit.daysOfWeek, getWeekdayOfDate(draft.date))) {
+          const task = {
+            id: uuidv5(`${event.habit.id} ${draft.date}`, HABIT_NAMESPACE),
+            name: event.habit.name,
+            reward: event.habit.reward,
+            penalty: event.habit.penalty,
+            deadline: localTime(nextUTCDay(draft.date), draft.timezone),
+            isPinned: false,
+          };
+
+          draft.tasks.push(task);
+          newEvents.push(createNewTaskDeadlineEvent(task));
+        }
+
         break;
       }
 
