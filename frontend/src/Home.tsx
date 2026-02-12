@@ -1,7 +1,9 @@
 import forest_location from './assets/map-locations/0001-forest.svg';
 import CarrotIcon from './assets/icons/carrot.svg';
+import CarrotGrey from './assets/icons/carrot_grey.svg';
 import TaskCard from './Tasks/TaskCard';
 import useNeomeStore from './useNeomeStore';
+import { clamp } from './applyEvent';
 
 function Home() {
   const tasks = useNeomeStore(s => s.getState().tasks);
@@ -18,8 +20,6 @@ function Home() {
         <img src={forest_location} className="w-auto h-screen object-cover" />
       </div>
 
-      {/* TODO(2025-12-17 21:20:34): show the carrots earned today the nice way */}
-      {/* deps: (2025-12-17 21:19:28) */}
       <div className="w-1/2 hidden lg:block pl-1">
         <div className="pt-2 pb-2">
           <div className="grid grid-cols-1 gap-3">
@@ -28,7 +28,7 @@ function Home() {
               <div className="flex justify-between">
                 <div className="flex text-[2.1rem] items-center">
                   {/* TODO(2026-02-08 15:29:43): show weekly carrots */}
-                  This Week: {32}
+                  This Week: TODO
                   <img src={CarrotIcon} className="h-[2.8rem]" />
                 </div>
                 <div className="flex text-[2.1rem] items-center">
@@ -37,8 +37,44 @@ function Home() {
                 </div>
               </div>
 
-              <div className="text-[2.1rem] ">
-                Carrots today: {dailyCarrots.toFixed(1)}
+              <div className="flex relative">
+                {[...Array(10).keys()].map(n => (
+                  <div key={n} className="flex-1 relative">
+                    <img
+                      src={CarrotIcon}
+                      alt=""
+                      className="w-full h-full top-0 left-0 absolute"
+                      style={{ opacity: clamp(dailyCarrots - (n - 1), 0, 1) }}
+                    />
+                    <img
+                      src={CarrotGrey}
+                      alt=""
+                      className="w-full h-auto"
+                    />
+                  </div>
+
+                  // TODO(2026-02-12 19:36:05): maybe make daily carrots partially filled
+                  // instead of partially transparent. i tried doing it like this, but i
+                  // don't understand how to make the icon full width:
+                  // <div key={n} className="flex-1 relative">
+                  //   <img
+                  //     src={CarrotGrey}
+                  //     alt=""
+                  //     className="w-full h-auto"
+                  //   />
+                  // 
+                  //   <div
+                  //     className="absolute top-0 left-0 h-full overflow-hidden"
+                  //     style={{ width: `${clamp(dailyCarrots - n+1, 0, 1)* 100}%` }}
+                  //   >
+                  //     <img
+                  //       src={CarrotIcon}
+                  //       alt=""
+                  //       className="absolute top-0 left-0 w-full h-auto"
+                  //     />
+                  //   </div>
+                  // </div>
+                ))}
               </div>
             </div>
 

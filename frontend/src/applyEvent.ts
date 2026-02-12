@@ -11,7 +11,9 @@ export function getTaskById(id: TaskId, state: State) {
   return state.tasks.find(t => t.id == id);
 }
 
-function clamp(n: number, min: number, max: number): number {
+// This function is needed in `./Home.tsx` but I don't think it makes sense to put it in a
+// separate file
+export function clamp(n: number, min: number, max: number): number {
   return Math.max(min, Math.min(n, max));
 }
 
