@@ -44,7 +44,7 @@ function Home() {
                       src={CarrotIcon}
                       alt=""
                       className="w-full h-full top-0 left-0 absolute"
-                      style={{ opacity: clamp(dailyCarrots - (n - 1), 0, 1) }}
+                      style={{ opacity: clamp(dailyCarrots - n, 0, 1) }}
                     />
                     <img
                       src={CarrotGrey}
