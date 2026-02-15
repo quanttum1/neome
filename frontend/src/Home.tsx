@@ -38,13 +38,17 @@ function Home() {
                 </div>
               </div>
 
-              <div className="flex ">
-                {[...Array(10).keys()].map(n => (
-                    <img
-                      src={`/carrots/carrot-${clamp(dailyCarrots - n, 0, 1).toFixed(1)}.svg`}
+              <div className="flex">
+                {[...Array(10).keys()].map(n => {
+                    let isNeg = dailyCarrots < 0;
+                    let prefix = `/carrots/carrot-${isNeg ? "negative-" : ""}`;
+                    let number = clamp(dailyCarrots-n + +isNeg*10, 0, 1).toFixed(1);
+
+                    return <img
+                      src={`${prefix}${number}.svg`}
                       alt=""
                       className="w-full h-auto"
-                    />
+                    />;
 
                   // TODO(2026-02-12 19:36:05): maybe make daily carrots partially filled
                   // using CSS instead of having 10 SVGs, i tried doing it, but i really
@@ -67,7 +71,7 @@ function Home() {
                   //     />
                   //   </div>
                   // </div>
-                ))}
+                })}
               </div>
             </div>
 
