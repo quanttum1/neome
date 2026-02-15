@@ -17,6 +17,7 @@ function Home() {
   return (
     <div className="flex w-full">
       <div className="lg:w-1/2 flex flex-col items-center w-full pr-1">
+        {/* TODO(2026-02-15 10:50:07): add Carro and different locations */}
         <img src={forest_location} className="w-auto h-screen object-cover" />
       </div>
 
@@ -37,24 +38,16 @@ function Home() {
                 </div>
               </div>
 
-              <div className="flex relative">
+              <div className="flex ">
                 {[...Array(10).keys()].map(n => (
-                  <div key={n} className="flex-1 relative">
                     <img
-                      src={CarrotIcon}
-                      alt=""
-                      className="w-full h-full top-0 left-0 absolute"
-                      style={{ opacity: clamp(dailyCarrots - n, 0, 1) }}
-                    />
-                    <img
-                      src={CarrotGrey}
+                      src={`/carrots/carrot-${clamp(dailyCarrots - n, 0, 1).toFixed(1)}.svg`}
                       alt=""
                       className="w-full h-auto"
                     />
-                  </div>
 
                   // TODO(2026-02-12 19:36:05): maybe make daily carrots partially filled
-                  // instead of partially transparent. i tried doing it like this, but i
+                  // using CSS instead of having 10 SVGs, i tried doing it, but i really
                   // don't understand how to make the icon full width:
                   // <div key={n} className="flex-1 relative">
                   //   <img
@@ -65,7 +58,7 @@ function Home() {
                   // 
                   //   <div
                   //     className="absolute top-0 left-0 h-full overflow-hidden"
-                  //     style={{ width: `${clamp(dailyCarrots - n+1, 0, 1)* 100}%` }}
+                  //     style={{ width: `${clamp(dailyCarrots - n, 0, 1)* 100}%` }}
                   //   >
                   //     <img
                   //       src={CarrotIcon}
