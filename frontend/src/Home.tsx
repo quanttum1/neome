@@ -1,9 +1,9 @@
-import CarrotIcon from './assets/icons/carrot.svg';
-import CarrotGrey from './assets/icons/carrot_grey.svg';
 import TaskCard from './Tasks/TaskCard';
 import Map from './Map';
 import useNeomeStore from './useNeomeStore';
 import { clamp } from './applyEvent';
+
+const carrotIcon = "../public/carrots/carrot-1.0.svg";
 
 function Home() {
   const tasks = useNeomeStore(s => s.getState().tasks);
@@ -30,11 +30,11 @@ function Home() {
                 <div className="flex text-[2.1rem] items-center">
                   {/* TODO(2026-02-08 15:29:43): show weekly carrots */}
                   This Week: TODO
-                  <img src={CarrotIcon} className="h-[2.8rem]" />
+                  <img src={carrotIcon} className="h-[2.8rem]" />
                 </div>
                 <div className="flex text-[2.1rem] items-center">
                   Total: {totalCarrots.toFixed(1)}
-                  <img src={CarrotIcon} className="h-[2.8rem]" />
+                  <img src={carrotIcon} className="h-[2.8rem]" />
                 </div>
               </div>
 
