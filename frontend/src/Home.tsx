@@ -1,7 +1,7 @@
-import forest_location from './assets/map-locations/0001-forest.svg';
 import CarrotIcon from './assets/icons/carrot.svg';
 import CarrotGrey from './assets/icons/carrot_grey.svg';
 import TaskCard from './Tasks/TaskCard';
+import Map from './Map';
 import useNeomeStore from './useNeomeStore';
 import { clamp } from './applyEvent';
 
@@ -16,9 +16,9 @@ function Home() {
 
   return (
     <div className="flex w-full">
-      <div className="lg:w-1/2 flex flex-col items-center w-full pr-1">
+      <div className="lg:w-1/2 flex relative flex-col items-center w-full pr-1">
         {/* TODO(2026-02-15 10:50:07): add Carro and different locations */}
-        <img src={forest_location} className="w-auto h-screen object-cover" />
+        <Map />
       </div>
 
       <div className="w-1/2 hidden lg:block pl-1">
