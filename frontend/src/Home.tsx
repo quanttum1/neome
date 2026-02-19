@@ -3,7 +3,7 @@ import Map from './Map';
 import useNeomeStore from './useNeomeStore';
 import { clamp } from './applyEvent';
 
-const carrotIcon = "../public/carrots/carrot-1.0.svg";
+const carrotIcon = "/carrots/carrot-1.0.svg";
 
 function Home() {
   const tasks = useNeomeStore(s => s.getState().tasks);
