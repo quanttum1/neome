@@ -1,4 +1,5 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState } from 'react';
+import useNeomeStore from './useNeomeStore';
 
 // TODO(2026-02-18 22:12): make a function that does invLerp and lerp at once
 function lerp(start: number, end: number, progress: number) {
@@ -20,6 +21,9 @@ let loadedCarro: HTMLImageElement | undefined;
 export default function Map() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   let [canvasHeight, _setCanvasHeight] = useState<number>(100);
+
+  // TODO(2026-02-22 21:04:05): use progress instead of totalCarrots
+  const progress = useNeomeStore(s => s.getState().totalCarrots);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -103,13 +107,14 @@ export default function Map() {
         const isRecording = 0;
 
         if (!isRecording) {
-          // TODO(2026-02-18 22:21): use actual user's progress in `Map.tsx`
-          const progress = 0;
-
           let carroPosition: {x: number, y: number} | undefined;
+
           if (progress in milestones) {
             carroPosition = milestones[progress];
-          } else {
+            if (!carroPosition) throw new Error("Unreachable");
+          }
+
+          else {
             let previous = Object.entries(milestones)
               .filter(m => Number(m[0]) < progress)
               .reduce((accumulator, current) => {
@@ -176,7 +181,7 @@ export default function Map() {
       window.removeEventListener("resize", resizeCanvas);
       canvas.removeEventListener("click", handleClick);
     };
-  }, [canvasHeight]);
+  }, [canvasHeight, progress]);
 
   return (
     <div className="w-full h-screen">
