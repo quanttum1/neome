@@ -17,7 +17,6 @@ function Home() {
   return (
     <div className="flex w-full">
       <div className="lg:w-1/2 flex relative flex-col items-center w-full pr-1">
-        {/* TODO(2026-02-15 10:50:07): add Carro and different locations */}
         <Map />
       </div>
 

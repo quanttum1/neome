@@ -12,6 +12,19 @@ export function localInputToUTC(value: string): UTCString {
   return date.toISOString();
 }
 
+export function UTCToLocalInput(value: UTCString): string {
+  const date = new Date(value);
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
 export function now(): UTCString {
   // TODO: when time travel is on, alert user once
   // Uncomment the following when testing/debugging to "travel in time"
