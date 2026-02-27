@@ -27,11 +27,11 @@ function Home() {
 
             <div>
               <div className="flex justify-between">
-                <div className="flex text-[2.1rem] items-center">
+                {/* <div className="flex text-[2.1rem] items-center"> */}
                   {/* TODO(2026-02-08 15:29:43): show weekly carrots */}
-                  This Week: TODO
-                  <img src={carrotIcon} className="h-[2.8rem]" />
-                </div>
+                {/*   This Week: TODO */}
+                {/*   <img src={carrotIcon} className="h-[2.8rem]" /> */}
+                {/* </div> */}
                 <div className="flex text-[2.1rem] items-center">
                   Total: {totalCarrots.toFixed(1)}
                   <img src={carrotIcon} className="h-[2.8rem]" />
