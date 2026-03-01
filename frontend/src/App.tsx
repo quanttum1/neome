@@ -8,6 +8,7 @@ import CompletedTask from './Tasks/Completed';
 import Page404 from './Page404';
 import Habits from './Habits/Habits';
 import NewHabit from './Habits/NewHabit';
+import OpenHabit from './Habits/OpenHabit';
 
 function Statistics() {
   return <>
@@ -41,7 +42,7 @@ export default function App() {
         <Route path="habits">
           <Route index element={<Habits />} />
           <Route path="new" element={<NewHabit />} />
-          {/* <Route path=":habitId" element={<OpenHabit />}/> */}
+          <Route path=":habitId" element={<OpenHabit />}/>
         </Route>
         <Route path="statistics" element={<Statistics />} />
         <Route path="settings" element={<Settings />} />

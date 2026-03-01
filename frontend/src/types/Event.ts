@@ -41,6 +41,13 @@ interface NewHabitEvent extends BaseStoredEvent {
   habit: Habit;
 }
 
+interface HabitUpdateEvent extends BaseStoredEvent {
+  type: "HABIT_UPDATE";
+  version: 1;
+  habitId: HabitId;
+  newHabit: Habit;
+}
+
 interface TaskUpdateEvent extends BaseStoredEvent {
   version: 1;
   type: "TASK_UPDATE";
@@ -57,6 +64,7 @@ type StoredEvent =
   | OldTaskDeadlineEvent
   | OldDayRolloverEvent
   | NewHabitEvent
+  | HabitUpdateEvent
   | TaskCompletedEvent;
 
 interface DayRolloverEvent extends BaseEvent {

@@ -156,6 +156,12 @@ function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] 
         break;
       }
 
+      case "HABIT_UPDATE": {
+        const index = draft.habits.findIndex(h => h.id === event.habitId);
+        draft.habits[index] = event.newHabit;
+        break;
+      }
+
       default: {
         assertEventHandled(event);
       }

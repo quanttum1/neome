@@ -22,6 +22,7 @@ interface NeomeStore {
   updateTask: (id: TaskId, newTask: Task) => void;
 
   addHabit: (habit: Habit) => void;
+  updateHabit: (id: HabitId, newHabit: Habit) => void;
 
   getTaskById: (id: TaskId) => Task | undefined;
 }

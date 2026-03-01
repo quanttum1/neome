@@ -8,6 +8,7 @@ import { createTaskCompletedEvent } from "./factories/createEvents";
 import { createTaskPinToggleEvent } from "./factories/createEvents";
 import { createNewTaskEvent } from "./factories/createEvents";
 import { createNewHabitEvent } from "./factories/createEvents";
+import { createHabitUpdateEvent } from "./factories/createEvents";
 import { createDayRolloverEvent } from "./factories/createEvents";
 import applyEvent from "./applyEvent";
 import { getTaskById } from "./applyEvent";
@@ -16,15 +17,15 @@ function compareEvents(a: LogicalEvent, b: LogicalEvent): number {
   if (a.time < b.time) return -1;
   if (a.time > b.time) return 1;
 
-  if ("id" in a && "id" in b) return a.id.localeCompare(b.id);
+  if ("id" in a && "id" in b) return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
 
   if (a.type == "TASK_DEADLINE" && b.type == "TASK_DEADLINE")
-    return a.taskId.localeCompare(b.taskId);
+    return a.taskId < b.taskId ? -1 : a.taskId > b.taskId ? 1 : 0;
   if (a.type == "DAY_ROLLOVER" && b.type == "DAY_ROLLOVER")
-    return a.newDate.localeCompare(b.newDate);
+    return a.newDate < b.newDate ? -1 : a.newDate > b.newDate ? 1 : 0;
 
   if (a.type == b.type) throw new Error("Unknown event type");
-  return a.type.localeCompare(b.type);
+  return a.type < b.type ? -1 : 1;
 }
 
 function getInitialState(initialDate: UTCDateString, initialTZ: TimezoneString): State {
@@ -182,6 +183,10 @@ const useNeomeStore = create<NeomeStore>()(
 
       addHabit: (habit: Habit) => {
         get().addEventAndUpdateState(createNewHabitEvent(habit));
+      },
+
+      updateHabit: (id: HabitId, newHabit: Habit) => {
+        get().addEventAndUpdateState(createHabitUpdateEvent(id, newHabit));
       },
 
 

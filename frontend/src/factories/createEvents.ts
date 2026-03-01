@@ -71,3 +71,15 @@ export function createNewHabitEvent(habit: Habit): NewHabitEvent {
     habit: habit
   };
 }
+
+export function createHabitUpdateEvent(id: HabitId, newHabit: Habit): HabitUpdateEvent {
+  return {
+    id: crypto.randomUUID(),
+    time: now(),
+    type: "HABIT_UPDATE",
+    version: 1,
+    habitId: id,
+    newHabit: newHabit,
+  };
+}
+
