@@ -136,6 +136,26 @@ function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] 
         break;
       }
 
+      case "TASK_UPDATE": {
+        const index = getTaskIndexById(event.taskId, draft);
+        // TODO(2026-03-01 14:03:12): maybe take some carrots away if the deadline is changed
+        // do something like this:
+        // const oldDeadline = new Date(oldTask.deadline).getTime();
+        // const newDeadline = new Date(newTask.deadline).getTime();
+        // const created = new Date(oldTask.created).getTime();
+        // const deadlineChanged = new Date(event.time);
+        //
+        // const oldDuration = oldDeadline - created;
+        // const newDuration = newDeadline - created;
+        //
+        // addCarrots(invLerp(created, deadlineChanged)
+        //   * (newDuration / oldDuration)
+        //   * oldTask.penalty); // Penalty is negative
+
+        draft.tasks[index] = event.newTask;
+        break;
+      }
+
       default: {
         assertEventHandled(event);
       }

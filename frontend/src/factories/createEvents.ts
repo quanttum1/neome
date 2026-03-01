@@ -39,6 +39,17 @@ export function createTaskCompletedEvent(taskId: TaskId): TaskCompletedEvent {
   };
 }
 
+export function createTaskUpdateEvent(id: TaskId, newTask: Task): TaskUpdateEvent {
+  return {
+    id: crypto.randomUUID(),
+    time: now(),
+    type: "TASK_UPDATE",
+    version: 1,
+    taskId: id,
+    newTask: newTask,
+  };
+}
+
 export function createDayRolloverEvent(oldDate: UTCDateString, timezone: TimezoneString)
 : DayRolloverEvent {
   const newDate = nextUTCDay(oldDate);

@@ -23,7 +23,7 @@ export default function NewTask() {
     now_.getDate()
   )}T${pad(now_.getHours())}:${pad(now_.getMinutes())}`;
 
-   function create(e: React.FormEvent): void {
+  function create(e: React.FormEvent): void {
     e.preventDefault();
     setError("");
 
@@ -46,7 +46,7 @@ export default function NewTask() {
     navigate('/tasks');
   }
 
-    return (
+  return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-md p-8">
 
@@ -118,5 +118,5 @@ export default function NewTask() {
         </form>
       </div>
     </div>
-    );
+  );
 }
