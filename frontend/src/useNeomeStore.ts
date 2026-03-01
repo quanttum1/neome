@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import { now } from "./utc";
 import { getTimezone } from "./utc";
 import { startOfUTCDay } from "./utc";
+import { createTaskUpdateEvent } from "./factories/createEvents";
 import { createTaskCompletedEvent } from "./factories/createEvents";
 import { createTaskPinToggleEvent } from "./factories/createEvents";
 import { createNewTaskEvent } from "./factories/createEvents";
@@ -172,6 +173,10 @@ const useNeomeStore = create<NeomeStore>()(
 
       taskTogglePinned: (id) => {
         get().addEventAndUpdateState(createTaskPinToggleEvent(id));
+      },
+
+      updateTask: (id, newTask) => {
+        get().addEventAndUpdateState(createTaskUpdateEvent(id, newTask));
       },
 
 

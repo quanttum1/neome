@@ -41,10 +41,18 @@ interface NewHabitEvent extends BaseStoredEvent {
   habit: Habit;
 }
 
+interface TaskUpdateEvent extends BaseStoredEvent {
+  version: 1;
+  type: "TASK_UPDATE";
+  taskId: TaskId;
+  newTask: Task;
+}
+
 // TODO(2026-02-01 20:21): add TimeZoneChangeEvent
 
 type StoredEvent =
   | NewTaskEvent
+  | TaskUpdateEvent
   | TaskPinToggleEvent
   | OldTaskDeadlineEvent
   | OldDayRolloverEvent

@@ -19,6 +19,7 @@ interface NeomeStore {
   addTask: (task: Task) => void;
   completeTask: (id: TaskId) => void;
   taskTogglePinned: (id: TaskId) => void;
+  updateTask: (id: TaskId, newTask: Task) => void;
 
   addHabit: (habit: Habit) => void;
 

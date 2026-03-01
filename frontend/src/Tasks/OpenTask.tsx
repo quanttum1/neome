@@ -3,12 +3,14 @@ import { useRef } from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import useNeomeStore from '../useNeomeStore';
+import { getCreateTaskError } from '../factories/createTask';
 import { UTCToLocalInput } from '../utc';
 
 export default function OpenTask() {
   const { taskId } = useParams();
   if (!taskId) return;
   const task = useNeomeStore(s => s.getTaskById(taskId));
+  const updateTask = useNeomeStore(s => s.updateTask);
 
   if (!task) {
     // TODO(2026-01-18 21:09:37): nice error message if task doesn't exist in OpenTask
@@ -22,12 +24,35 @@ export default function OpenTask() {
 
   const completeTask = useNeomeStore(s => s.completeTask);
   const navigate = useNavigate();
-  const [error, _setError] = useState("");
+  const [error, setError] = useState("");
 
   function update(e: React.FormEvent): void {
+    if (!taskId || !task) throw new Error("Unreachable");
     e.preventDefault();
-    // TODO(2026-02-23 21:49): actually implement updating a task
-    alert("Not implemented");
+    setError("");
+
+    if (!nameRef.current) return setError("Name is not set");
+    if (!deadlineRef.current) return setError("Deadline is not set");
+    if (!rewardRef.current) return setError("Reward is not set");
+    if (!penaltyRef.current) return setError("Penalty is not set");
+
+    const newTask = {
+      name: nameRef.current.value,
+      deadline: deadlineRef.current.value,
+      reward: Number(rewardRef.current.value),
+      penalty: -Number(penaltyRef.current.value),
+    };
+
+    const error = getCreateTaskError(newTask);
+    if (error) return setError(error);
+
+    updateTask(taskId, {
+      ...task,...newTask,
+      id: taskId,
+      isPinned: task.isPinned,
+    });
+
+    navigate(-1);
   }
 
   function complete() {
