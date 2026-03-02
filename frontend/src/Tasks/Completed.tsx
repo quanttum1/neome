@@ -9,11 +9,29 @@ function Completed() {
 
   if (reward == undefined) navigate('/');
 
-  // TODO(2026-01-18 22:26:21): make nice `Completed.tsx`
-  return <div>
-    You got {reward} carrots!
-    <Link to="/">Go home</Link>
-  </div>;
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center text-center px-6">
+
+      <img
+        src="/excited_carros/0.gif"
+        alt="Excited Carro"
+        className="w-48 sm:w-64 mb-8 select-none pointer-events-none"
+      />
+
+      <h1 className="text-3xl text-neome-pink sm:text-4xl font-semibold mb-8">
+        You got <span className="text-neome-orange font-bold">{reward}</span> carrots!
+      </h1>
+
+      {/* TODO(2026-03-02 20:15:27): bind Enter to this button */}
+      <button
+        onClick={() => navigate("/")}
+        className="p-3 bg-neome-pink text-black rounded-2xl cursor-pointer"
+      >
+        Go home
+      </button>
+
+    </div>
+  );
 }
 
 export default Completed;
