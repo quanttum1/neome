@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
 body {
-    background-color: #1e0e1c;
     color: white;
 }
 
@@ -12,4 +11,5 @@ body {
   --color-neome-grey: #17262b;
   --color-neome-light-grey: #1b3035;
   --color-neome-dark-red: #411a21;
+  --color-neome-background: #1f0f1d;
 }
