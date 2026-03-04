@@ -11,13 +11,25 @@ import tourIcon from './assets/icons/tour.svg';
 
 function Layout() {
   const [isTourOpen, setIsTourOpen] = useState(false);
+  const [tourPage, setTourPage] = useState(0);
 
   function openTour() {
     setIsTourOpen(true);
+    setTourPage(0);
   }
 
   function closeTour() {
     setIsTourOpen(false);
+  }
+
+  function skipTour() {
+    setTourPage(-1);
+  }
+
+  const tourPopupClass = "relative z-10 w-full max-w-2xl bg-neome-background border border-gray-700 rounded-2xl shadow-2xl p-4";
+
+  function nextTourPage() {
+    setTourPage(tourPage + 1);
   }
 
   return (
@@ -65,54 +77,276 @@ function Layout() {
       </div>
 
       {isTourOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
 
-            {/* Overlay */}
-            <div
-              className="absolute inset-0 bg-black/10 "
-              onClick={closeTour}
-            />
+          {/* Overlay */}
+          {/* TODO(2026-03-04 12:52:42): close the pop-up when the skip tour popup is open */}
+          <div
+            className="absolute inset-0 bg-black/10 "
+            onClick={skipTour}
+          />
 
-            <div className="relative z-10 w-full max-w-2xl bg-neome-background border border-gray-700 rounded-2xl shadow-2xl p-4">
+          <div className={tourPage == -1 ? tourPopupClass : "hidden"}>
 
-              <div className="flex justify-end items-center mb-4">
-                <button
-                  onClick={closeTour}
-                  className="text-gray-400 hover:text-white text-xl"
-                >
-                  ✕
-                </button>
-              </div>
+            <div className="flex justify-end items-center mb-4">
+              <button
+                onClick={closeTour}
+                className="text-gray-400 hover:text-white text-xl"
+              >
+                ✕
+              </button>
+            </div>
 
-              <div className="h-80 flex flex-col items-center">
-                <h2 className="text-[2rem]">
-                  Hey, I'm Carro!
-                </h2>
-                <img src="/tour/greeting_carro.gif" className="w-auto h-full object-contain"></img>
-                <h2 className="text-[2rem] mb-5">
-                  Want to learn how NEOME works?
-                </h2>
-              </div>
+            <p>
+              You can always access the tour by clicking
+              <b>
+                &nbsp;
+                <img src={tourIcon} className="inline"/>
+                &nbsp;Take a tour&nbsp;
+              </b>
+              button
+            </p>
 
-              <div className=" flex justify-center gap-2">
-                <button
-                  className="px-5 py-2 rounded-lg bg-neome-pink text-black cursor-pointer"
-                >
-                  Yes
-                </button>
-
-                <button
-                  onClick={closeTour}
-                  className="px-5 py-2 rounded-lg text-neome-pink border-neome-pink border cursor-pointer"
-                >
-                  Skip
-                </button>
-
-              </div>
+            <div className="mt-6 flex justify-center gap-2">
+              <button
+                className="px-5 py-2 rounded-lg bg-neome-pink text-black cursor-pointer"
+                onClick={closeTour}
+              >
+                Okay
+              </button>
 
             </div>
           </div>
-        )}
+
+          <div className={tourPage == 0 ? tourPopupClass : "hidden"}>
+
+            <div className="flex justify-end items-center mb-4">
+              <button
+                onClick={skipTour}
+                className="text-gray-400 hover:text-white text-xl"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="h-80 flex flex-col items-center">
+              <h2 className="text-[2rem]">
+                Hey, I'm Carro!
+              </h2>
+              <img src="/tour/greeting_carro.gif" className="w-auto sm:max-h-52 max-h-50 object-contain"></img>
+              <h2 className="text-[2rem] mb-5">
+                Want to learn how NEOME works?
+              </h2>
+            </div>
+
+            <div className=" flex justify-center gap-2">
+              <button
+                className="px-5 py-2 rounded-lg bg-neome-pink text-black cursor-pointer"
+                onClick={nextTourPage}
+              >
+                Yes
+              </button>
+
+              <button
+                onClick={skipTour}
+                className="px-5 py-2 rounded-lg text-neome-pink border-neome-pink border cursor-pointer"
+              >
+                Skip
+              </button>
+
+            </div>
+          </div>
+
+          <div className={tourPage == 1 ? tourPopupClass : "hidden"}>
+            <div className="flex justify-end items-center mb-4">
+              <button
+                onClick={skipTour}
+                className="text-gray-400 hover:text-white text-xl"
+              >
+                ✕
+              </button>
+            </div>
+
+            <span>TODO: image of a task card</span>
+
+            <p className="text-xl">
+              <b>
+                <img src={tasksIcon} className="inline" />
+                &nbsp;Tasks&nbsp;
+              </b>
+              are the core of NEOME workflow, you can set the reward, penalty and deadline of a task
+            </p>
+
+            <div className="mt-6 flex justify-center gap-2">
+              <button
+                className="px-5 py-2 rounded-lg bg-neome-pink text-black cursor-pointer"
+                onClick={nextTourPage}
+              >
+                Next
+              </button>
+
+              <button
+                onClick={skipTour}
+                className="px-5 py-2 rounded-lg text-neome-pink border-neome-pink border cursor-pointer"
+              >
+                Skip
+              </button>
+
+            </div>
+          </div>
+
+          <div className={tourPage == 2 ? tourPopupClass : "hidden"}>
+            <div className="flex justify-end items-center mb-4">
+              <button
+                onClick={skipTour}
+                className="text-gray-400 hover:text-white text-xl"
+              >
+                ✕
+              </button>
+            </div>
+
+            <span>TODO: image of a habit card</span>
+
+            <p className="text-xl">
+              <b>
+                <img src={habitsIcon} className="inline" />
+                &nbsp;Habits:&nbsp;
+              </b>
+              if you repeat something on a regular basis, you can create a habit, which will automatically create the task as often as you need
+            </p>
+
+            <div className="mt-6 flex justify-center gap-2">
+              <button
+                className="px-5 py-2 rounded-lg bg-neome-pink text-black cursor-pointer"
+                onClick={nextTourPage}
+              >
+                Next
+              </button>
+
+              <button
+                onClick={skipTour}
+                className="px-5 py-2 rounded-lg text-neome-pink border-neome-pink border cursor-pointer"
+              >
+                Skip
+              </button>
+
+            </div>
+          </div>
+
+          <div className={tourPage == 3 ? tourPopupClass : "hidden"}>
+            <div className="flex justify-end items-center mb-4">
+              <button
+                onClick={skipTour}
+                className="text-gray-400 hover:text-white text-xl"
+              >
+                ✕
+              </button>
+            </div>
+
+            <span>
+              TODO: gif of increasing carrot counter, increasing from -2 to 2
+            </span>
+
+            <p className="text-xl">
+              As you complete tasks, you feed Carro with carrots
+            </p>
+
+            <div className="mt-6 flex justify-center gap-2">
+              <button
+                className="px-5 py-2 rounded-lg bg-neome-pink text-black cursor-pointer"
+                onClick={nextTourPage}
+              >
+                Next
+              </button>
+
+              <button
+                onClick={skipTour}
+                className="px-5 py-2 rounded-lg text-neome-pink border-neome-pink border cursor-pointer"
+              >
+                Skip
+              </button>
+
+            </div>
+          </div>
+
+          <div className={tourPage == 4 ? tourPopupClass : "hidden"}>
+            <div className="flex justify-end items-center mb-4">
+              <button
+                onClick={skipTour}
+                className="text-gray-400 hover:text-white text-xl"
+              >
+                ✕
+              </button>
+            </div>
+
+            <span>
+              TODO: image of the carro on a milestone
+            </span>
+
+            <p className="text-xl">
+              Carro moves to the next milestones every 10 carrots. you can't gain or lose more than 10 carrots per day.
+            </p>
+
+            <div className="mt-6 flex justify-center gap-2">
+              <button
+                className="px-5 py-2 rounded-lg bg-neome-pink text-black cursor-pointer"
+                onClick={nextTourPage}
+              >
+                Next
+              </button>
+
+              <button
+                onClick={skipTour}
+                className="px-5 py-2 rounded-lg text-neome-pink border-neome-pink border cursor-pointer"
+              >
+                Skip
+              </button>
+
+            </div>
+          </div>
+
+          <div className={tourPage == 5 ? tourPopupClass : "hidden"}>
+            <div className="flex justify-end items-center mb-4">
+              <button
+                onClick={skipTour}
+                className="text-gray-400 hover:text-white text-xl"
+              >
+                ✕
+              </button>
+            </div>
+
+            <span>
+              TODO: image of carro holding a heart
+            </span>
+
+            <p className="text-xl">
+              The app is still being developed and more features are coming.
+              It is 100% open-source, and anyone can contribute to it.
+              If you want to report a bug, suggest a feature, don't hesitate to&nbsp;
+              <a href="https://example.com" className="underline">
+                contact me
+              </a>.
+              You can also&nbsp;
+              <a href="https://example.com" className="underline">
+                join our discord
+              </a>
+              &nbsp;if you want to chat with me and like-minded people.
+              <br /><br />
+              Have a productive day &lt;3
+            </p>
+
+            <div className="mt-6 flex justify-center gap-2">
+              <button
+                className="px-5 py-2 rounded-lg bg-neome-pink text-black cursor-pointer"
+                onClick={skipTour}
+              >
+                End tour
+              </button>
+
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
