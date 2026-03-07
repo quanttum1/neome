@@ -32,6 +32,8 @@ function Layout() {
     setTourPage(tourPage + 1);
   }
 
+  let currentPage = 0;
+
   return (
     <>
       <div className="flex h-screen">
@@ -80,10 +82,9 @@ function Layout() {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
 
           {/* Overlay */}
-          {/* TODO(2026-03-04 12:52:42): close the pop-up when the skip tour popup is open */}
           <div
             className="absolute inset-0 bg-black/10 "
-            onClick={skipTour}
+            onClick={tourPage == -1 ? closeTour : skipTour}
           />
 
           <div className={tourPage == -1 ? tourPopupClass : "hidden"}>
@@ -100,9 +101,9 @@ function Layout() {
             <p>
               You can always access the tour by clicking
               <b>
-                &nbsp;
+                {" "}
                 <img src={tourIcon} className="inline"/>
-                &nbsp;Take a tour&nbsp;
+                {" Take a tour "}
               </b>
               button
             </p>
@@ -118,7 +119,7 @@ function Layout() {
             </div>
           </div>
 
-          <div className={tourPage == 0 ? tourPopupClass : "hidden"}>
+          <div className={tourPage == currentPage++ ? tourPopupClass : "hidden"}>
 
             <div className="flex justify-end items-center mb-4">
               <button
@@ -157,7 +158,7 @@ function Layout() {
             </div>
           </div>
 
-          <div className={tourPage == 1 ? tourPopupClass : "hidden"}>
+          <div className={tourPage == currentPage++ ? tourPopupClass : "hidden"}>
             <div className="flex justify-end items-center mb-4">
               <button
                 onClick={skipTour}
@@ -167,15 +168,17 @@ function Layout() {
               </button>
             </div>
 
-            <span>TODO: image of a task card</span>
+            <div className="flex flex-col gap-4">
+              <img src="/tour/task_card.svg" />
 
-            <p className="text-xl">
-              <b>
-                <img src={tasksIcon} className="inline" />
-                &nbsp;Tasks&nbsp;
-              </b>
-              are the core of NEOME workflow, you can set the reward, penalty and deadline of a task
-            </p>
+              <p className="text-xl">
+                <b>
+                  <img src={tasksIcon} className="inline" />
+                  {" Tasks "}
+                </b>
+                are the core of NEOME workflow, you can set the reward, penalty and deadline of a task
+              </p>
+            </div>
 
             <div className="mt-6 flex justify-center gap-2">
               <button
@@ -195,7 +198,7 @@ function Layout() {
             </div>
           </div>
 
-          <div className={tourPage == 2 ? tourPopupClass : "hidden"}>
+          <div className={tourPage == currentPage++ ? tourPopupClass : "hidden"}>
             <div className="flex justify-end items-center mb-4">
               <button
                 onClick={skipTour}
@@ -205,15 +208,17 @@ function Layout() {
               </button>
             </div>
 
-            <span>TODO: image of a habit card</span>
+            <div className="flex flex-col gap-4">
+              <img src="/tour/habit_card.svg" />
 
-            <p className="text-xl">
-              <b>
-                <img src={habitsIcon} className="inline" />
-                &nbsp;Habits:&nbsp;
-              </b>
-              if you repeat something on a regular basis, you can create a habit, which will automatically create the task as often as you need
-            </p>
+              <p className="text-xl">
+                <b>
+                  <img src={habitsIcon} className="inline" />
+                  &nbsp;Habits:&nbsp;
+                </b>
+                if you repeat something on a regular basis, you can create a habit, which will automatically create the task as often as you need
+              </p>
+            </div>
 
             <div className="mt-6 flex justify-center gap-2">
               <button
@@ -233,7 +238,7 @@ function Layout() {
             </div>
           </div>
 
-          <div className={tourPage == 3 ? tourPopupClass : "hidden"}>
+          <div className={tourPage == currentPage++ ? tourPopupClass : "hidden"}>
             <div className="flex justify-end items-center mb-4">
               <button
                 onClick={skipTour}
@@ -243,9 +248,7 @@ function Layout() {
               </button>
             </div>
 
-            <span>
-              TODO: gif of increasing carrot counter, increasing from -2 to 2
-            </span>
+            <img src="tour/carrot_bar.gif" />
 
             <p className="text-xl">
               As you complete tasks, you feed Carro with carrots
@@ -269,7 +272,7 @@ function Layout() {
             </div>
           </div>
 
-          <div className={tourPage == 4 ? tourPopupClass : "hidden"}>
+          <div className={tourPage == currentPage++ ? tourPopupClass : "hidden"}>
             <div className="flex justify-end items-center mb-4">
               <button
                 onClick={skipTour}
@@ -279,13 +282,13 @@ function Layout() {
               </button>
             </div>
 
-            <span>
-              TODO: image of the carro on a milestone
-            </span>
+            <div className="flex flex-col gap-4">
+              <img src="tour/carro_on_milestone.svg" className="max-h-52" />
 
-            <p className="text-xl">
-              Carro moves to the next milestones every 10 carrots. you can't gain or lose more than 10 carrots per day.
-            </p>
+              <p className="text-xl">
+                Carro moves to the next milestones every 10 carrots. you can't gain or lose more than 10 carrots per day.
+              </p>
+            </div>
 
             <div className="mt-6 flex justify-center gap-2">
               <button
@@ -305,7 +308,7 @@ function Layout() {
             </div>
           </div>
 
-          <div className={tourPage == 5 ? tourPopupClass : "hidden"}>
+          <div className={tourPage == currentPage++ ? tourPopupClass : "hidden"}>
             <div className="flex justify-end items-center mb-4">
               <button
                 onClick={skipTour}
@@ -315,24 +318,23 @@ function Layout() {
               </button>
             </div>
 
-            <span>
-              TODO: image of carro holding a heart
-            </span>
+            {/* TODO(2026-03-07 21:04:54): image of carro holding a heart */}
 
             <p className="text-xl">
               The app is still being developed and more features are coming.
               It is 100% open-source, and anyone can contribute to it.
-              If you want to report a bug, suggest a feature, don't hesitate to&nbsp;
-              <a href="https://example.com" className="underline">
+              {" If you want to report a bug, suggest a feature, don't hesitate to "}
+              {/* TODO(2026-03-07 22:06:54): make the contact link actually work */}
+              <a className="">
                 contact me
               </a>.
-              You can also&nbsp;
-              <a href="https://example.com" className="underline">
-                join our discord
+              {" You can also "}
+              <a href="https://discord.gg/ejAuWq5u" className="underline">
+                join our Discord
               </a>
-              &nbsp;if you want to chat with me and like-minded people.
+              {" if you want to chat with me and like-minded people."}
               <br /><br />
-              Have a productive day &lt;3
+              {"Have a productive day <3"}
             </p>
 
             <div className="mt-6 flex justify-center gap-2">
