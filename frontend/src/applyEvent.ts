@@ -83,6 +83,8 @@ function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] 
         const task = getTaskById(event.taskId, state);
         if (!task) break; // Task has already been completed
 
+        if (task.deadline != event.time) break;
+
         // We add the penalty, because it's supposed to be negative itself
         addCarrots(task.penalty, draft);
         draft.tasks = draft.tasks.filter(t => t.id !== event.taskId);
@@ -138,6 +140,9 @@ function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] 
 
       case "TASK_UPDATE": {
         const index = getTaskIndexById(event.taskId, draft);
+        const task = draft.tasks[index];
+        if (!task) break;
+
         // TODO(2026-03-01 14:03:12): maybe take some carrots away if the deadline is changed
         // do something like this:
         // const oldDeadline = new Date(oldTask.deadline).getTime();
@@ -151,6 +156,10 @@ function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] 
         // addCarrots(invLerp(created, deadlineChanged)
         //   * (newDuration / oldDuration)
         //   * oldTask.penalty); // Penalty is negative
+
+        if (task.deadline != event.newTask.deadline) {
+          newEvents.push(createNewTaskDeadlineEvent(event.newTask));
+        }
 
         draft.tasks[index] = event.newTask;
         break;
