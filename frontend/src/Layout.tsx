@@ -7,8 +7,8 @@ import useNeomeStore from "./useNeomeStore";
 import homeIcon from './assets/icons/home.svg';
 import tasksIcon from './assets/icons/tasks.svg';
 import habitsIcon from './assets/icons/habits.svg';
-import statisticsIcon from './assets/icons/statistics.svg';
-import settingsIcon from './assets/icons/settings.svg';
+// import statisticsIcon from './assets/icons/statistics.svg';
+// import settingsIcon from './assets/icons/settings.svg';
 import tourIcon from './assets/icons/tour.svg';
 
 function Layout() {
@@ -53,15 +53,17 @@ function Layout() {
                 <Link className="ml-2" to="/habits">Habits</Link>
               </li>
 
-              <li className="p-2 flex">
-                <img className="pt-1 w-[2rem] h-[2rem]" src={statisticsIcon} />
-                <Link className="ml-2" to="/statistics">Statistics</Link>
-              </li>
+              {/* TODO(2026-03-08 18:45:59): add Statistics */}
+              {/* <li className="p-2 flex"> */}
+              {/*   <img className="pt-1 w-[2rem] h-[2rem]" src={statisticsIcon} /> */}
+              {/*   <Link className="ml-2" to="/statistics">Statistics</Link> */}
+              {/* </li> */}
 
-              <li className="p-2 flex">
-                <img className="pt-1 w-[2rem] h-[2rem]" src={settingsIcon} />
-                <Link className="ml-2" to="/settings">Settings</Link>
-              </li>
+              {/* TODO(2026-03-08 18:46:25): add Settings */}
+              {/* <li className="p-2 flex"> */}
+              {/*   <img className="pt-1 w-[2rem] h-[2rem]" src={settingsIcon} /> */}
+              {/*   <Link className="ml-2" to="/settings">Settings</Link> */}
+              {/* </li> */}
 
               <li className="mt-auto p-2 flex">
                 <img className="pt-1 w-[2rem] h-[2rem]" src={tourIcon} />
