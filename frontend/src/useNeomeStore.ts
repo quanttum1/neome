@@ -78,6 +78,9 @@ let updatedState = false;
 const useNeomeStore = create<NeomeStore>()(
   persist(
     (set, get) => ({
+      isTourTaken: false,
+      setIsTourTaken: (value) => set({ isTourTaken: value }),
+
       initialTimezone: getTimezone(),
       initialDate: startOfUTCDay(now()),
       events: [],
@@ -196,18 +199,13 @@ const useNeomeStore = create<NeomeStore>()(
     }),
     {
       name: 'neome',
-      version: 0.21,
-      migrate: (state, oldVersion) => {
+      version: 0.22,
+      migrate: (state: any, oldVersion) => {
 
-        if (oldVersion == 0.18) {
-          (state as NeomeStore).initialTimezone = getTimezone();
+        if (oldVersion == 0.21) {
+          state.isTourTaken = false;
         }
 
-        if (oldVersion == 0.19 && (state as NeomeStore).events === undefined) {
-          (state as NeomeStore).events = [];
-        }
-
-        (state as NeomeStore).stateLastUpdated = undefined; // Force full recompute
         return state as NeomeStore;
       },
     }

@@ -1,6 +1,8 @@
 import logo from './assets/logo.svg';
 import { Link, Outlet } from "react-router";
 import { useState } from "react";
+import Tour from "./Tour";
+import useNeomeStore from "./useNeomeStore";
 
 import homeIcon from './assets/icons/home.svg';
 import tasksIcon from './assets/icons/tasks.svg';
@@ -9,10 +11,11 @@ import statisticsIcon from './assets/icons/statistics.svg';
 import settingsIcon from './assets/icons/settings.svg';
 import tourIcon from './assets/icons/tour.svg';
 
-import Tour from "./Tour";
-
 function Layout() {
-  const [isTourOpen, setIsTourOpen] = useState(false);
+  const isTourTaken = useNeomeStore(s => s.isTourTaken);
+  const setIsTourTaken = useNeomeStore(s => s.setIsTourTaken);
+
+  const [isTourOpen, setIsTourOpen] = useState(!isTourTaken);
 
   function openTour() {
     setIsTourOpen(true);
@@ -20,6 +23,7 @@ function Layout() {
 
   function closeTour() {
     setIsTourOpen(false);
+    setIsTourTaken(true);
   }
 
   return (

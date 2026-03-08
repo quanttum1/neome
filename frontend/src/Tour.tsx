@@ -165,11 +165,11 @@ export default function Tour({ isOpen, onClose }: any) {
           <p className="text-xl">
             <b>
               <img src={habitsIcon} className="inline" />
-              {" Habits "}
+              {" Habits: "}
             </b>
             if you repeat something on a regular basis,
             you can create a habit which automatically
-            creates tasks.
+            creates tasks as often as you need
           </p>
         </div>
 
@@ -198,7 +198,7 @@ export default function Tour({ isOpen, onClose }: any) {
 
           <p className="text-xl">
             Carro moves to the next milestones every 10 carrots. You can't
-            gain or lose more than 10 carrots per day.
+            gain or lose more than 10 carrots per day
           </p>
         </div>
 
@@ -210,10 +210,10 @@ export default function Tour({ isOpen, onClose }: any) {
 
         {/* TODO(2026-03-07 21:04:54): image of carro holding a heart */}
         <p className="text-xl">
-          The app is still being developed and more features are coming.
+          The app is still being developed and many more features are coming.
           It is 100% open-source, and anyone can contribute to it.
           {" If you want to report a bug, suggest a feature, don't hesitate to "}
-          <a className="underline cursor-pointer">
+          <a>
             contact me
           </a>.
           {/* TODO(2026-03-07 22:06:54): make the contact link in the tour actually work */}

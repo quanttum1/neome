@@ -1,4 +1,7 @@
 interface NeomeStore {
+  isTourTaken: boolean;
+  setIsTourTaken: (value: boolean) => void;
+
   initialTimezone: TimezoneString;
   initialDate: UTCDateString;
   events: StoredEvent[];
