@@ -13,6 +13,9 @@ export function getCreateHabitError(input: {
   if (!Number.isInteger(input.reward * 10)) return "Reward is too precise";
   if (!Number.isInteger(input.penalty * 10)) return "Penalty is too precise";
 
+  if (input.reward < 0) return "Reward should be positive";
+  if (input.penalty > 0) return "Penalty should be positive number that will be substracted";
+
   if (input.daysOfWeek == 0) return "You need to do the habit at least once a week";
 
   return null;

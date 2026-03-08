@@ -18,6 +18,9 @@ export function getCreateTaskError(input: {
   if (!Number.isInteger(input.reward * 10)) return "Reward is too precise";
   if (!Number.isInteger(input.penalty * 10)) return "Penalty is too precise";
 
+  if (input.reward < 0) return "Reward should be positive";
+  if (input.penalty > 0) return "Penalty should be positive number that will be substracted";
+
   if (!isValidDate(input.deadline)) return "Invalid deadline";
   if (localInputToUTC(input.deadline) < now()) return "Deadline is in the past";
 

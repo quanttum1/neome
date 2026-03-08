@@ -95,7 +95,7 @@ export default function OpenTask() {
                 ref={penaltyRef}
                 type="number"
                 step="0.1"
-                defaultValue={task.penalty}
+                defaultValue={-task.penalty}
                 className="bg-neome-light-grey border-2 border-neome-light-grey rounded-xl p-4 text-white focus:outline-none focus:border-neome-pink"
               />
             </div>

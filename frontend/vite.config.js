@@ -20,4 +20,7 @@ export default defineConfig({
 
     checker({ typescript: true }),
   ],
+  server: {
+    allowedHosts: ["85b1-2001-bb6-73fa-1100-af11-be9e-50d-8aed.ngrok-free.app"]
+  }
 })

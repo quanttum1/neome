@@ -87,7 +87,7 @@ export default function OpenHabit() {
                 type="number"
                 step="0.1"
                 className="bg-neome-light-grey border-2 border-neome-light-grey rounded-xl p-4 text-white focus:outline-none focus:border-neome-pink"
-                defaultValue={habit.penalty}
+                defaultValue={-habit.penalty}
               />
             </div>
           </div>
