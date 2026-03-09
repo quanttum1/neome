@@ -22,8 +22,7 @@ export default function Map() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   let [canvasHeight, _setCanvasHeight] = useState<number>(100);
 
-  // TODO(2026-02-22 21:04:05): use progress instead of totalCarrots
-  const progress = useNeomeStore(s => s.getState().totalCarrots);
+  const progress = useNeomeStore(s => s.getState().progress);
 
   useEffect(() => {
     const canvas = canvasRef.current;
