@@ -95,6 +95,11 @@ function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] 
         if (!("version" in event)) break; // Deprecated
         if (event.oldDate != draft.date) break;
 
+        draft.week.splice(0, 1);
+        draft.week.push(draft.dailyCarrots);
+
+        // TODO(2026-03-09 15:30:03): if user didn't feed Carro for 2 days this week, take away weekly progress
+
         draft.date = event.newDate;
         draft.dailyCarrots = 0;
 

@@ -9,6 +9,7 @@ function Home() {
   const tasks = useNeomeStore(s => s.getState().tasks);
   const totalCarrots = useNeomeStore(s => s.getState().totalCarrots);
   const dailyCarrots = useNeomeStore(s => s.getState().dailyCarrots);
+  const weeklyCarrots = useNeomeStore(s => s.getWeeklyCarrots());
 
   // Sometimes it's useful for debugging
   // window.recomputeCurrentState = useNeomeStore(s => s.recomputeCurrentState);
@@ -26,11 +27,10 @@ function Home() {
 
             <div>
               <div className="flex justify-between">
-                {/* <div className="flex text-[2.1rem] items-center"> */}
-                  {/* TODO(2026-02-08 15:29:43): show weekly carrots */}
-                {/*   This Week: TODO */}
-                {/*   <img src={carrotIcon} className="h-[2.8rem]" /> */}
-                {/* </div> */}
+                <div className="flex text-[2.1rem] items-center">
+                  This Week: {weeklyCarrots.toFixed(1)}
+                  <img src={carrotIcon} className="h-[2.8rem]" />
+                </div>
                 <div className="flex text-[2.1rem] items-center">
                   Total: {totalCarrots.toFixed(1)}
                   <img src={carrotIcon} className="h-[2.8rem]" />

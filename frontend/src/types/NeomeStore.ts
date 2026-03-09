@@ -10,6 +10,8 @@ interface NeomeStore {
   stateLastUpdated?: UTCString | undefined;
   // TODO(2026-01-16 15:04:01): add `snapshot` and `snapshotTime` to `NeomeStore`
 
+  getWeeklyCarrots: () => number;
+
   getState: () => State;
   // Returns sorted events, but also adds initial DayRolloverEvent
   getLogicalEvents: () => LogicalEvent[];

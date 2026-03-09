@@ -36,6 +36,8 @@ function getInitialState(initialDate: UTCDateString, initialTZ: TimezoneString):
     totalCarrots: 0,
     dailyCarrots: 0,
     progress: 0,
+    // Need to cast it cause TS is dumb
+    week: Array(6).fill(undefined) as FixedArray<number | undefined, 6>,
 
     tasks: [],
     habits: [],
@@ -87,6 +89,16 @@ const useNeomeStore = create<NeomeStore>()(
 
       // Don't read the state directly outside useNeomeStore, use getState instead
       currentState: getInitialState(startOfUTCDay(now()), getTimezone()),
+
+      getWeeklyCarrots: () => {
+        let result = 0;
+
+        for (let i of get().getState().week) {
+          result += i == undefined ? 0 : i;
+        }
+
+        return result + get().getState().dailyCarrots;
+      },
 
       getState: () => {
         if (!updatedState) {
