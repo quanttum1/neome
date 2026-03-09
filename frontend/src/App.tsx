@@ -36,7 +36,6 @@ export default function App() {
         <Route path="tasks">
           <Route index element={<Tasks />} />
           <Route path="new" element={<NewTask />} />
-          <Route path="completed" element={<CompletedTask />}/>
           <Route path=":taskId" element={<OpenTask />}/>
         </Route>
         <Route path="habits">
@@ -48,6 +47,7 @@ export default function App() {
         <Route path="settings" element={<Settings />} />
       </Route>
 
+      <Route path="tasks/completed" element={<CompletedTask />} />
       <Route path="about" element={<About />} />
       <Route path="*" element={<Page404 />} />
     </Routes>
