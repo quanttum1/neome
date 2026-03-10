@@ -27,7 +27,7 @@ function TaskCard(props: TaskCardProps) {
 
   return (
     <div
-      className="group/card text-[24px] pt-2 pb-3 pl-4 pr-4 rounded-[1.5vw] bg-neome-grey flex items-center gap-2"
+      className="group/card text-[24px] pt-2 pb-3 pl-4 pr-4 rounded-[1.5rem] bg-neome-grey flex items-center gap-2"
     >
 
       <div
@@ -37,7 +37,7 @@ function TaskCard(props: TaskCardProps) {
         <img src={task.isPinned ? PinActiveIcon : PinIcon}></img>
       </div>
 
-      <Link 
+      <Link
         className="group/link flex cursor-pointer flex-col" to={`/tasks/${task.id}`}
       >
         <span className="group-hover/link:underline">{task.name}</span>

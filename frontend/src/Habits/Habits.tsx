@@ -7,11 +7,11 @@ function Habits() {
   let habits = useNeomeStore(s => s.getState().habits);
 
   return (
-    <div className="pt-2 pb-2">
+    <div className="p-2">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         {habits.map((habit) => (
           <div
-            className="text-[24px] pt-2 pb-3 pl-4 pr-4 rounded-[1.5vw] bg-neome-grey flex items-center gap-2"
+            className="text-[24px] pt-2 pb-3 pl-4 pr-4 rounded-[1.5rem] bg-neome-grey flex items-center gap-2"
             key={habit.id}
           >
 

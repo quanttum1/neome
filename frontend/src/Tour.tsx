@@ -5,9 +5,6 @@ import tasksIcon from "./assets/icons/tasks.svg";
 import habitsIcon from "./assets/icons/habits.svg";
 import tourIcon from "./assets/icons/tour.svg";
 
-const popupClass =
-  "relative z-10 w-full max-w-2xl bg-neome-background border border-gray-700 rounded-2xl shadow-2xl p-4";
-
 type CloseButtonProps = {
   onClick: () => void;
 };
@@ -61,6 +58,8 @@ type PageProps = {
 };
 
 function Page({ visible, children }: PageProps) {
+  const popupClass =
+    "relative z-10 w-full max-w-2xl bg-neome-background border border-gray-700 rounded-2xl shadow-2xl p-4";
   return (
     <div className={visible ? popupClass : "hidden"}>
       {children}
@@ -125,7 +124,7 @@ export default function Tour({ isOpen, onClose }: any) {
             className="w-auto sm:max-h-52 max-h-50 object-contain"
           />
 
-          <h2 className="text-[2rem] mb-5">
+          <h2 className="text-[2rem] text-center mb-5">
             Want to learn how NEOME works?
           </h2>
         </div>
