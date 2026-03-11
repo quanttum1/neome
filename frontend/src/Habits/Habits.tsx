@@ -10,7 +10,7 @@ function Habits() {
     <div className="p-2">
       {
         habits.length == 0 ?
-        <div className="justify-center flex text-[2rem]">
+        <div className="justify-center flex text-[1.5rem] text-center">
           <p>You have no habits? Why won't you start a new hobby then?</p>
         </div>
         :

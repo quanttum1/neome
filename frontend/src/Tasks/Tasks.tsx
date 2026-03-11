@@ -16,7 +16,7 @@ export default function Tasks() {
           ))}
         </div>
         :
-        <div className="flex text-[2rem] justify-center">
+        <div className="flex text-[1.5rem] text-center justify-center">
           <p>There are no tasks for you. Joking, I know you've got some, so go ahead and click that "New" button</p>
         </div>
       }
