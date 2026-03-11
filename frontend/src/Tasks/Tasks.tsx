@@ -9,11 +9,17 @@ export default function Tasks() {
 
   return (
     <div className="p-2">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-        {tasks.map((task) => (
-          <TaskCard task={task} key={task.id}/>
-        ))}
-      </div>
+      {tasks.length != 0 ?
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          {tasks.map((task) => (
+            <TaskCard task={task} key={task.id}/>
+          ))}
+        </div>
+        :
+        <div className="flex text-[2rem] justify-center">
+          <p>There are no tasks for you. Joking, I know you've got some, so go ahead and click that "New" button</p>
+        </div>
+      }
 
     <NewButton />
     </div>

@@ -2,6 +2,7 @@ import TaskCard from './Tasks/TaskCard';
 import Map from './Map';
 import useNeomeStore from './useNeomeStore';
 import { clamp } from './applyEvent';
+import { Link } from 'react-router';
 
 const carrotIcon = "/carrots/carrot-1.0.svg";
 
@@ -80,9 +81,15 @@ function Home() {
 
             {carrotsInfo}
 
-            {tasks.map((task) => (
-              <TaskCard task={task} key={task.id}/>
-            ))}
+            {tasks.length != 0 ?
+              tasks.map((task) => (
+                <TaskCard task={task} key={task.id}/>
+              ))
+              :
+              <div className="flex justify-center text-[2rem]">
+                <p>There are no tasks here. Why won't you <Link className="underline" to="/tasks/new">create one</Link>?</p>
+              </div>
+            }
 
           </div>
         </div>
