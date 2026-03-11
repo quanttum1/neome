@@ -10,6 +10,7 @@ export default function NewTask() {
   const deadlineRef = useRef<HTMLInputElement>(null);
   const rewardRef = useRef<HTMLInputElement>(null);
   const penaltyRef = useRef<HTMLInputElement>(null);
+  const deleteOnDeadlineRef = useRef<HTMLInputElement>(null);
 
   const addTask = useNeomeStore((s: NeomeStore) => s.addTask);
   const navigate = useNavigate();
@@ -31,18 +32,22 @@ export default function NewTask() {
     if (!deadlineRef.current) return setError("Deadline is not set");
     if (!rewardRef.current) return setError("Reward is not set");
     if (!penaltyRef.current) return setError("Penalty is not set");
+    if (!deleteOnDeadlineRef.current) return setError("Delete on deadline checkbox is not set");
 
     const task = {
       name: nameRef.current.value,
       deadline: deadlineRef.current.value,
       reward: Number(rewardRef.current.value),
       penalty: -Number(penaltyRef.current.value),
+      deleteOnDeadline: deleteOnDeadlineRef.current.checked,
     };
 
     const error = getCreateTaskError(task);
     if (error) return setError(error);
 
-    addTask(createTask(task));
+    const t = createTask(task);
+    console.log(t);
+    addTask(t);
     navigate('/tasks');
   }
 
@@ -92,6 +97,21 @@ export default function NewTask() {
               defaultValue={localDatetime}
               className="bg-neome-light-grey border-2 border-neome-light-grey rounded-xl p-4 text-white focus:outline-none focus:border-neome-pink"
             />
+          </div>
+
+          <div className="flex ml-0.5 items-center gap-3">
+            <input
+              ref={deleteOnDeadlineRef}
+              type="checkbox"
+              id="deleteOnDeadline"
+              className="w-5 h-5 accent-neome-pink bg-neome-dark-red border-2 border-neome-dark-red rounded-md cursor-pointer"
+            />
+            <label
+              htmlFor="deleteOnDeadline"
+              className="text-[1.1rem] text-neome-pink cursor-pointer select-none"
+            >
+              Delete the task on deadline
+            </label>
           </div>
 
           {error && (

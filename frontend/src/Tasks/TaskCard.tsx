@@ -41,25 +41,32 @@ function TaskCard(props: TaskCardProps) {
         className="group/link flex cursor-pointer flex-col" to={`/tasks/${task.id}`}
       >
         <span className="group-hover/link:underline">{task.name}</span>
-        <span className="text-gray-400 text-[15px] italic">
-          {(() => {
-            const ms = new Date(task.deadline).getTime() - new Date(now()).getTime();
-            const minutes = ms / 1000 / 60;
+        {"isOverdue" in task && task.isOverdue
+        ?
+          <p className="text-gray-400 text-red-500 text-[15px] italic">
+            overdue
+          </p>
+        :
+          <span className="text-gray-400 text-[15px] italic">
+            {(() => {
+              const ms = new Date(task.deadline).getTime() - new Date(now()).getTime();
+              const minutes = ms / 1000 / 60;
 
-            if (minutes < 1) return "less than a minute";
-            const hours = minutes / 60;
+              if (minutes < 1) return "less than a minute";
+              const hours = minutes / 60;
 
-            if (hours < 1) return `${minutes.toFixed()} minutes`;
-            const days = hours / 24;
+              if (hours < 1) return `${minutes.toFixed()} minutes`;
+              const days = hours / 24;
 
-            if (days < 1) return `${hours.toFixed()} hours`;
-            const weeks = days / 7;
+              if (days < 1) return `${hours.toFixed()} hours`;
+              const weeks = days / 7;
 
-            if (weeks < 1) return `${days.toFixed()} days`;
+              if (weeks < 1) return `${days.toFixed()} days`;
 
-            return `${weeks.toFixed()} weeks`;
-          })()} left
-        </span>
+              return `${weeks.toFixed()} weeks`;
+            })()} left
+          </span>
+        }
       </Link>
 
       <div className="group-hover/card:hidden ml-auto flex gap-2 text-[1.5em]">

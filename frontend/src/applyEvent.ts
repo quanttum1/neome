@@ -83,11 +83,20 @@ function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] 
         const task = getTaskById(event.taskId, state);
         if (!task) break; // Task has already been completed
 
-        if (task.deadline != event.time) break;
+        if (task.deadline != event.time) break; // The task has been rescheduled
 
         // We add the penalty, because it's supposed to be negative itself
         addCarrots(task.penalty, draft);
-        draft.tasks = draft.tasks.filter(t => t.id !== event.taskId);
+
+        if (!("version" in task) || task.deleteOnDeadline) {
+          console.log(`Deleting task ${task.name}`);
+          console.log(task);
+          draft.tasks = draft.tasks.filter(t => t.id !== event.taskId);
+        } else {
+          const index = getTaskIndexById(task.id, draft);
+          draft.tasks[index] = { ...task, isOverdue: true };
+        }
+
         break;
       }
 

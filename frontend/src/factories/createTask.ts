@@ -8,6 +8,7 @@ export function getCreateTaskError(input: {
   reward: number;
   penalty: number;
   isPinned?: boolean;
+  deleteOnDeadline: boolean;
 }): string | null {
 
   if (!input.name) return "Name can't be empty";
@@ -34,6 +35,7 @@ function createTask(input: {
   reward: number;
   penalty: number;
   isPinned?: boolean;
+  deleteOnDeadline: boolean;
 }): Task {
 
   const error = getCreateTaskError(input);
@@ -42,6 +44,7 @@ function createTask(input: {
   return {
     ...input,
     id: crypto.randomUUID(),
+    version: 2,
     deadline: localInputToUTC(input.deadline),
     isPinned: input.isPinned ?? false,
   };

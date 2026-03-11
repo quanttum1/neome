@@ -21,6 +21,7 @@ export default function OpenTask() {
   const deadlineRef = useRef<HTMLInputElement>(null);
   const rewardRef = useRef<HTMLInputElement>(null);
   const penaltyRef = useRef<HTMLInputElement>(null);
+  const deleteOnDeadlineRef = useRef<HTMLInputElement>(null);
 
   const completeTask = useNeomeStore(s => s.completeTask);
   const navigate = useNavigate();
@@ -35,12 +36,14 @@ export default function OpenTask() {
     if (!deadlineRef.current) return setError("Deadline is not set");
     if (!rewardRef.current) return setError("Reward is not set");
     if (!penaltyRef.current) return setError("Penalty is not set");
+    if (!deleteOnDeadlineRef.current) return setError("Delete on deadline checkbox is not set");
 
     const newTask = {
       name: nameRef.current.value,
       deadline: deadlineRef.current.value,
       reward: Number(rewardRef.current.value),
       penalty: -Number(penaltyRef.current.value),
+      deleteOnDeadline: deleteOnDeadlineRef.current.checked,
     };
 
     const error = getCreateTaskError(newTask);

@@ -86,7 +86,7 @@ function Home() {
                 <TaskCard task={task} key={task.id}/>
               ))
               :
-              <div className="flex justify-center text-[2rem]">
+              <div className="flex justify-center text-center text-[2rem]">
                 <p>There are no tasks here. Why won't you <Link className="underline" to="/tasks/new">create one</Link>?</p>
               </div>
             }
