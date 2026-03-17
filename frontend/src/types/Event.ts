@@ -55,9 +55,25 @@ interface TaskUpdateEvent extends BaseStoredEvent {
   newTask: Task;
 }
 
+// When i added support for the events, i updated already existing events to make them produce messages.
+// But this lead to accumulation of messages about past events for users who started using NEOME before messages are
+// supported. To avoid this, when i added this event. It will wipe out all the messages about past events (before
+// messages are supported).
+interface MessagesMigrationEvent extends BaseStoredEvent {
+  type: "MESSAGES_MIGRATION";
+  version: "INITIAL"; // If we ever have similar updates, we'll just create a different version of this event
+}
+
+interface MessagesReadEvent extends BaseStoredEvent {
+  type: "MESSAGES_READ";
+  version: 1;
+}
+
 // TODO(2026-02-01 20:21): add TimeZoneChangeEvent
 
 type StoredEvent =
+  | MessagesReadEvent
+  | MessagesMigrationEvent
   | NewTaskEvent
   | TaskUpdateEvent
   | TaskPinToggleEvent

@@ -10,6 +10,8 @@ interface State {
   progress: number; // Same as totalCarrots, but doesn't descrease if you lose carrots
   week: FixedArray<number | undefined, 6>; // Carrots gained this week excluding today
 
+  messages: Message[];
+
   tasks: Task[];
   habits: Habit[];
 }

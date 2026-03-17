@@ -6,6 +6,7 @@ import { isWeekMaskDay } from "./weekMask";
 import { localTime } from "./utc";
 import { nextUTCDay } from "./utc";
 import { createDayRolloverEvent } from "./factories/createEvents";
+import { createTaskDeadlineMessage } from "./factories/createMessage";
 
 export function getTaskById(id: TaskId, state: State) {
   return state.tasks.find(t => t.id == id);
@@ -87,6 +88,7 @@ function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] 
 
         // We add the penalty, because it's supposed to be negative itself
         addCarrots(task.penalty, draft);
+        draft.messages.push(createTaskDeadlineMessage(task));
 
         if (!("version" in task) || task.deleteOnDeadline) {
           console.log(`Deleting task ${task.name}`);
@@ -182,6 +184,16 @@ function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] 
       case "HABIT_UPDATE": {
         const index = draft.habits.findIndex(h => h.id === event.habitId);
         draft.habits[index] = event.newHabit;
+        break;
+      }
+
+      case "MESSAGES_MIGRATION": {
+        draft.messages = [];
+        break;
+      }
+
+      case "MESSAGES_READ": {
+        draft.messages = [];
         break;
       }
 

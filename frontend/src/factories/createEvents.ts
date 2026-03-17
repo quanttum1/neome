@@ -83,3 +83,11 @@ export function createHabitUpdateEvent(id: HabitId, newHabit: Habit): HabitUpdat
   };
 }
 
+export function createMessagesReadEvent(): MessagesReadEvent {
+  return {
+    id: crypto.randomUUID(),
+    time: now(),
+    type: "MESSAGES_READ",
+    version: 1,
+  };
+}

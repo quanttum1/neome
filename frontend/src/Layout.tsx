@@ -11,9 +11,35 @@ import habitsIcon from './assets/icons/habits.svg';
 // import settingsIcon from './assets/icons/settings.svg';
 import tourIcon from './assets/icons/tour.svg';
 
+function Message({ message }: { message: Message }) {
+  // For future use (see comment below)
+  // function assertUnreachable(_: never) {
+  //   throw new Error("Unknown message type");
+  //   _; // To shut up stupid JSLint
+  // }
+
+  switch (message.type) {
+    case "TASK_DEADLINE":
+      let tn = message.taskName;
+      if (tn) tn = tn[0]?.toLowerCase() + tn.slice(1);
+      return <>
+        You lost {message.carrotsLost} carrots, because you didn't <b>{tn}</b> on time
+      </>;
+
+    // I will uncomment this when i have more types of messages, because TS is stupid enough not to understand it's
+    // unreachable if i only have one type of message
+    //
+    // default:
+    //   assertUnreachable(message);
+  }
+}
+
 function Layout() {
   const isTourTaken = useNeomeStore(s => s.isTourTaken);
   const setIsTourTaken = useNeomeStore(s => s.setIsTourTaken);
+
+  const messages = useNeomeStore(s => s.getState().messages);
+  const markMessagesRead = useNeomeStore(s => s.markMessagesRead);
 
   const [isTourOpen, setIsTourOpen] = useState(!isTourTaken);
 
@@ -131,6 +157,46 @@ function Layout() {
         isOpen={isTourOpen}
         onClose={closeTour}
       />
+
+      {isTourOpen || !messages.length ? ""
+      :
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/10"
+            onClick={markMessagesRead}
+          />
+
+          <div className="relative z-10 w-full max-w-2xl bg-neome-background border border-gray-700 rounded-2xl shadow-2xl p-4">
+            <div className="flex justify-end items-center">
+              <button
+                onClick={markMessagesRead}
+                className="text-gray-400 hover:text-white text-xl"
+              >
+                ✕
+              </button>
+            </div>
+
+            <h2 className="text-3xl mb-4 text-center">What you missed</h2>
+
+            <div className="gap-2 flex flex-col">
+              {messages.map(m =>
+                <p className="p-1 pl-3 bg-neome-grey rounded-full text-[1.2rem]">
+                  <Message message={m} />
+                </p>
+              )}
+            </div>
+
+    <div className="mt-6 flex justify-center gap-2">
+      <button
+        className="px-5 py-2 rounded-lg bg-neome-pink text-black cursor-pointer"
+        onClick={markMessagesRead}
+      >
+        Okie
+      </button>
+    </div>
+          </div>
+        </div>
+      }
     </>
   );
 }

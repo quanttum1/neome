@@ -10,6 +10,7 @@ import { createNewTaskEvent } from "./factories/createEvents";
 import { createNewHabitEvent } from "./factories/createEvents";
 import { createHabitUpdateEvent } from "./factories/createEvents";
 import { createDayRolloverEvent } from "./factories/createEvents";
+import { createMessagesReadEvent } from "./factories/createEvents";
 import applyEvent from "./applyEvent";
 import { getTaskById } from "./applyEvent";
 
@@ -38,6 +39,8 @@ function getInitialState(initialDate: UTCDateString, initialTZ: TimezoneString):
     progress: 0,
     // Need to cast it cause TS is dumb
     week: Array(6).fill(undefined) as FixedArray<number | undefined, 6>,
+
+    messages: [],
 
     tasks: [],
     habits: [],
@@ -205,17 +208,32 @@ const useNeomeStore = create<NeomeStore>()(
       },
 
 
+      markMessagesRead: () => {
+        get().addEventAndUpdateState(createMessagesReadEvent());
+      },
+
+
       getTaskById: (id) => {
         return getTaskById(id, get().currentState);
       },
     }),
     {
       name: 'neome',
-      version: 0.22,
+      version: 0.23,
       migrate: (state: any, oldVersion) => {
 
         if (oldVersion == 0.21) {
           state.isTourTaken = false;
+        }
+
+        if (oldVersion == 0.22) {
+          let e: StoredEvent = {
+            id: crypto.randomUUID(),
+            time: now(),
+            type: "MESSAGES_MIGRATION",
+            version: "INITIAL",
+          };
+          state.events.push(e);
         }
 
         return state as NeomeStore;
