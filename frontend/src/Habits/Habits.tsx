@@ -14,8 +14,8 @@ function Habits() {
           <p>You have no habits? Why won't you start a new hobby then?</p>
         </div>
         :
-        habits.map((habit) => (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          {habits.map((habit) => (
             <div
               className="text-[24px] pt-2 pb-3 pl-4 pr-4 rounded-[1.5rem] bg-neome-grey flex items-center gap-2"
               key={habit.id}
@@ -37,8 +37,8 @@ function Habits() {
                 <span className="text-[#FF0000]">{habit.penalty}</span>
               </div>
             </div>
-          </div>
-        ))
+          ))}
+        </div>
       }
 
     <NewButton />
