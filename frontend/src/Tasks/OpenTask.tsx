@@ -114,6 +114,8 @@ export default function OpenTask() {
             />
           </div>
 
+          {/* TODO(2026-03-23 17:57:12): add `deleteOnDeadline` to OpenTask */}
+
           {error && (
             <div className="bg-red-500/10 border border-red-500 text-[#ff6b81] p-3 rounded-xl text-sm">
               ⚠️ {error}

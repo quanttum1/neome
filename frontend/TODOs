@@ -25,3 +25,8 @@
 (2026-02-07 12:54:59): add a way to export/import the entire store for debugging
 
 (2026-02-18 23:24:04): minify SVGs
+
+(2026-03-23 17:49:30): fix a bug that when a page is reloaded, it opens the home page
+because the code that we have in `./public/404.html` assumes we use HashRouter, which we don't
+in `./src/App.tsx` or `./src/Home.tsx` we need to check the we have hash instead of normal path, and if we do, use
+navigate to restore the page
