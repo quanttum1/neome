@@ -22,8 +22,8 @@ function Completed() {
         You got <span className="text-neome-orange font-bold">{reward}</span> carrots!
       </h1>
 
-      {/* TODO(2026-03-02 20:15:27): bind Enter to this button */}
       <button
+        autoFocus
         onClick={() => navigate("/")}
         className="p-3 bg-neome-pink text-black rounded-2xl cursor-pointer"
       >
