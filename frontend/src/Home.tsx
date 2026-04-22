@@ -87,7 +87,7 @@ function Home() {
               ))
               :
               <div className="flex justify-center text-center text-[2rem]">
-                <p>There are no tasks here. Why won't you <Link className="underline" to="/tasks/new">create one</Link>?</p>
+                <p>There are no tasks right now. <Link className="underline" to="/tasks/new">Create one</Link>?</p>
               </div>
             }
 
