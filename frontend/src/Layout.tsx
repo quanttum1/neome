@@ -49,7 +49,6 @@ function Layout() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      console.log(e);
       if (e.ctrlKey && e.shiftKey) {
         setIsCtrlShiftDown(true);
 

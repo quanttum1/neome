@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { ReactNode } from "react";
 
 import tasksIcon from "./assets/icons/tasks.svg";
@@ -26,11 +26,24 @@ type NavigationProps = {
   onNext?: () => void;
   onSkip?: () => void;
   nextLabel?: string;
+  isFocused: boolean;
 };
 
-function Navigation({ onNext, onSkip, nextLabel = "Next" }: NavigationProps) {
+function Navigation({ onNext, onSkip, nextLabel = "Next", isFocused }: NavigationProps) {
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.code != "Enter") return;
+      if (!isFocused) return;
+      if (onNext) onNext();
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  });
+
   return (
     <div className="mt-6 flex justify-center gap-2">
+      {isFocused}
       {onNext && (
         <button
           className="px-5 py-2 rounded-lg bg-neome-pink text-black cursor-pointer"
@@ -110,10 +123,10 @@ export default function Tour({ isOpen, onClose }: any) {
           button
         </p>
 
-        <Navigation nextLabel="Okay" onNext={close} />
+        <Navigation nextLabel="Okay" onNext={close} isFocused={tourPage == -1} />
       </Page>
 
-      <Page visible={tourPage === currentPage++}>
+      <Page visible={tourPage == currentPage}>
         <CloseButton onClick={skip} />
 
         <div className="h-80 flex flex-col items-center">
@@ -133,10 +146,11 @@ export default function Tour({ isOpen, onClose }: any) {
           onNext={next}
           onSkip={skip}
           nextLabel="Yes"
+          isFocused={tourPage == currentPage++}
         />
       </Page>
 
-      <Page visible={tourPage === currentPage++}>
+      <Page visible={tourPage == currentPage}>
         <CloseButton onClick={skip} />
 
         <div className="flex flex-col gap-4">
@@ -152,10 +166,10 @@ export default function Tour({ isOpen, onClose }: any) {
           </p>
         </div>
 
-        <Navigation onNext={next} onSkip={skip} />
+        <Navigation onNext={next} onSkip={skip} isFocused={tourPage == currentPage++} />
       </Page>
 
-      <Page visible={tourPage === currentPage++}>
+      <Page visible={tourPage == currentPage}>
         <CloseButton onClick={skip} />
 
         <div className="flex flex-col gap-4">
@@ -172,10 +186,10 @@ export default function Tour({ isOpen, onClose }: any) {
           </p>
         </div>
 
-        <Navigation onNext={next} onSkip={skip} />
+        <Navigation onNext={next} onSkip={skip} isFocused={tourPage == currentPage++} />
       </Page>
 
-      <Page visible={tourPage === currentPage++}>
+      <Page visible={tourPage == currentPage}>
         <CloseButton onClick={skip} />
 
         <div className="flex flex-col gap-4">
@@ -186,10 +200,10 @@ export default function Tour({ isOpen, onClose }: any) {
           </p>
         </div>
 
-        <Navigation onNext={next} onSkip={skip} />
+        <Navigation onNext={next} onSkip={skip} isFocused={tourPage == currentPage++} />
       </Page>
 
-      <Page visible={tourPage === currentPage++}>
+      <Page visible={tourPage == currentPage}>
         <CloseButton onClick={skip} />
 
         <div className="flex flex-col gap-4 items-center">
@@ -201,10 +215,10 @@ export default function Tour({ isOpen, onClose }: any) {
           </p>
         </div>
 
-        <Navigation onNext={next} onSkip={skip} />
+        <Navigation onNext={next} onSkip={skip} isFocused={tourPage == currentPage++} />
       </Page>
 
-      <Page visible={tourPage === currentPage++}>
+      <Page visible={tourPage == currentPage}>
         <CloseButton onClick={skip} />
 
         {/* TODO(2026-03-07 21:04:54): image of carro holding a heart */}
@@ -230,7 +244,11 @@ export default function Tour({ isOpen, onClose }: any) {
           {"Have a productive day <3"}
         </p>
 
-        <Navigation nextLabel="End tour" onNext={skip} />
+        <Navigation 
+          nextLabel="End tour"
+          onNext={skip}
+          isFocused={tourPage == currentPage++}
+        />
       </Page>
     </div>
   );
