@@ -1,7 +1,13 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: nasinNanpa;
+  src: url(/fonts/nasin-nanpa-4.0.2-UCSUR.otf);
+}
+
 body {
   color: white;
+  font-family: "nasinNanpa", sans-serif;
   background-color: #1f0f1d;;
 }
 
