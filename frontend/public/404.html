@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <script>
   const path = location.pathname.replace(/^\/+/, "");
-  location.replace("/#" + path + location.search + location.hash);
+  location.replace("/?redirect=" + path + location.search + location.hash);
 </script>
 </head>
 <body></body>

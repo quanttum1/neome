@@ -3,6 +3,8 @@ import Map from './Map';
 import useNeomeStore from './useNeomeStore';
 import { clamp } from './applyEvent';
 import { Link } from 'react-router';
+import { useNavigate } from 'react-router';
+import { useEffect } from 'react';
 
 const carrotIcon = "/carrots/carrot-1.0.svg";
 
@@ -15,6 +17,12 @@ function Home() {
   // Sometimes it's useful for debugging
   // window.recomputeCurrentState = useNeomeStore(s => s.recomputeCurrentState);
   // window.events = useNeomeStore(s => s.events);
+
+  const navigate = useNavigate();
+  useEffect(() => {
+    const redirectPath = new URLSearchParams(location.search).get("redirect");
+    if (redirectPath) navigate(redirectPath + location.hash);
+  }, []);
 
   const carrotsInfo =
   <>
