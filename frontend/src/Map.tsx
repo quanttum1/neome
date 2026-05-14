@@ -7,7 +7,6 @@ function lerp(start: number, end: number, progress: number) {
 }
 
 function invLerp(start: number, end: number, value: number) {
-  console.log(`invLerp: ${(value - start) / (end - start)}`);
   return (value - start) / (end - start);
 }
 

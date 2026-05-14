@@ -91,8 +91,6 @@ function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] 
         draft.messages.push(createTaskDeadlineMessage(task));
 
         if (!("version" in task) || task.deleteOnDeadline) {
-          console.log(`Deleting task ${task.name}`);
-          console.log(task);
           draft.tasks = draft.tasks.filter(t => t.id !== event.taskId);
         } else {
           const index = getTaskIndexById(task.id, draft);

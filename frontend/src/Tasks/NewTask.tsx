@@ -46,7 +46,6 @@ export default function NewTask() {
     if (error) return setError(error);
 
     const t = createTask(task);
-    console.log(t);
     addTask(t);
     navigate('/tasks');
   }
