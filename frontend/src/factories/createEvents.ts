@@ -83,6 +83,16 @@ export function createHabitUpdateEvent(id: HabitId, newHabit: Habit): HabitUpdat
   };
 }
 
+export function createHabitRemoveEvent(id: HabitId): HabitRemoveEvent {
+  return {
+    id: crypto.randomUUID(),
+    time: now(),
+    type: "HABIT_REMOVE",
+    version: 1,
+    habitId: id,
+  };
+}
+
 export function createMessagesReadEvent(): MessagesReadEvent {
   return {
     id: crypto.randomUUID(),

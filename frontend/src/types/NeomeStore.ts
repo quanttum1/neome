@@ -28,6 +28,7 @@ interface NeomeStore {
 
   addHabit: (habit: Habit) => void;
   updateHabit: (id: HabitId, newHabit: Habit) => void;
+  removeHabit: (id: HabitId) => void;
 
   markMessagesRead: () => void;
 

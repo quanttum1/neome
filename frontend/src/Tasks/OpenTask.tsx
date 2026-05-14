@@ -147,7 +147,7 @@ export default function OpenTask() {
               Mark as completed
             </button>
           </div>
-          </form>
+        </form>
       </div>
     </div>
   );

@@ -187,6 +187,12 @@ function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] 
         break;
       }
 
+      case "HABIT_REMOVE": {
+        draft.habits = draft.habits.filter(h => h.id != event.habitId);
+        // TODO(2026-05-14 07:37): when removing a habit also remove the task produced by this habit today if such exists
+        break;
+      }
+
       case "MESSAGES_MIGRATION": {
         draft.messages = [];
         break;

@@ -9,6 +9,7 @@ import { createTaskPinToggleEvent } from "./factories/createEvents";
 import { createNewTaskEvent } from "./factories/createEvents";
 import { createNewHabitEvent } from "./factories/createEvents";
 import { createHabitUpdateEvent } from "./factories/createEvents";
+import { createHabitRemoveEvent } from "./factories/createEvents";
 import { createDayRolloverEvent } from "./factories/createEvents";
 import { createMessagesReadEvent } from "./factories/createEvents";
 import applyEvent from "./applyEvent";
@@ -205,6 +206,10 @@ const useNeomeStore = create<NeomeStore>()(
 
       updateHabit: (id: HabitId, newHabit: Habit) => {
         get().addEventAndUpdateState(createHabitUpdateEvent(id, newHabit));
+      },
+
+      removeHabit: (id: HabitId) => {
+        get().addEventAndUpdateState(createHabitRemoveEvent(id));
       },
 
 

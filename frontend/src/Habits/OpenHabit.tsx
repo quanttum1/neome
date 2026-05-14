@@ -15,6 +15,8 @@ export default function OpenHabit() {
   if (!habit) return "Habit doesn't exist";
 
   const updateHabit = useNeomeStore(s => s.updateHabit);
+  const removeHabit = useNeomeStore(s => s.removeHabit);
+
   const navigate = useNavigate();
   const [error, setError] = useState("");
 
@@ -48,6 +50,14 @@ export default function OpenHabit() {
     });
 
     navigate('/habits');
+  }
+
+  function remove() {
+    if (!habitId) return;
+    removeHabit(habitId);
+    navigate('/habits');
+    // TODO(2026-05-14 11:38): fix `Error: Rendered fewer hooks than expected`
+    // if you look at the console while removing you'll see this error, but it's able to recover
   }
 
   return (
@@ -152,6 +162,16 @@ export default function OpenHabit() {
               className="flex-1 bg-neome-pink text-black rounded-2xl cursor-pointer"
             >
               Update
+            </button>
+          </div>
+
+          <div className="flex pt-0">
+            <button
+              type="button"
+              onClick={() => remove()}
+              className="flex-1 text-sm bg-neome-pink py-4 text-black rounded-2xl cursor-pointer"
+            >
+              Remove
             </button>
           </div>
         </form>
