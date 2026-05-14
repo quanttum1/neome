@@ -1,7 +1,7 @@
 import { getWeekdayOfDate } from "./utc";
 import { produce } from "immer";
 import { v5 as uuidv5 } from "uuid";
-import { createNewTaskDeadlineEvent } from "./factories/createEvents";
+import { createTaskDeadlineEvent } from "./factories/createEvents";
 import { isWeekMaskDay } from "./weekMask";
 import { localTime } from "./utc";
 import { nextUTCDay } from "./utc";
@@ -57,7 +57,7 @@ function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] 
     switch (event.type) {
       case "NEW_TASK": {
         draft.tasks.push(event.task);
-        newEvents.push(createNewTaskDeadlineEvent(event.task));
+        newEvents.push(createTaskDeadlineEvent(event.task));
         break;
       }
 
@@ -124,7 +124,7 @@ function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] 
             };
 
             draft.tasks.push(task);
-            newEvents.push(createNewTaskDeadlineEvent(task));
+            newEvents.push(createTaskDeadlineEvent(task));
           }
         }
 
@@ -146,7 +146,7 @@ function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] 
           };
 
           draft.tasks.push(task);
-          newEvents.push(createNewTaskDeadlineEvent(task));
+          newEvents.push(createTaskDeadlineEvent(task));
         }
 
         break;
@@ -172,7 +172,7 @@ function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] 
         //   * oldTask.penalty); // Penalty is negative
 
         if (task.deadline != event.newTask.deadline) {
-          newEvents.push(createNewTaskDeadlineEvent(event.newTask));
+          newEvents.push(createTaskDeadlineEvent(event.newTask));
         }
 
         draft.tasks[index] = event.newTask;
