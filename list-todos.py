@@ -14,6 +14,11 @@ def is_file_ignored(path, name):
     if path.startswith('./.git') or \
         path.startswith('./frontend/node_modules/') or \
         path.startswith('./frontend/dist/') or \
+        path.startswith('./backend/obj/') or \
+        path.startswith('./backend/bin/') or \
+        name.endswith('.db') or \
+        name.endswith('.gif') or \
+        name.endswith('.otf') or \
         name.startswith('.'):
             return True
 
@@ -24,7 +29,12 @@ def get_todos_from_file(path, name):
     if is_file_ignored(path, name):
         return []
 
-    lines = open(path).read().splitlines()
+    try:
+        lines = open(path).read().splitlines()
+    except Exception as e:
+        print(f"Can't open file {path}/{name}:", e)
+        return []
+
     comment_lines = []
     in_multiline_jsx = False
 
