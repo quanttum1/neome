@@ -22,6 +22,18 @@ interface TaskV2 {
   isOverdue: boolean;
 }
 
+interface TaskV3 {
+  version: 3;
+  id: TaskId;
+  name: string;
+  isPinned: boolean;
+  deadline: UTCString;
+
+  deleteOnDeadline: boolean;
+  isOverdue: boolean;
+}
+
 type Task =
   | OldTask
-  | TaskV2;
+  | TaskV2
+  | TaskV3;

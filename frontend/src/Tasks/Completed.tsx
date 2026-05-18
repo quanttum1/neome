@@ -19,7 +19,10 @@ function Completed() {
       />
 
       <h1 className="text-3xl text-neome-pink sm:text-4xl font-semibold mb-8">
-        You got <span className="text-neome-orange font-bold">{reward}</span> carrots!
+        {reward === null ?
+          <>You got a <span className="text-neome-orange font-bold">carrot</span>!</> :
+          <>You got <span className="text-neome-orange font-bold">{reward}</span> carrots!</>
+        }
       </h1>
 
       <button

@@ -20,7 +20,8 @@ function TaskCard(props: TaskCardProps) {
 
   function complete() {
     completeTask(task.id);
-    navigate('/tasks/completed', {state: { reward: task.reward }});
+    if ("version" in task && task.version == 3) navigate("/tasks/completed", {state: { reward: null }});
+    else navigate("/tasks/completed", {state: { reward: task.reward }});
   }
 
   const buttonClass = "hover:bg-neome-light-grey cursor-pointer rounded-[20%]";
@@ -68,11 +69,6 @@ function TaskCard(props: TaskCardProps) {
           </span>
         }
       </Link>
-
-      <div className="group-hover/card:hidden ml-auto flex gap-2 text-[1.5em]">
-        <span className="text-[#00FF00]">{task.reward}</span>
-        <span className="text-[#FF0000]">{task.penalty}</span>
-      </div>
 
       <div className="hidden group-hover/card:flex ml-auto flex gap-2 text-[1.5em]">
         {/* TODO(2026-02-24 20:54:44): ask for comfirmation before completing the task */}

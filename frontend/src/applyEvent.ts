@@ -65,7 +65,8 @@ function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] 
         const task = getTaskById(event.taskId, draft);
         if (!task) break; // The event has already been completed
 
-        addCarrots(task.reward, draft);
+        if ("version" in task && task.version == 3) addCarrots(1, draft);
+        else addCarrots(task.reward, draft);
         draft.tasks = draft.tasks.filter(t => t.id !== event.taskId);
         break;
       }
@@ -87,7 +88,8 @@ function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] 
         if (task.deadline != event.time) break; // The task has been rescheduled
 
         // We add the penalty, because it's supposed to be negative itself
-        addCarrots(task.penalty, draft);
+        if ("version" in task && task.version == 3) addCarrots(-1, draft);
+        else addCarrots(task.penalty, draft);
         draft.messages.push(createTaskDeadlineMessage(task));
 
         if (!("version" in task) || task.deleteOnDeadline) {

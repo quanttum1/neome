@@ -8,8 +8,6 @@ import { getCreateTaskError } from '../factories/createTask';
 export default function NewTask() {
   const nameRef = useRef<HTMLInputElement>(null);
   const deadlineRef = useRef<HTMLInputElement>(null);
-  const rewardRef = useRef<HTMLInputElement>(null);
-  const penaltyRef = useRef<HTMLInputElement>(null);
   const deleteOnDeadlineRef = useRef<HTMLInputElement>(null);
 
   const addTask = useNeomeStore((s: NeomeStore) => s.addTask);
@@ -30,15 +28,11 @@ export default function NewTask() {
 
     if (!nameRef.current) return setError("Name is not set");
     if (!deadlineRef.current) return setError("Deadline is not set");
-    if (!rewardRef.current) return setError("Reward is not set");
-    if (!penaltyRef.current) return setError("Penalty is not set");
     if (!deleteOnDeadlineRef.current) return setError("Delete on deadline checkbox is not set");
 
     const task = {
       name: nameRef.current.value,
       deadline: deadlineRef.current.value,
-      reward: Number(rewardRef.current.value),
-      penalty: -Number(penaltyRef.current.value),
       deleteOnDeadline: deleteOnDeadlineRef.current.checked,
     };
 
@@ -63,29 +57,6 @@ export default function NewTask() {
               placeholder='e.g. "Finish homework"'
               autoFocus
             />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col">
-              <label className="text-[0.7rem] font-bold text-neome-pink mb-2 ml-1">Reward</label>
-              <input
-                ref={rewardRef}
-                type="number"
-                defaultValue="0"
-                step="0.1"
-                className="bg-neome-light-grey border-2 border-neome-light-grey rounded-xl p-4 text-white focus:outline-none focus:border-neome-pink"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label className="text-[0.7rem] font-bold text-neome-pink mb-2 ml-1">Penalty</label>
-              <input
-                ref={penaltyRef}
-                type="number"
-                step="0.1"
-                defaultValue="0"
-                className="bg-neome-light-grey border-2 border-neome-light-grey rounded-xl p-4 text-white focus:outline-none focus:border-neome-pink"
-              />
-            </div>
           </div>
 
           <div className="flex flex-col">

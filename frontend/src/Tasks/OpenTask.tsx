@@ -62,7 +62,8 @@ export default function OpenTask() {
     if (!taskId) return;
     if (!task) return;
     completeTask(taskId);
-    navigate('../completed', {state: { reward: task.reward }});
+    if ("version" in task && task.version == 3) navigate('../completed', {state: { reward: null }});
+    else navigate('../completed', {state: { reward: task.reward }});
   }
 
   return (
@@ -79,29 +80,6 @@ export default function OpenTask() {
               defaultValue={task.name}
               autoFocus
             />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col">
-              <label className="text-[0.7rem] font-bold text-neome-pink mb-2 ml-1">Reward</label>
-              <input
-                ref={rewardRef}
-                type="number"
-                defaultValue={task.reward}
-                step="0.1"
-                className="bg-neome-light-grey border-2 border-neome-light-grey rounded-xl p-4 text-white focus:outline-none focus:border-neome-pink"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label className="text-[0.7rem] font-bold text-neome-pink mb-2 ml-1">Penalty</label>
-              <input
-                ref={penaltyRef}
-                type="number"
-                step="0.1"
-                defaultValue={-task.penalty}
-                className="bg-neome-light-grey border-2 border-neome-light-grey rounded-xl p-4 text-white focus:outline-none focus:border-neome-pink"
-              />
-            </div>
           </div>
 
           <div className="flex flex-col">
