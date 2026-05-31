@@ -8,6 +8,8 @@ import { nextUTCDay } from "./utc";
 import { createDayRolloverEvent } from "./factories/createEvents";
 import { createTaskDeadlineMessage } from "./factories/createMessage";
 
+const HABIT_NAMESPACE = "bbd04581-46ed-4e61-96d6-6b7dc7b044e3";
+
 export function getTaskById(id: TaskId, state: State) {
   return state.tasks.find(t => t.id == id);
 }
@@ -41,9 +43,38 @@ function getTaskIndexById(id: TaskId, state: State) {
   return state.tasks.findIndex(t => t.id === id);
 }
 
-function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] {
-  const HABIT_NAMESPACE = "bbd04581-46ed-4e61-96d6-6b7dc7b044e3";
+function createTaskFromHabitIfNeeded(habit: Habit, date: UTCDateString, draft: State, newEvents: LogicalEvent[]) {
+  if (isWeekMaskDay(habit.daysOfWeek, getWeekdayOfDate(date))) {
+    if ('version' in habit) {
+      const task = {
+        version: 3,
+        id: uuidv5(`${habit.id} ${date}`, HABIT_NAMESPACE),
+        name: habit.name,
+        deadline: localTime(nextUTCDay(date), draft.timezone),
+        isPinned: false,
+        deleteOnDeadline: true,
+        isOverdue: false,
+      };
 
+      draft.tasks.push({...task, version: 3});
+      newEvents.push(createTaskDeadlineEvent({...task, version: 3}));
+    } else {
+      const task = {
+        id: uuidv5(`${habit.id} ${date}`, HABIT_NAMESPACE),
+        name: habit.name,
+        reward: habit.reward,
+        penalty: habit.penalty,
+        deadline: localTime(nextUTCDay(date), draft.timezone),
+        isPinned: false,
+      };
+
+      draft.tasks.push(task);
+      newEvents.push(createTaskDeadlineEvent(task));
+    }
+  }
+}
+
+function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] {
   function assertEventHandled(x: never): never {
     throw new Error(`Unhandled event: ${JSON.stringify(x)}`);
   }
@@ -115,19 +146,7 @@ function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] 
         draft.dailyCarrots = 0;
 
         for (const habit of draft.habits) {
-          if (isWeekMaskDay(habit.daysOfWeek, getWeekdayOfDate(event.newDate))) {
-            const task = {
-              id: uuidv5(`${habit.id} ${event.newDate}`, HABIT_NAMESPACE),
-              name: habit.name,
-              reward: habit.reward,
-              penalty: habit.penalty,
-              deadline: localTime(nextUTCDay(event.newDate), draft.timezone),
-              isPinned: false,
-            };
-
-            draft.tasks.push(task);
-            newEvents.push(createTaskDeadlineEvent(task));
-          }
+          createTaskFromHabitIfNeeded(habit, event.newDate, draft, newEvents);
         }
 
         newEvents.push(createDayRolloverEvent(event.newDate, draft.timezone));
@@ -137,19 +156,7 @@ function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] 
       case "NEW_HABIT": {
         draft.habits.push(event.habit);
 
-        if (isWeekMaskDay(event.habit.daysOfWeek, getWeekdayOfDate(draft.date))) {
-          const task = {
-            id: uuidv5(`${event.habit.id} ${draft.date}`, HABIT_NAMESPACE),
-            name: event.habit.name,
-            reward: event.habit.reward,
-            penalty: event.habit.penalty,
-            deadline: localTime(nextUTCDay(draft.date), draft.timezone),
-            isPinned: false,
-          };
-
-          draft.tasks.push(task);
-          newEvents.push(createTaskDeadlineEvent(task));
-        }
+        createTaskFromHabitIfNeeded(event.habit, draft.date, draft, newEvents);
 
         break;
       }

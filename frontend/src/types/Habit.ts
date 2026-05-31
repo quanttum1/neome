@@ -7,10 +7,21 @@ type WeekMask = number;
 
 type HabitId = string;
 
-interface Habit {
+interface OldHabit {
   id: HabitId;
   name: string;
   daysOfWeek: WeekMask;
   reward: number;
   penalty: number;
 }
+
+interface HabitV2 {
+  version: 2;
+  id: HabitId;
+  name: string;
+  daysOfWeek: WeekMask;
+}
+
+type Habit =
+  | OldHabit
+  | HabitV2;

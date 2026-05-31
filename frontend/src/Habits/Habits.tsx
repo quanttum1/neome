@@ -10,35 +10,38 @@ function Habits() {
     <div className="p-2">
       {
         habits.length == 0 ?
-        <div className="justify-center flex text-[1.5rem] text-center">
-          <p>You have no habits? Why won't you start a new hobby then?</p>
-        </div>
+          <div className="justify-center flex text-[1.5rem] text-center">
+            <p>You have no habits? Why won't you start a new hobby then?</p>
+          </div>
         :
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-          {habits.map((habit) => (
-            <div
-              className="text-[24px] pt-2 pb-3 pl-4 pr-4 rounded-[1.5rem] bg-neome-grey flex items-center gap-2"
-              key={habit.id}
-            >
-
-              <Link 
-                className="group flex cursor-pointer flex-col" to={`/habits/${habit.id}`}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+            {habits.map((habit) => (
+              <div
+                className="text-[24px] pt-2 pb-3 pl-4 pr-4 rounded-[1.5rem] bg-neome-grey flex items-center gap-2"
+                key={habit.id}
               >
-                <span className="group-hover:underline">{habit.name}</span>
-                <span className="text-gray-400 text-[15px] italic">
-                  {habit.daysOfWeek == 0b1111111
-                    ? "Everyday"
-                    : ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].filter((label, index) => 
-                      isWeekMaskDay(habit.daysOfWeek, index)).join(", ")}
-                </span>
-              </Link>
-              <div className="ml-auto flex gap-2 text-[1.5em]">
-                <span className="text-[#00FF00]">{habit.reward}</span>
-                <span className="text-[#FF0000]">{habit.penalty}</span>
+
+                <Link
+                  className="group flex cursor-pointer flex-col" to={`/habits/${habit.id}`}
+                >
+                  <span className="group-hover:underline">{habit.name}</span>
+                  <span className="text-gray-400 text-[15px] italic">
+                    {habit.daysOfWeek == 0b1111111
+                      ? "Everyday"
+                      : ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].filter((label, index) => 
+                        isWeekMaskDay(habit.daysOfWeek, index)).join(", ")}
+                  </span>
+                </Link>
+                {!('version' in habit) ?
+                  <div className="ml-auto flex gap-2 text-[1.5em]">
+                    <span className="text-[#00FF00]">{habit.reward}</span>
+                    <span className="text-[#FF0000]">{habit.penalty}</span>
+                  </div>
+                  : ''
+                }
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
       }
 
     <NewButton />

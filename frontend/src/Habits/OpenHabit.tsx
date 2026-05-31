@@ -79,28 +79,31 @@ export default function OpenHabit() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col">
-              <label className="text-[0.7rem] font-bold text-neome-pink mb-2 ml-1">Reward</label>
-              <input
-                ref={rewardRef}
-                type="number"
-                step="0.1"
-                className="bg-neome-light-grey border-2 border-neome-light-grey rounded-xl p-4 text-white focus:outline-none focus:border-neome-pink"
-                defaultValue={habit.reward}
-              />
+          {!('version' in habit) ?
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col">
+                <label className="text-[0.7rem] font-bold text-neome-pink mb-2 ml-1">Reward</label>
+                <input
+                  ref={rewardRef}
+                  type="number"
+                  step="0.1"
+                  className="bg-neome-light-grey border-2 border-neome-light-grey rounded-xl p-4 text-white focus:outline-none focus:border-neome-pink"
+                  defaultValue={habit.reward}
+                />
+              </div>
+              <div className="flex flex-col">
+                <label className="text-[0.7rem] font-bold text-neome-pink mb-2 ml-1">Penalty</label>
+                <input
+                  ref={penaltyRef}
+                  type="number"
+                  step="0.1"
+                  className="bg-neome-light-grey border-2 border-neome-light-grey rounded-xl p-4 text-white focus:outline-none focus:border-neome-pink"
+                  defaultValue={-habit.penalty}
+                />
+              </div>
             </div>
-            <div className="flex flex-col">
-              <label className="text-[0.7rem] font-bold text-neome-pink mb-2 ml-1">Penalty</label>
-              <input
-                ref={penaltyRef}
-                type="number"
-                step="0.1"
-                className="bg-neome-light-grey border-2 border-neome-light-grey rounded-xl p-4 text-white focus:outline-none focus:border-neome-pink"
-                defaultValue={-habit.penalty}
-              />
-            </div>
-          </div>
+            : ''
+          }
 
           <div className="flex flex-col">
             <div className="flex items-center justify-between mb-2">

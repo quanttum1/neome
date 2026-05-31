@@ -12,8 +12,6 @@ function NewHabit() {
   const addHabit = useNeomeStore(s => s.addHabit);
 
   const nameRef = useRef<HTMLInputElement>(null);
-  const rewardRef = useRef<HTMLInputElement>(null);
-  const penaltyRef = useRef<HTMLInputElement>(null);
   const [daysOfWeek, setDaysOfWeek] = useState(0);
 
   function create(e: React.FormEvent) {
@@ -21,14 +19,10 @@ function NewHabit() {
     setError("");
 
     if (!nameRef.current) return setError("Name is not set");
-    if (!rewardRef.current) return setError("Reward is not set");
-    if (!penaltyRef.current) return setError("Penalty is not set");
 
     const habit = {
       name: nameRef.current.value,
       daysOfWeek: daysOfWeek,
-      reward: Number(rewardRef.current.value),
-      penalty: -Number(penaltyRef.current.value),
     };
 
     const error = getCreateHabitError(habit);
@@ -51,29 +45,6 @@ function NewHabit() {
               placeholder='e.g. "Practice touchtyping"'
               autoFocus
             />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col">
-              <label className="text-[0.7rem] font-bold text-neome-pink mb-2 ml-1">Reward</label>
-              <input
-                ref={rewardRef}
-                type="number"
-                defaultValue="0"
-                step="0.1"
-                className="bg-neome-light-grey border-2 border-neome-light-grey rounded-xl p-4 text-white focus:outline-none focus:border-neome-pink"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label className="text-[0.7rem] font-bold text-neome-pink mb-2 ml-1">Penalty</label>
-              <input
-                ref={penaltyRef}
-                type="number"
-                step="0.1"
-                defaultValue="0"
-                className="bg-neome-light-grey border-2 border-neome-light-grey rounded-xl p-4 text-white focus:outline-none focus:border-neome-pink"
-              />
-            </div>
           </div>
 
           <div className="flex flex-col">
