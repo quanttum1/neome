@@ -19,8 +19,6 @@ export default function OpenTask() {
 
   const nameRef = useRef<HTMLInputElement>(null);
   const deadlineRef = useRef<HTMLInputElement>(null);
-  const rewardRef = useRef<HTMLInputElement>(null);
-  const penaltyRef = useRef<HTMLInputElement>(null);
   const deleteOnDeadlineRef = useRef<HTMLInputElement>(null);
 
   const completeTask = useNeomeStore(s => s.completeTask);
@@ -34,15 +32,11 @@ export default function OpenTask() {
 
     if (!nameRef.current) return setError("Name is not set");
     if (!deadlineRef.current) return setError("Deadline is not set");
-    if (!rewardRef.current) return setError("Reward is not set");
-    if (!penaltyRef.current) return setError("Penalty is not set");
     if (!deleteOnDeadlineRef.current) return setError("Delete on deadline checkbox is not set");
 
     const newTask = {
       name: nameRef.current.value,
       deadline: deadlineRef.current.value,
-      reward: Number(rewardRef.current.value),
-      penalty: -Number(penaltyRef.current.value),
       deleteOnDeadline: deleteOnDeadlineRef.current.checked,
     };
 
@@ -92,7 +86,21 @@ export default function OpenTask() {
             />
           </div>
 
-          {/* TODO(2026-03-23 17:57:12): add `deleteOnDeadline` to OpenTask */}
+          <div className="flex ml-0.5 items-center gap-3">
+            <input
+              defaultChecked={'version' in task ? task.deleteOnDeadline : true}
+              ref={deleteOnDeadlineRef}
+              type="checkbox"
+              id="deleteOnDeadline"
+              className="w-5 h-5 accent-neome-pink bg-neome-dark-red border-2 border-neome-dark-red rounded-md cursor-pointer"
+            />
+            <label
+              htmlFor="deleteOnDeadline"
+              className="text-[1.1rem] text-neome-pink cursor-pointer select-none"
+            >
+              Delete the task on deadline
+            </label>
+          </div>
 
           {error && (
             <div className="bg-red-500/10 border border-red-500 text-[#ff6b81] p-3 rounded-xl text-sm">

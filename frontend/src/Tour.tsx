@@ -232,7 +232,7 @@ export default function Tour({ isOpen, onClose }: any) {
           {/* TODO(2026-03-07 22:06:54): make the contact link in the tour actually work */}
           {" You can also "}
           <a
-            href="https://discord.gg/ejAuWq5u"
+            href="https://discord.gg/FRWnjRqCxC"
             className="underline"
             target="_blank"
           >
