@@ -1,19 +1,16 @@
 import TaskCard from './Tasks/TaskCard';
 import Map from './Map';
 import useNeomeStore from './useNeomeStore';
-import { clamp } from './applyEvent';
 import { Link } from 'react-router';
 import { useNavigate } from 'react-router';
 import { useEffect } from 'react';
+import CarrotCounter from './CarrotCounter';
 
-import carrotGrey from './assets/carrots/carrot-grey.svg';
 import carrotIcon from './assets/carrots/carrot.svg';
-import carrotNegative from './assets/carrots/carrot-negative.svg';
 
 function Home() {
   const tasks = useNeomeStore(s => s.getState().tasks);
   const totalCarrots = useNeomeStore(s => s.getState().totalCarrots);
-  const dailyCarrots = useNeomeStore(s => s.getState().dailyCarrots);
   const weeklyCarrots = useNeomeStore(s => s.getWeeklyCarrots());
 
   // Sometimes it's useful for debugging
@@ -41,28 +38,7 @@ function Home() {
         </div>
 
         <div className="flex w-full">
-          {[...Array(10).keys()].map(n => {
-            // Fraction of this slot that should be filled (0 … 1)
-            const fillFraction = clamp((dailyCarrots >= 0 ? 0 : 10) + dailyCarrots - n, 0, 1);
-            // Convert to a CSS percentage for the clip‑path
-            const clipPercent = `${(1 - fillFraction) * 100}%`;
-            carrotNegative;
-
-            return (
-              <div key={n} className="flex-1 relative carrot-wrapper">
-                {/* Grey carrot – always shown */}
-                <img src={carrotGrey} alt="" className="carrot-grey" />
-
-                {/* Coloured carrot – clipped to the exact fraction */}
-                <img
-                  src={dailyCarrots > 0 ? carrotIcon : carrotNegative}
-                  alt=""
-                  className="carrot-fill"
-                  style={{ clipPath: `inset(0 ${clipPercent} 0 0)` }}
-                />
-              </div>
-            );
-          })}
+          <CarrotCounter />
         </div>
       </div>
     </>;
@@ -70,7 +46,7 @@ function Home() {
   return (
     <div className="flex w-full">
       <div className="lg:w-1/2 flex relative flex-col items-center w-full">
-        <div className="lg:hidden border-b border-gray-700">{carrotsInfo}</div>
+        <div className="lg:hidden p-2 border-b border-gray-700">{carrotsInfo}</div>
         <Map />
       </div>
 
