@@ -6,7 +6,9 @@ import { Link } from 'react-router';
 import { useNavigate } from 'react-router';
 import { useEffect } from 'react';
 
-const carrotIcon = "/carrots/carrot-1.0.svg";
+import carrotGrey from './assets/carrots/carrot-grey.svg';
+import carrotIcon from './assets/carrots/carrot.svg';
+import carrotNegative from './assets/carrots/carrot-negative.svg';
 
 function Home() {
   const tasks = useNeomeStore(s => s.getState().tasks);
@@ -25,56 +27,45 @@ function Home() {
   }, []);
 
   const carrotsInfo =
-  <>
-    <div>
-      <div className="flex justify-between">
-        <div className="flex text-[1.5rem] md:text-[2.1rem] items-center">
-          This Week: {weeklyCarrots.toFixed(1)}
-          <img src={carrotIcon} className="h-[2.8rem]" />
+    <>
+      <div>
+        <div className="flex justify-between">
+          <div className="flex text-[1.5rem] md:text-[2.1rem] items-center">
+            This Week: {weeklyCarrots.toFixed(1)}
+            <img src={carrotIcon} className="h-[2.8rem]" />
+          </div>
+          <div className="flex text-[1.5rem] md:text-[2.1rem] items-center">
+            Total: {totalCarrots.toFixed(1)}
+            <img src={carrotIcon} className="h-[2.8rem]" />
+          </div>
         </div>
-        <div className="flex text-[1.5rem] md:text-[2.1rem] items-center">
-          Total: {totalCarrots.toFixed(1)}
-          <img src={carrotIcon} className="h-[2.8rem]" />
+
+        <div className="flex w-full">
+          {[...Array(10).keys()].map(n => {
+            // Fraction of this slot that should be filled (0 … 1)
+            const fillFraction = clamp((dailyCarrots >= 0 ? 0 : 10) + dailyCarrots - n, 0, 1);
+            // Convert to a CSS percentage for the clip‑path
+            const clipPercent = `${(1 - fillFraction) * 100}%`;
+            carrotNegative;
+
+            return (
+              <div key={n} className="flex-1 relative carrot-wrapper">
+                {/* Grey carrot – always shown */}
+                <img src={carrotGrey} alt="" className="carrot-grey" />
+
+                {/* Coloured carrot – clipped to the exact fraction */}
+                <img
+                  src={dailyCarrots > 0 ? carrotIcon : carrotNegative}
+                  alt=""
+                  className="carrot-fill"
+                  style={{ clipPath: `inset(0 ${clipPercent} 0 0)` }}
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
-
-      <div className="flex w-full">
-        {[...Array(10).keys()].map(n => {
-            let isNeg = dailyCarrots < 0;
-            let prefix = `/carrots/carrot-${isNeg ? "negative-" : ""}`;
-            let number = clamp(dailyCarrots-n + +isNeg*10, 0, 1).toFixed(1);
-
-            return <img
-              src={`${prefix}${number}.svg`}
-              alt=""
-              className="w-1/10 h-auto"
-            />;
-
-          // TODO(2026-02-12 19:36:05): maybe make daily carrots partially filled
-          // using CSS instead of having 10 SVGs, i tried doing it, but i really
-          // don't understand how to make the icon full width:
-          // <div key={n} className="flex-1 relative">
-          //   <img
-          //     src={CarrotGrey}
-          //     alt=""
-          //     className="w-full h-auto"
-          //   />
-          // 
-          //   <div
-          //     className="absolute top-0 left-0 h-full overflow-hidden"
-          //     style={{ width: `${clamp(dailyCarrots - n, 0, 1)* 100}%` }}
-          //   >
-          //     <img
-          //       src={CarrotIcon}
-          //       alt=""
-          //       className="absolute top-0 left-0 w-full h-auto"
-          //     />
-          //   </div>
-          // </div>
-        })}
-      </div>
-    </div>
-  </>;
+    </>;
 
   return (
     <div className="flex w-full">

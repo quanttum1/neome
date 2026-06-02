@@ -20,3 +20,28 @@ body {
   --color-neome-dark-red: #411a21;
   --color-neome-background: #1f0f1d;
 }
+
+.carrot-wrapper {
+  position: relative;
+  width: 100%;               /* takes the width of the column */
+  height: auto;              /* keep aspect ratio of the SVG */
+}
+
+/* The grey (background) carrot – always visible */
+.carrot-grey {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* The coloured carrot that we’ll clip */
+.carrot-fill {
+  position: absolute;
+  inset: 0;                  /* stretch over the wrapper */
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  /* Clip the image to the desired percentage */
+  clip-path: inset(0 0 0 0); /* will be overridden inline */
+}
+ 
