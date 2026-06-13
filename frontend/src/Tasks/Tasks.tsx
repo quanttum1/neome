@@ -7,6 +7,9 @@ import CarrotCounter from '../CarrotCounter';
 import { useState } from "react";
 import { compareTasks } from '../useNeomeStore';
 import { carrotsToString } from '../Home';
+import { useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
+import { useRef } from 'react';
 
 import carrotIcon from '../assets/carrots/carrot.svg';
 
@@ -34,6 +37,8 @@ export default function Tasks() {
   const totalCarrots = useNeomeStore(s => s.getState().totalCarrots);
   const weeklyCarrots = useNeomeStore(s => s.getWeeklyCarrots());
   const [query, setQuery] = useState("");
+  const searchRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
 
   // TODO(2026-06-13 02:50:35): maybe highlight the found letters of the word
   let sorted = tasks.sort((t1, t2) => {
@@ -47,6 +52,22 @@ export default function Tasks() {
     if (w1bad < w2bad) return -1;
     return compareTasks(t1, t2);
   });
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key == "Enter" && document.activeElement == searchRef.current) {
+        const id = sorted[0]?.id;
+        if (id === undefined) return;
+        navigate(`/tasks/${id}`);
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      return document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   return (
     <div className="p-2">
@@ -63,6 +84,7 @@ export default function Tasks() {
               className="w-full bg-neome-light-grey border-2 border-neome-light-grey rounded-xl p-4 text-white focus:outline-none focus:border-neome-pink transition-all placeholder:opacity-30"
               placeholder="Search"
               onChange={(e) => setQuery(e.target.value)}
+              ref={searchRef}
               autoFocus
             />
           </div>
