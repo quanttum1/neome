@@ -6,6 +6,7 @@ import NewButton from '../NewButton';
 import CarrotCounter from '../CarrotCounter';
 import { useState } from "react";
 import { compareTasks } from '../useNeomeStore';
+import { carrotsToString } from '../Home';
 
 import carrotIcon from '../assets/carrots/carrot.svg';
 
@@ -70,12 +71,12 @@ export default function Tasks() {
         {/* Takes only the width needed by the labels */}
         <div className="flex flex-row shrink-0 whitespace-nowrap gap-4">
           <div className="flex text-[1.5rem] md:text-[2.1rem] items-center">
-            This Week: {weeklyCarrots.toFixed(1)}
+            This Week: {carrotsToString(weeklyCarrots)}
             <img src={carrotIcon} className="h-[2.8rem]" />
           </div>
 
           <div className="flex text-[1.5rem] md:text-[2.1rem] items-center">
-            Total: {totalCarrots.toFixed(1)}
+            Total: {carrotsToString(totalCarrots)}
             <img src={carrotIcon} className="h-[2.8rem]" />
           </div>
         </div>
