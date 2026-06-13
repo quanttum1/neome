@@ -48,12 +48,14 @@ function getInitialState(initialDate: UTCDateString, initialTZ: TimezoneString):
   };
 }
 
+export function compareTasks(a: Task, b: Task) {
+  if (a.isPinned != b.isPinned) return Number(b.isPinned) - Number(a.isPinned);
+  return a.deadline.localeCompare(b.deadline) || a.id.localeCompare(b.id);
+}
+
 function sortTasks(state: State) {
   const newTasks = [...state.tasks];
-  newTasks.sort((a, b) => {
-    if (a.isPinned != b.isPinned) return Number(b.isPinned) - Number(a.isPinned);
-    return a.deadline.localeCompare(b.deadline) || a.id.localeCompare(b.id);
-  });
+  newTasks.sort(compareTasks);
 
   return {...state, tasks: newTasks};
 }
