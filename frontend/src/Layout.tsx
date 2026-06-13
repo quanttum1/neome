@@ -44,13 +44,13 @@ function Layout() {
 
   const pathname = useLocation().pathname;
 
-  const [isCtrlShiftDown, setIsCtrlShiftDown] = useState(false);
+  const [isCtrlAltDown, setIsCtrlAltDown] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.shiftKey) {
-        setIsCtrlShiftDown(true);
+      if (e.ctrlKey && e.altKey) {
+        setIsCtrlAltDown(true);
 
         // TODO(2026-04-21 10:34:36): use array implemented in (2026-03-10 13:22:32) in here
         // to be able to modify the code in one place to change everything i may need
@@ -62,8 +62,8 @@ function Layout() {
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (!(e.ctrlKey && e.shiftKey)) {
-        setIsCtrlShiftDown(false);
+      if (!(e.ctrlKey && e.altKey)) {
+        setIsCtrlAltDown(false);
       }
     };
 
@@ -74,7 +74,7 @@ function Layout() {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [setIsCtrlShiftDown]);
+  }, [setIsCtrlAltDown]);
 
   function openTour() {
     setIsTourOpen(true);
@@ -103,19 +103,19 @@ function Layout() {
                 <li className="p-2 flex">
                   <img className="pt-1 w-[2rem] h-[2rem]" src={homeIcon} />
                   <Link className="ml-2" to="/">Home</Link>
-                  <span className={`ml-auto text-gray-500 ${isCtrlShiftDown ? "" : "hidden"}`}>1</span>
+                  <span className={`ml-auto text-gray-500 ${isCtrlAltDown ? "" : "hidden"}`}>1</span>
                 </li>
 
                 <li className="p-2 flex">
                   <img className="pt-1 w-[2rem] h-[2rem]" src={tasksIcon} />
                   <Link className="ml-2" to="/tasks">Tasks</Link>
-                  <span className={`ml-auto text-gray-500 ${isCtrlShiftDown ? "" : "hidden"}`}>2</span>
+                  <span className={`ml-auto text-gray-500 ${isCtrlAltDown ? "" : "hidden"}`}>2</span>
                 </li>
 
                 <li className="p-2 flex">
                   <img className="pt-1 w-[2rem] h-[2rem]" src={habitsIcon} />
                   <Link className="ml-2" to="/habits">Habits</Link>
-                  <span className={`ml-auto text-gray-500 ${isCtrlShiftDown ? "" : "hidden"}`}>3</span>
+                  <span className={`ml-auto text-gray-500 ${isCtrlAltDown ? "" : "hidden"}`}>3</span>
                 </li>
 
                 {/* TODO(2026-03-08 18:45:59): add Statistics */}
