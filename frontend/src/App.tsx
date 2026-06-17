@@ -9,16 +9,11 @@ import Page404 from './Page404';
 import Habits from './Habits/Habits';
 import NewHabit from './Habits/NewHabit';
 import OpenHabit from './Habits/OpenHabit';
+import Settings from './Settings';
 
 function Statistics() {
   return <>
     Statistics TODO
-  </>;
-}
-
-function Settings() {
-  return <>
-    Settings TODO
   </>;
 }
 

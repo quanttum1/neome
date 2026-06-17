@@ -8,7 +8,7 @@ import homeIcon from './assets/icons/home.svg';
 import tasksIcon from './assets/icons/tasks.svg';
 import habitsIcon from './assets/icons/habits.svg';
 // import statisticsIcon from './assets/icons/statistics.svg';
-// import settingsIcon from './assets/icons/settings.svg';
+import settingsIcon from './assets/icons/settings.svg';
 import tourIcon from './assets/icons/tour.svg';
 
 function Message({ message }: { message: Message }) {
@@ -58,6 +58,7 @@ function Layout() {
         if (e.code == "Digit1") navigate("/");
         if (e.code == "Digit2") navigate("/tasks");
         if (e.code == "Digit3") navigate("/habits");
+        if (e.code == "Digit4") navigate("/settings");
       }
     };
 
@@ -125,10 +126,11 @@ function Layout() {
                 {/* </li> */}
 
                 {/* TODO(2026-03-08 18:46:25): add Settings */}
-                {/* <li className="p-2 flex"> */}
-                {/*   <img className="pt-1 w-[2rem] h-[2rem]" src={settingsIcon} /> */}
-                {/*   <Link className="ml-2" to="/settings">Settings</Link> */}
-                {/* </li> */}
+                <li className="p-2 flex">
+                  <img className="pt-1 w-[2rem] h-[2rem]" src={settingsIcon} />
+                  <Link className="ml-2" to="/settings">Settings</Link>
+                  <span className={`ml-auto text-gray-500 ${isCtrlAltDown ? "" : "hidden"}`}>4</span>
+                </li>
 
                 <li className="mt-auto p-2 flex">
                   <img className="pt-1 w-[2rem] h-[2rem]" src={tourIcon} />
@@ -173,10 +175,11 @@ function Layout() {
             {/* </li> */}
 
             {/* TODO(2026-03-08 18:46:25): add Settings */}
-            {/* <li className="p-2 flex"> */}
-            {/*   <img className="pt-1 w-[2rem] h-[2rem]" src={settingsIcon} /> */}
-            {/*   <Link className="ml-2" to="/settings">Settings</Link> */}
-            {/* </li> */}
+            <li className={`p-2 flex rounded-full ${pathname.startsWith('/settings') ? 'bg-gray-700' : ''}`}>
+              <Link to="/settings">
+                <img className="pt-1 w-[2rem] h-[2rem]" src={settingsIcon} />
+              </Link>
+            </li>
 
             <li className="mt-auto p-2 flex">
               <span className="cursor-pointer" onClick={openTour}>
