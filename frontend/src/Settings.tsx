@@ -10,7 +10,7 @@ export default function Settings() {
   const passwordRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string>("");
 
-  const errorEnding = "If it keeps happening, please report it to the developer";
+  const errorEnding = "If that keeps happening, please report it to the developer";
   function register(e: React.FormEvent) {
     e.preventDefault();
     setError("");
@@ -30,7 +30,8 @@ export default function Settings() {
       }),
     })
       .then(response => {
-        if (!response.ok) setError(`Server returned ${response.status}. ${errorEnding}`);
+        if (response.status == 400) setError("Username already taken");
+        else if (!response.ok) setError(`Server returned ${response.status}. ${errorEnding}`);
         else response.json()
           .then(data => setToken(data.token))
           .catch(error => setError(`Failed to set token during registration: "${error.toString()}". ${errorEnding}`));
@@ -81,9 +82,11 @@ export default function Settings() {
           "Authorization": `Bearer ${token}`,
         },
       })
-        .then((response) => response.json())
-        .then((data) => setUsername(data.username))
-        .catch((error) => setError(`Failed to get username: "${error.toString()}". ${errorEnding}`));
+        .then((response) => response.status === 401 ?
+          setToken(undefined) : // if we got 401, the token is expired or something like that
+          response.json()
+            .then((data) => setUsername(data.username))
+            .catch((error) => setError(`Failed to get username: "${error.toString()}". Try logging out and in again. ${errorEnding}`)));
     } else {
       setUsername(undefined);
     }
@@ -128,20 +131,18 @@ export default function Settings() {
       <div className="w-full max-w-md p-8">
         {token === undefined ?
           loginOrRegisterForm :
-          username === undefined ?
-            <h2 className="text-neome-pink text-[1.4rem]">
-              Loading...
-            </h2>
-            :
-            <div className="flex flex-col gap-3">
-              <p className="text-neome-pink text-[1.4rem]">You're logged in as <b>{username}</b></p>
-              <button
-                onClick={logout}
-                className="flex-1 bg-neome-pink text-black rounded-2xl cursor-pointer p-3"
-              >
-                Logout
-              </button>
-            </div>
+          <div className="flex flex-col gap-3">
+            {username === undefined ? 
+              <p className="text-neome-pink text-[1.4rem]">Loading username...</p>
+              :
+              <p className="text-neome-pink text-[1.4rem]">You're logged in as <b>{username}</b></p>} 
+            <button
+              onClick={logout}
+              className="flex-1 bg-neome-pink text-black rounded-2xl cursor-pointer p-3"
+            >
+              Logout
+            </button>
+          </div>
         }
         {error &&
           <div className="bg-red-500/10 border border-red-500 text-[#ff6b81] p-3 rounded-xl text-sm mt-8">
