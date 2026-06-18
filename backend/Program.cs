@@ -50,7 +50,7 @@ builder.Services.AddSwaggerGen(c =>
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"{token}\"",
         Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.Http,
@@ -101,7 +101,6 @@ string GenerateJwtToken(string username, IConfiguration config)
         {
             new Claim(ClaimTypes.Name, username)
         }),
-        Expires = DateTime.UtcNow.AddHours(2),
         Issuer = jwtSettings["Issuer"],
         Audience = jwtSettings["Audience"],
         SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
