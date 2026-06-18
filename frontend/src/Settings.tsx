@@ -10,6 +10,7 @@ export default function Settings() {
   const passwordRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string>("");
 
+  const errorEnding = "If it keeps happening, please report it to the developer";
   function register(e: React.FormEvent) {
     e.preventDefault();
     setError("");
@@ -29,12 +30,12 @@ export default function Settings() {
       }),
     })
       .then(response => {
-        if (!response.ok) setError(`Server returned ${response.status}. If it keeps happening, please report it to the developer`);
+        if (!response.ok) setError(`Server returned ${response.status}. ${errorEnding}`);
         else response.json()
           .then(data => setToken(data.token))
-          .catch(error => setError(`Failed to set token: "${error.toString()}". If it keeps happening, please report it to the developer`));
+          .catch(error => setError(`Failed to set token during registration: "${error.toString()}". ${errorEnding}`));
       })
-      .catch(error => setError(`Failed to get a response: "${error.toString()}". If it keeps happening, please report it to the developer`));
+      .catch(error => setError(`Failed to get a response during registration: "${error.toString()}". ${errorEnding}`));
   }
 
   function login(e: React.FormEvent) {
@@ -59,9 +60,9 @@ export default function Settings() {
         if (response.status == 401) setError("Invalid username or password");
         else response.json()
           .then(data => setToken(data.token))
-          .catch(error => setError(`Failed to set token: "${error.toString()}". If it keeps happening, please report it to the developer`));
+          .catch(error => setError(`Failed to set token during login: "${error.toString()}". ${errorEnding}`));
       })
-      .catch(error => setError(`Failed to get a response: "${error.toString()}". If it keeps happening, please report it to the developer`));
+      .catch(error => setError(`Failed to get a response during login: "${error.toString()}". ${errorEnding}`));
   }
 
   function logout(e: React.FormEvent) {
@@ -82,12 +83,74 @@ export default function Settings() {
       })
         .then((response) => response.json())
         .then((data) => setUsername(data.username))
-        .catch((error) => console.error(error));
+        .catch((error) => setError(`Failed to get username: "${error.toString()}". ${errorEnding}`));
     } else {
       setUsername(undefined);
     }
 
   }, [token]);
+
+  const loginOrRegisterForm = (
+    <form className="space-y-6">
+      <input
+        ref={usernameRef}
+        placeholder="Username"
+        autoFocus
+        className="bg-neome-light-grey border-2 border-neome-light-grey rounded-xl p-4 text-white focus:outline-none focus:border-neome-pink w-full"
+      />
+
+      <input
+        type="password"
+        ref={passwordRef}
+        placeholder="Password"
+        className="bg-neome-light-grey border-2 border-neome-light-grey rounded-xl p-4 text-white focus:outline-none focus:border-neome-pink w-full"
+      />
+
+      <div className="flex gap-4 pt-4">
+        <button
+          onClick={login}
+          className="flex-1 bg-neome-pink text-black rounded-2xl cursor-pointer p-3"
+        >
+          Login
+        </button>
+        <button
+          onClick={register}
+          className="flex-1 bg-neome-pink text-black rounded-2xl cursor-pointer"
+        >
+          Register
+        </button>
+      </div>
+    </form>
+  );
+
+  return (
+    <div className="min-h-screen flex justify-center p-4">
+      <div className="w-full max-w-md p-8">
+        {token === undefined ?
+          loginOrRegisterForm :
+          username === undefined ?
+            <h2 className="text-neome-pink text-[1.4rem]">
+              Loading...
+            </h2>
+            :
+            <div className="flex flex-col gap-3">
+              <p className="text-neome-pink text-[1.4rem]">You're logged in as <b>{username}</b></p>
+              <button
+                onClick={logout}
+                className="flex-1 bg-neome-pink text-black rounded-2xl cursor-pointer p-3"
+              >
+                Logout
+              </button>
+            </div>
+        }
+        {error &&
+          <div className="bg-red-500/10 border border-red-500 text-[#ff6b81] p-3 rounded-xl text-sm mt-8">
+            ⚠️ {error}
+          </div>
+        }
+      </div>
+    </div>
+  );
 
   return <div>
     {username === undefined ?
