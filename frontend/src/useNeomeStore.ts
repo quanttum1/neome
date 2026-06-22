@@ -15,7 +15,7 @@ import { createMessagesReadEvent } from "./factories/createEvents";
 import applyEvent from "./applyEvent";
 import { getTaskById } from "./applyEvent";
 
-function compareEvents(a: LogicalEvent, b: LogicalEvent): number {
+function compareEvents(a: LocalEvent, b: LocalEvent): number {
   if (a.time < b.time) return -1;
   if (a.time > b.time) return 1;
 
@@ -60,32 +60,12 @@ function sortTasks(state: State) {
   return {...state, tasks: newTasks};
 }
 
-// This function ensures old events are not affected
-function mergeEvents(oldEvents: LogicalEvent[], newEvents: LogicalEvent[]) {
-  let oldEventsSorted = [...oldEvents]; // To avoid changing oldEvents by reference
-  oldEventsSorted.sort(compareEvents);
-
-  let newEventsSorted = [...newEvents];
-  newEventsSorted.sort(compareEvents);
-
-  const firstNewEvent = newEventsSorted[0];
-  const lastOldEvent = oldEventsSorted[oldEventsSorted.length];
-
-  if (firstNewEvent && lastOldEvent) {
-    if (firstNewEvent.time <= lastOldEvent.time) {
-      throw new Error("Tried to change past events");
-    }
-  }
-
-  let events = [...oldEventsSorted, ...newEventsSorted];
-  return events.sort(compareEvents);
-}
-
 let updatedState = false;
 
 const useNeomeStore = create<NeomeStore>()(
   persist(
     (set, get) => ({
+      version: 1,
       isTourTaken: false,
       setIsTourTaken: (value) => set({ isTourTaken: value }),
 
@@ -114,54 +94,51 @@ const useNeomeStore = create<NeomeStore>()(
         return get().currentState;
       },
 
-      // Returns sorted events, but also adds initial DayRolloverEvent
-      getLogicalEvents: () => {
-        let events = [
-          ...get().events,
-          createDayRolloverEvent(get().initialDate, get().initialTimezone)
-        ];
+      addEvent: (event) => {
+        const events = get().events;
 
-        return events.sort(compareEvents);
+        if (!events.length) {
+          set({ events: [createDayRolloverEvent(get().initialDate, get().initialTimezone)] });
+        }
+
+        const index = events.findIndex(e => e.id == event.id);
+        if (index != -1) return index;
+
+        let low = 0;
+        let high = events.length;
+
+        while (low < high) {
+          const mid = (low + high) >>> 1;
+
+          if (compareEvents(events[mid]!, event) < 0) {
+            low = mid + 1;
+          } else {
+            high = mid;
+          }
+        }
+
+        events.splice(low, 0, event);
+        set({ events: events });
+        return low;
+      },
+
+      addEventAndUpdateState: (event) => {
+        get().addEvent(event);
+        get().updateCurrentState();
       },
 
 
-      // TODO(2026-02-07 21:50:33): decide what to do with `updateCurrentState`
-      // Because some events are now purely logical and are not stored this function
-      // becomes useless. To avoid full recompute the state from scratch every time
-      // we would need to cache logical events somewhere 🤡
       updateCurrentState: () => {
+        // TODO(2026-06-22 23:27): make updateCurrentState work again
         return get().recomputeCurrentState();
-        // const stateLastUpdated = get().stateLastUpdated;
-        // if (stateLastUpdated == undefined) return get().recomputeCurrentState();
-        // // "Time-travel" was probably involved
-        // if (stateLastUpdated > now()) return get().recomputeCurrentState();
-        //
-        // let events: LogicalEvent[] = get().getLogicalEvents();
-        // let state = get().currentState;
-        //
-        // for (let i = 0; i < events.length; i++) {
-        //   const e = events[i];
-        //   if (!e) break;
-        //
-        //   if (e.time > now()) break;
-        //   if (e.time < stateLastUpdated) continue;
-        //
-        //   const [newState, newEvents] = applyEvent(e, state);
-        //   state = newState;
-        //
-        //   events = mergeEvents(events, newEvents);
-        // }
-        //
-        // state = sortTasks(state);
-        // set({ currentState: state, stateLastUpdated: now() });
       },
 
       recomputeCurrentState: () => {
-        let events: LogicalEvent[] = get().getLogicalEvents();
+        set({ events: get().events.filter(e => 'isSynchronised' in e) });
         let state = getInitialState(get().initialDate, get().initialTimezone);
 
-        for (let i = 0; i < events.length; i++) {
-          const e = events[i];
+        for (let i = 0; i < get().events.length; i++) {
+          const e = get().events[i];
           if (!e) break;
 
           if (e.time > now()) break;
@@ -169,19 +146,13 @@ const useNeomeStore = create<NeomeStore>()(
           const [newState, newEvents] = applyEvent(e, state);
           state = newState;
 
-          events = mergeEvents(events, newEvents);
+          for (const e of newEvents) {
+            if (get().addEvent(e) <= i) i++;
+          }
         }
 
         state = sortTasks(state);
         set({ currentState: state, stateLastUpdated: now() });
-      },
-
-
-      addEventAndUpdateState: (event) => {
-        set({
-          events: [...get().events, event],
-        });
-        get().updateCurrentState();
       },
 
 
@@ -226,7 +197,7 @@ const useNeomeStore = create<NeomeStore>()(
     }),
     {
       name: 'neome',
-      version: 0.23,
+      version: 1,
       migrate: (state: any, oldVersion) => {
 
         if (oldVersion == 0.21) {
@@ -234,7 +205,9 @@ const useNeomeStore = create<NeomeStore>()(
         }
 
         if (oldVersion == 0.22) {
-          let e: StoredEvent = {
+          // at the time I wrote this migration, it was of type StoredEvent, now it's LocalEvent just to suppress
+          // typescript errors, nothing else changed
+          let e: LocalEvent = {
             id: crypto.randomUUID(),
             time: now(),
             type: "MESSAGES_MIGRATION",
@@ -242,6 +215,27 @@ const useNeomeStore = create<NeomeStore>()(
           };
           state.events.push(e);
         }
+
+        if (oldVersion == 0.23) {
+          for (let i = 0; i < state.events.length; i++) {
+            if (state.events[i].type == "MESSAGES_MIGRATION") continue; // it's now considered a local event
+            if ('id' in state.events[i]) state.events[i].isSynchronised = false;
+          }
+
+          for (let i = 0; i < state.events.length; i++) {
+            if (!('id' in state.events[i])) state.events.splice(i--, 1);
+          }
+
+          state.version = 1;
+          state.stateLastUpdated = undefined;
+        }
+
+        // if you decide to make a big change in NeomeStore, consider to change version to 2,
+        // copy the previous one as NeomeStoreV1, and make NeomeStoreAny, a union of the old one
+        // and the new one. at this point in the code, reinterpret state as NeomeStoreAny, and switch on its
+        // version. this allows typescript to actually do some typechecking
+        // if you want to do just make `state.stateLastUpdated = undefined;`, make a version 1.1 or something
+        // like that and make it work that way
 
         return state as NeomeStore;
       },

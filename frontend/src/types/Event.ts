@@ -2,10 +2,11 @@ type EventId = string; // UUID
 
 interface BaseEvent {
   time: UTCString;
+  id: EventId;
 }
 
 interface BaseStoredEvent extends BaseEvent {
-  id: EventId;
+  isSynchronised: boolean;
 }
 
 interface NewTaskEvent extends BaseStoredEvent {
@@ -65,7 +66,7 @@ interface TaskUpdateEvent extends BaseStoredEvent {
 // But this lead to accumulation of messages about past events for users who started using NEOME before messages are
 // supported. To avoid this, when i added this event. It will wipe out all the messages about past events (before
 // messages are supported).
-interface MessagesMigrationEvent extends BaseStoredEvent {
+interface MessagesMigrationEvent extends BaseEvent {
   type: "MESSAGES_MIGRATION";
   version: "INITIAL"; // If we ever have similar updates, we'll just create a different version of this event
 }
@@ -79,7 +80,6 @@ interface MessagesReadEvent extends BaseStoredEvent {
 
 type StoredEvent =
   | MessagesReadEvent
-  | MessagesMigrationEvent
   | NewTaskEvent
   | TaskUpdateEvent
   | TaskPinToggleEvent
@@ -103,7 +103,8 @@ interface TaskDeadlineEvent extends BaseEvent {
   taskId: TaskId;
 }
 
-type LogicalEvent =
+type LocalEvent =
+  | MessagesMigrationEvent
   | DayRolloverEvent
   | TaskDeadlineEvent
   | StoredEvent;

@@ -51,6 +51,8 @@ function TaskCard(props: TaskCardProps) {
           <span className="text-gray-400 text-[15px] italic">
             {(() => {
               const ms = new Date(task.deadline).getTime() - new Date(now()).getTime();
+
+              if (ms < 0) return "idk how much";
               const minutes = ms / 1000 / 60;
 
               if (minutes < 1) return "less than a minute";

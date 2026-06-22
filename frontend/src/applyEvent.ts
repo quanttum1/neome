@@ -43,7 +43,7 @@ function getTaskIndexById(id: TaskId, state: State) {
   return state.tasks.findIndex(t => t.id === id);
 }
 
-function createTaskFromHabitIfNeeded(habit: Habit, date: UTCDateString, draft: State, newEvents: LogicalEvent[]) {
+function createTaskFromHabitIfNeeded(habit: Habit, date: UTCDateString, draft: State, newEvents: LocalEvent[]) {
   if (isWeekMaskDay(habit.daysOfWeek, getWeekdayOfDate(date))) {
     if ('version' in habit) {
       const task = {
@@ -74,12 +74,12 @@ function createTaskFromHabitIfNeeded(habit: Habit, date: UTCDateString, draft: S
   }
 }
 
-function applyEvent(event: LogicalEvent, state: State): [State, LogicalEvent[]] {
+function applyEvent(event: LocalEvent, state: State): [State, LocalEvent[]] {
   function assertEventHandled(x: never): never {
     throw new Error(`Unhandled event: ${JSON.stringify(x)}`);
   }
 
-  let newEvents: LogicalEvent[] = [];
+  let newEvents: LocalEvent[] = [];
 
   // They told that in high-level languages like JS we don't need to think about
   // memory management. So here we go. We need to use immer's `produce` to make sure

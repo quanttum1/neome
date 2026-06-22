@@ -1,10 +1,12 @@
 interface NeomeStore {
+  version: 1,
+
   isTourTaken: boolean;
   setIsTourTaken: (value: boolean) => void;
 
   initialTimezone: TimezoneString;
   initialDate: UTCDateString;
-  events: StoredEvent[];
+  events: LocalEvent[];
 
   currentState: State;
   stateLastUpdated?: UTCString | undefined;
@@ -13,13 +15,12 @@ interface NeomeStore {
   getWeeklyCarrots: () => number;
 
   getState: () => State;
-  // Returns sorted events, but also adds initial DayRolloverEvent
-  getLogicalEvents: () => LogicalEvent[];
+
+  addEvent: (event: LocalEvent) => number;
+  addEventAndUpdateState: (event: LocalEvent) => void;
 
   updateCurrentState: () => void; // Applies events with time > stateLastUpdated
   recomputeCurrentState: () => void; // Replays from scratch
-
-  addEventAndUpdateState: (event: StoredEvent) => void;
 
   addTask: (task: Task) => void;
   completeTask: (id: TaskId) => void;
