@@ -18,7 +18,7 @@ export default function Settings() {
     if (!usernameRef.current) return setError("Username is not provided");
     if (!passwordRef.current) return setError("Password is not provided");
 
-    fetch("http://localhost:5221/register", {
+    fetch(`${API_BASE}/register`, {
       method: "POST",
       headers: {
         "Accept": "*/*",
@@ -46,7 +46,7 @@ export default function Settings() {
     if (!usernameRef.current) return setError("Username is not provided");
     if (!passwordRef.current) return setError("Password is not provided");
 
-    fetch("http://localhost:5221/login", {
+    fetch(`${API_BASE}/login`, {
       method: "POST",
       headers: {
         "Accept": "*/*",
@@ -75,7 +75,7 @@ export default function Settings() {
   const [username, setUsername] = useState<string | undefined>(undefined);
   useEffect(() => {
     if (token) {
-      fetch("http://localhost:5221/me", {
+      fetch(`${API_BASE}/me`, {
         method: "GET",
         headers: {
           "Accept": "*/*",
@@ -126,34 +126,32 @@ export default function Settings() {
     </form>
   );
 
-  return (
-    <div className="min-h-screen flex justify-center p-4">
-      <div className="w-full max-w-md p-8">
-        {token === undefined ?
-          loginOrRegisterForm :
-          <div className="flex flex-col gap-3">
-            {username === undefined ? 
-              <p className="text-neome-pink text-[1.4rem]">Loading username...</p>
-              :
-              <p className="text-neome-pink text-[1.4rem]">You're logged in as <b>{username}</b></p>} 
-            <button
-              onClick={logout}
-              className="flex-1 bg-neome-pink text-black rounded-2xl cursor-pointer p-3"
-            >
-              Logout
-            </button>
-          </div>
-        }
-        {error &&
-          <div className="bg-red-500/10 border border-red-500 text-[#ff6b81] p-3 rounded-xl text-sm mt-8">
-            ⚠️ {error}
-          </div>
-        }
-      </div>
+  return (<div className="min-h-screen flex justify-center p-4">
+    <div className="w-full max-w-md p-8">
+      {token === undefined ?
+        loginOrRegisterForm :
+        <div className="flex flex-col gap-3">
+          {username === undefined ? 
+            <p className="text-neome-pink text-[1.4rem]">Loading username...</p>
+            :
+            <p className="text-neome-pink text-[1.4rem]">You're logged in as <b>{username}</b></p>} 
+          <button
+            onClick={logout}
+            className="flex-1 bg-neome-pink text-black rounded-2xl cursor-pointer p-3"
+          >
+            Logout
+          </button>
+        </div>
+      }
+      {error &&
+        <div className="bg-red-500/10 border border-red-500 text-[#ff6b81] p-3 rounded-xl text-sm mt-8">
+          ⚠️ {error}
+        </div>
+      }
     </div>
-  );
+  </div>);
 
-  return <div>
+  return (<div>
     {username === undefined ?
       "not logged in" :
       username
@@ -171,5 +169,5 @@ export default function Settings() {
       <button type="submit">Logout</button>
     </form>
     {error}
-  </div>;
+  </div>);
 }
