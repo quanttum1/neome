@@ -1,97 +1,35 @@
-import useLoginStore from './useLoginStore';
-import { useRef, useState, useEffect } from 'react';
-import { API_BASE } from './env';
+import { useRef, useState } from 'react';
+import { useRegister, useLogin, useLogout, useUsername } from './auth';
 
 export default function Settings() {
-  const token = useLoginStore(s => s.token);
-  const setToken = useLoginStore(s => s.setToken);
-
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string>("");
 
-  const errorEnding = "If that keeps happening, please report it to the developer";
-  function register(e: React.FormEvent) {
+  const login = useLogin();
+  const register = useRegister();
+  const logout = useLogout();
+  const username = useUsername();
+
+  function registerCallback(e: React.FormEvent) {
     e.preventDefault();
     setError("");
 
     if (!usernameRef.current) return setError("Username is not provided");
     if (!passwordRef.current) return setError("Password is not provided");
 
-    fetch(`${API_BASE}/register`, {
-      method: "POST",
-      headers: {
-        "Accept": "*/*",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: usernameRef.current.value,
-        password: passwordRef.current.value,
-      }),
-    })
-      .then(response => {
-        if (response.status == 400) setError("Username already taken");
-        else if (!response.ok) setError(`Server returned ${response.status}. ${errorEnding}`);
-        else response.json()
-          .then(data => setToken(data.token))
-          .catch(error => setError(`Failed to set token during registration: "${error.toString()}". ${errorEnding}`));
-      })
-      .catch(error => setError(`Failed to get a response during registration: "${error.toString()}". ${errorEnding}`));
+    register(usernameRef.current.value, passwordRef.current.value).then(error => error && setError(error));
   }
 
-  function login(e: React.FormEvent) {
+  function loginCallback(e: React.FormEvent) {
     e.preventDefault();
     setError("");
 
     if (!usernameRef.current) return setError("Username is not provided");
     if (!passwordRef.current) return setError("Password is not provided");
 
-    fetch(`${API_BASE}/login`, {
-      method: "POST",
-      headers: {
-        "Accept": "*/*",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: usernameRef.current.value,
-        password: passwordRef.current.value,
-      }),
-    })
-      .then(response => {
-        if (response.status == 401) setError("Invalid username or password");
-        else response.json()
-          .then(data => setToken(data.token))
-          .catch(error => setError(`Failed to set token during login: "${error.toString()}". ${errorEnding}`));
-      })
-      .catch(error => setError(`Failed to get a response during login: "${error.toString()}". ${errorEnding}`));
+    login(usernameRef.current.value, passwordRef.current.value).then(error => error && setError(error));
   }
-
-  function logout(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    setToken(undefined);
-  }
-
-  const [username, setUsername] = useState<string | undefined>(undefined);
-  useEffect(() => {
-    if (token) {
-      fetch(`${API_BASE}/me`, {
-        method: "GET",
-        headers: {
-          "Accept": "*/*",
-          "Authorization": `Bearer ${token}`,
-        },
-      })
-        .then((response) => response.status === 401 ?
-          setToken(undefined) : // if we got 401, the token is expired or something like that
-          response.json()
-            .then((data) => setUsername(data.username))
-            .catch((error) => setError(`Failed to get username: "${error.toString()}". Try logging out and in again. ${errorEnding}`)));
-    } else {
-      setUsername(undefined);
-    }
-
-  }, [token]);
 
   const loginOrRegisterForm = (
     <form className="space-y-6">
@@ -111,13 +49,13 @@ export default function Settings() {
 
       <div className="flex gap-4 pt-4">
         <button
-          onClick={login}
+          onClick={loginCallback}
           className="flex-1 bg-neome-pink text-black rounded-2xl cursor-pointer p-3"
         >
           Login
         </button>
         <button
-          onClick={register}
+          onClick={registerCallback}
           className="flex-1 bg-neome-pink text-black rounded-2xl cursor-pointer"
         >
           Register
@@ -128,13 +66,10 @@ export default function Settings() {
 
   return (<div className="min-h-screen flex justify-center p-4">
     <div className="w-full max-w-md p-8">
-      {token === undefined ?
+      {username === undefined ?
         loginOrRegisterForm :
         <div className="flex flex-col gap-3">
-          {username === undefined ? 
-            <p className="text-neome-pink text-[1.4rem]">Loading username...</p>
-            :
-            <p className="text-neome-pink text-[1.4rem]">You're logged in as <b>{username}</b></p>} 
+          <p className="text-neome-pink text-[1.4rem]">You're logged in as <b>{username}</b></p>
           <button
             onClick={logout}
             className="flex-1 bg-neome-pink text-black rounded-2xl cursor-pointer p-3"
@@ -149,25 +84,5 @@ export default function Settings() {
         </div>
       }
     </div>
-  </div>);
-
-  return (<div>
-    {username === undefined ?
-      "not logged in" :
-      username
-    }
-    <br />
-    <form onSubmit={register}>
-      <input ref={usernameRef} placeholder="Username" autoFocus />
-      <input ref={passwordRef} placeholder="Password" />
-      <button type="submit">Register</button>
-    </form>
-    <form onSubmit={login}>
-      <button type="submit">Login</button>
-    </form>
-    <form onSubmit={logout}>
-      <button type="submit">Logout</button>
-    </form>
-    {error}
   </div>);
 }
