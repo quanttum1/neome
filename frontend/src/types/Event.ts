@@ -62,15 +62,6 @@ interface TaskUpdateEvent extends BaseStoredEvent {
   newTask: Task;
 }
 
-// When i added support for the events, i updated already existing events to make them produce messages.
-// But this lead to accumulation of messages about past events for users who started using NEOME before messages are
-// supported. To avoid this, when i added this event. It will wipe out all the messages about past events (before
-// messages are supported).
-interface MessagesMigrationEvent extends BaseEvent {
-  type: "MESSAGES_MIGRATION";
-  version: "INITIAL"; // If we ever have similar updates, we'll just create a different version of this event
-}
-
 interface MessagesReadEvent extends BaseStoredEvent {
   type: "MESSAGES_READ";
   version: 1;
@@ -103,8 +94,21 @@ interface TaskDeadlineEvent extends BaseEvent {
   taskId: TaskId;
 }
 
+// When i added support for messages, i updated already existing events to make them produce messages.
+// But this lead to accumulation of messages about past events for users who started using NEOME before messages are
+// supported. To avoid this, when i added this event. It will wipe out all the messages about past events (before
+// messages are supported).
+interface MessagesMigrationEvent extends BaseEvent {
+  type: "MESSAGES_MIGRATION";
+  version: "INITIAL"; // If we ever have similar updates, we'll just create a different version of this event
+}
+
 type LocalEvent =
   | MessagesMigrationEvent
   | DayRolloverEvent
   | TaskDeadlineEvent
   | StoredEvent;
+
+// we don't *really* need to have `StoredEvent` as a separate type, because all we'll
+// need is to check if an event has `isSynchronised`. but this way it's just easier to
+// organise this file in my opinion.
