@@ -12,4 +12,19 @@ model User {
   username     String @unique
   passwordHash String
   token        String @unique
+  events       Event[]
+}
+
+model Event {
+  id       String   @id @db.Uuid
+  data     Json
+
+  time     DateTime
+  pushTime DateTime @default(now())
+
+  userId   Int
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([userId, pushTime])
+  @@index([userId, time])
 }
