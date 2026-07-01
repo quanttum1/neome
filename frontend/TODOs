@@ -21,12 +21,22 @@
 # the root of the project. It will hide TODOs whose deps are still present.
 
 (2025-12-17 21:50:24): add quick tasks
+make it so that the user can configure the default time offset, and create tasks from the main page with that offset
 
 (2026-02-07 12:54:59): add a way to export/import the entire store for debugging
+maybe it's not needed anymore?
 
 (2026-02-18 23:24:04): minify SVGs
+maybe use `https://www.npmjs.com/package/svgo`
 
-(2026-03-23 17:49:30): fix a bug that when a page is reloaded, it opens the home page
-because the code that we have in `./public/404.html` assumes we use HashRouter, which we don't
-in `./src/App.tsx` or `./src/Home.tsx` we need to check the we have hash instead of normal path, and if we do, use
-navigate to restore the page
+(2026-06-28 13:00:05): collect statistics on how often/much task deadlines are missed to suggest a better deadline
+maybe also create categories for cleaner data?
+
+(2026-06-28 13:05:24): let users drag tasks to change their priority instead of just pinning them
+possible way is to have a priority, and sort tasks by `invLerp(task.createdAt, task.deadline, now()) * task.priority`
+and when dragged, calculate the new priority so that the value of this expression is the average between the values
+of this expression of the new next task and new previous task
+
+(2026-06-29 12:01:42): if you enter `\` in search on tasks page, the app crashes
+
+(2026-06-29 12:03:36): if you extent an overdue task, it's still shown as overdue
