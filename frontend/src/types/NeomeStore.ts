@@ -4,18 +4,19 @@ interface NeomeStore {
   isTourTaken: boolean;
   setIsTourTaken: (value: boolean) => void;
 
-  initialTimezone: TimezoneString;
-  initialDate: UTCDateString;
   events: LocalEvent[];
 
   currentState: State;
   stateLastUpdated?: UTCString | undefined;
   // TODO(2026-01-16 15:04:01): add `snapshot` and `snapshotTime` to `NeomeStore`
 
+  markEventSyncronised: (id: EventId) => void;
+
   getWeeklyCarrots: () => number;
 
   getState: () => State;
 
+  ensureEventsNotEmpty: () => void;
   addEvent: (event: LocalEvent) => number;
   addEventAndUpdateState: (event: LocalEvent) => void;
 

@@ -20,7 +20,6 @@ const prisma = new PrismaClient({ adapter });
 
 app.post("/register", validate(RegisterLoginSchema),
   async (req, res) => {
-    console.log(req.body);
     const { username, password } = req.body;
 
     try {
@@ -117,10 +116,7 @@ app.post("/sync", [validate(SyncSchema), authorise(prisma)],
         }
       }
 
-      return res.json({
-        newSyncTime,
-        events: newEvents,
-      });
+      return res.json({ newSyncTime, newEvents });
     } catch (error) {
       console.error(error);
       return res.status(500);

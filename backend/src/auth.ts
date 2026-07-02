@@ -20,7 +20,7 @@ export function generateToken() {
 export function authorise(prisma: PrismaClient) {
   return async (req: any, res: any, next: NextFunction) => {
     const authorisationHeader = req.get("Authorization");
-    if (authorisationHeader === undefined) return res.json({ error: "Authorisation header is not provided" });
+    if (authorisationHeader === undefined) return res.status(400).json({ error: "Authorisation header not provided" });
 
     if (!authorisationHeader.startsWith("Bearer "))
       return res.status(400).json({ error: "Authorisation header should start with `Bearer `" });

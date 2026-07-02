@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { API_BASE } from './env';
+import useNeomeStore from './useNeomeStore';
 
 type JwtToken = string;
 
@@ -10,6 +11,9 @@ interface AuthStore {
 
   username: string | undefined;
   setUsername: (newUsername: string | undefined) => void;
+
+  lastSyncTime: UTCString | undefined;
+  setLastSyncTime: (newSyncTime: string | undefined) => void;
 }
 
 const useAuthStore = create<AuthStore>()(
@@ -20,6 +24,9 @@ const useAuthStore = create<AuthStore>()(
 
       username: undefined,
       setUsername: (newUsername: string | undefined) => set({ username: newUsername }),
+
+      lastSyncTime: undefined,
+      setLastSyncTime: (newSyncTime: string | undefined) => set({ lastSyncTime: newSyncTime }),
     }),
 
     {
@@ -136,4 +143,59 @@ export function useLogout() {
 // returns `undefined` if logged out
 export function useUsername() {
   return useAuthStore(s => s.username);
+}
+
+export function useSync() {
+  const addEvent = useNeomeStore(s => s.addEvent);
+  const recomputeCurrentState = useNeomeStore(s => s.recomputeCurrentState);
+  const events = useNeomeStore(s => s.events);
+  const markEventSyncronised = useNeomeStore(s => s.markEventSyncronised);
+
+  const token = useAuthStore(s => s.token);
+  const lastSyncTime = useAuthStore(s => s.lastSyncTime);
+  const setLastSyncTime = useAuthStore(s => s.setLastSyncTime);
+
+  return async () => {
+    // TODO(2026-07-03 00:03): lock: the fuction should return, if it's already running
+
+    if (token == undefined) return;
+
+    const eventsToPush = events
+      .filter((e: LocalEvent) => 'isSynchronised' in e && e.isSynchronised === false)
+      .map((e: any) => { // I use type `any`, 'cause TS is a bit stupid
+        const { isSynchronised, ...rest } = e;
+        return rest;
+        isSynchronised; // Stupid JS linter
+      });
+
+    const response = await fetch(`${API_BASE}/sync`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+
+      body: JSON.stringify({
+        lastSyncTime,
+        events: eventsToPush,
+      }),
+    });
+
+    if (!response.ok) return;
+
+    const body = await response.json();
+    const { newSyncTime, newEvents } = body;
+
+    setLastSyncTime(newSyncTime);
+
+    for (const e of eventsToPush) {
+      markEventSyncronised(e.id);
+    }
+
+    for (const e of newEvents) {
+      addEvent({ ...e, isSynchronised: true });
+    }
+
+    recomputeCurrentState();
+  };
 }

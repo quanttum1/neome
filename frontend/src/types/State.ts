@@ -2,8 +2,8 @@ type FixedArray<T, N extends number, R extends T[] = []> =
   R['length'] extends N ? R : FixedArray<T, N, [...R, T]>;
 
 interface State {
-  date: UTCDateString;
-  timezone: TimezoneString;
+  date: UTCDateString | undefined;
+  timezone: TimezoneString | undefined;
 
   totalCarrots: number;
   dailyCarrots: number;

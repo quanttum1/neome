@@ -7,6 +7,7 @@ import { localTime } from "./utc";
 import { nextUTCDay } from "./utc";
 import { createDayRolloverEvent } from "./factories/createEvents";
 import { createTaskDeadlineMessage } from "./factories/createMessage";
+import { startOfUTCDay } from "./utc";
 
 const HABIT_NAMESPACE = "bbd04581-46ed-4e61-96d6-6b7dc7b044e3";
 
@@ -46,11 +47,14 @@ function getTaskIndexById(id: TaskId, state: State) {
 function createTaskFromHabitIfNeeded(habit: Habit, date: UTCDateString, draft: State, newEvents: LocalEvent[]) {
   if (isWeekMaskDay(habit.daysOfWeek, getWeekdayOfDate(date))) {
     if ('version' in habit) {
+      const timezone = draft.timezone;
+      if (timezone === undefined) throw new Error("Unreachable: timezone === undefined");
+
       const task = {
         version: 3,
         id: uuidv5(`${habit.id} ${date}`, HABIT_NAMESPACE),
         name: habit.name,
-        deadline: localTime(nextUTCDay(date), draft.timezone),
+        deadline: localTime(nextUTCDay(date), timezone),
         isPinned: false,
         deleteOnDeadline: true,
         isOverdue: false,
@@ -59,12 +63,15 @@ function createTaskFromHabitIfNeeded(habit: Habit, date: UTCDateString, draft: S
       draft.tasks.push({...task, version: 3});
       newEvents.push(createTaskDeadlineEvent({...task, version: 3}));
     } else {
+      const timezone = draft.timezone;
+      if (timezone === undefined) throw new Error("Unreachable: timezone === undefined");
+
       const task = {
         id: uuidv5(`${habit.id} ${date}`, HABIT_NAMESPACE),
         name: habit.name,
         reward: habit.reward,
         penalty: habit.penalty,
-        deadline: localTime(nextUTCDay(date), draft.timezone),
+        deadline: localTime(nextUTCDay(date), timezone),
         isPinned: false,
       };
 
@@ -149,14 +156,20 @@ function applyEvent(event: LocalEvent, state: State): [State, LocalEvent[]] {
           createTaskFromHabitIfNeeded(habit, event.newDate, draft, newEvents);
         }
 
-        newEvents.push(createDayRolloverEvent(event.newDate, draft.timezone));
+        const timezone = draft.timezone;
+        if (timezone === undefined) throw new Error("Unreachable: timezone === undefined");
+
+        newEvents.push(createDayRolloverEvent(event.newDate, timezone));
         break;
       }
 
       case "NEW_HABIT": {
         draft.habits.push(event.habit);
 
-        createTaskFromHabitIfNeeded(event.habit, draft.date, draft, newEvents);
+        const date = draft.date;
+        if (date === undefined) throw new Error("Unreachable: date === undefined");
+
+        createTaskFromHabitIfNeeded(event.habit, date, draft, newEvents);
 
         break;
       }
@@ -207,6 +220,16 @@ function applyEvent(event: LocalEvent, state: State): [State, LocalEvent[]] {
 
       case "MESSAGES_READ": {
         draft.messages = [];
+        break;
+      }
+
+      case "TIMEZONE_CHANGE": {
+        draft.timezone = event.newTimezone;
+
+        if (draft.date === undefined) {
+          draft.date = startOfUTCDay(event.time);
+          newEvents.push(createDayRolloverEvent(startOfUTCDay(event.time), draft.timezone));
+        }
         break;
       }
 

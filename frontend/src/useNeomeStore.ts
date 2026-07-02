@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { now } from "./utc";
 import { getTimezone } from "./utc";
-import { startOfUTCDay } from "./utc";
 import { createTaskUpdateEvent } from "./factories/createEvents";
 import { createTaskCompletedEvent } from "./factories/createEvents";
 import { createTaskPinToggleEvent } from "./factories/createEvents";
@@ -10,8 +9,8 @@ import { createNewTaskEvent } from "./factories/createEvents";
 import { createNewHabitEvent } from "./factories/createEvents";
 import { createHabitUpdateEvent } from "./factories/createEvents";
 import { createHabitRemoveEvent } from "./factories/createEvents";
-import { createDayRolloverEvent } from "./factories/createEvents";
 import { createMessagesReadEvent } from "./factories/createEvents";
+import { createTimezoneChangeEvent } from "./factories/createEvents";
 import applyEvent from "./applyEvent";
 import { getTaskById } from "./applyEvent";
 
@@ -30,10 +29,10 @@ function compareEvents(a: LocalEvent, b: LocalEvent): number {
   return a.type < b.type ? -1 : 1;
 }
 
-function getInitialState(initialDate: UTCDateString, initialTZ: TimezoneString): State {
+function getInitialState(): State {
   return {
-    date: initialDate,
-    timezone: initialTZ,
+    date: undefined,
+    timezone: undefined,
 
     totalCarrots: 0,
     dailyCarrots: 0,
@@ -69,12 +68,16 @@ const useNeomeStore = create<NeomeStore>()(
       isTourTaken: false,
       setIsTourTaken: (value) => set({ isTourTaken: value }),
 
-      initialTimezone: getTimezone(),
-      initialDate: startOfUTCDay(now()),
       events: [],
 
       // Don't read the state directly outside useNeomeStore, use getState instead
-      currentState: getInitialState(startOfUTCDay(now()), getTimezone()),
+      currentState: getInitialState(),
+
+      markEventSyncronised: (id: EventId) => {
+        let events = get().events;
+        events = events.map((e: LocalEvent) => e.id != id ? e : { ...e, isSynchronised: true });
+        set({ events });
+      },
 
       getWeeklyCarrots: () => {
         let result = 0;
@@ -94,12 +97,19 @@ const useNeomeStore = create<NeomeStore>()(
         return get().currentState;
       },
 
+
+      ensureEventsNotEmpty: () => {
+        const events = get().events;
+        if (!events.length) {
+          set({ events });
+          events.push(createTimezoneChangeEvent(getTimezone(), now()));
+        }
+      },
+
       addEvent: (event) => {
         const events = get().events;
 
-        if (!events.length) {
-          set({ events: [createDayRolloverEvent(get().initialDate, get().initialTimezone)] });
-        }
+        get().ensureEventsNotEmpty();
 
         const index = events.findIndex(e => e.id == event.id);
         if (index != -1) return index;
@@ -129,13 +139,15 @@ const useNeomeStore = create<NeomeStore>()(
 
 
       updateCurrentState: () => {
+        get().ensureEventsNotEmpty();
         // TODO(2026-06-22 23:27): make updateCurrentState work again
         return get().recomputeCurrentState();
       },
 
       recomputeCurrentState: () => {
+        get().ensureEventsNotEmpty();
         set({ events: get().events.filter(e => 'isSynchronised' in e) });
-        let state = getInitialState(get().initialDate, get().initialTimezone);
+        let state = getInitialState();
 
         for (let i = 0; i < get().events.length; i++) {
           const e = get().events[i];
@@ -157,6 +169,7 @@ const useNeomeStore = create<NeomeStore>()(
 
 
       addTask: (task: Task) => {
+        get().ensureEventsNotEmpty();
         get().addEventAndUpdateState(createNewTaskEvent(task));
       },
 
@@ -174,6 +187,7 @@ const useNeomeStore = create<NeomeStore>()(
 
 
       addHabit: (habit: Habit) => {
+        get().ensureEventsNotEmpty();
         get().addEventAndUpdateState(createNewHabitEvent(habit));
       },
 
@@ -187,6 +201,7 @@ const useNeomeStore = create<NeomeStore>()(
 
 
       markMessagesRead: () => {
+        get().ensureEventsNotEmpty();
         get().addEventAndUpdateState(createMessagesReadEvent());
       },
 
@@ -197,14 +212,14 @@ const useNeomeStore = create<NeomeStore>()(
     }),
     {
       name: 'neome',
-      version: 1,
+      version: 1.2,
       migrate: (state: any, oldVersion) => {
 
-        if (oldVersion == 0.21) {
+        if (oldVersion <= 0.21) {
           state.isTourTaken = false;
         }
 
-        if (oldVersion == 0.22) {
+        if (oldVersion <= 0.22) {
           // at the time I wrote this migration, it was of type StoredEvent, now it's LocalEvent just to suppress
           // typescript errors, nothing else changed
           let e: LocalEvent = {
@@ -216,7 +231,7 @@ const useNeomeStore = create<NeomeStore>()(
           state.events.push(e);
         }
 
-        if (oldVersion == 0.23) {
+        if (oldVersion <= 0.23) {
           for (let i = 0; i < state.events.length; i++) {
             if (state.events[i].type == "MESSAGES_MIGRATION") continue; // it's now considered a local event
             if ('id' in state.events[i]) state.events[i].isSynchronised = false;
@@ -228,6 +243,16 @@ const useNeomeStore = create<NeomeStore>()(
 
           state.version = 1;
           state.stateLastUpdated = undefined;
+        }
+
+        if (oldVersion <= 1) {
+          state.events.splice(0, 0, createTimezoneChangeEvent(state.initialTimezone, state.initialDate));
+        }
+
+        if (oldVersion <= 1.1) {
+          const { initialDate, initialTimezone, ...newState } = state;
+          state = newState;
+          initialTimezone; initialDate;
         }
 
         // if you decide to make a big change in NeomeStore, consider to change version to 2,

@@ -113,3 +113,14 @@ export function createMessagesReadEvent(): MessagesReadEvent {
     isSynchronised: false,
   };
 }
+
+export function createTimezoneChangeEvent(newTimezone: Timezone, time: UTCString | undefined = undefined): TimezoneChangeEvent {
+  return {
+    id: crypto.randomUUID(),
+    time: time ?? now(),
+    type: "TIMEZONE_CHANGE",
+    version: 1,
+    newTimezone,
+    isSynchronised: false,
+  };
+}

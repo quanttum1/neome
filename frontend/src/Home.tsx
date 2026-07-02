@@ -5,6 +5,7 @@ import { Link } from 'react-router';
 import { useNavigate } from 'react-router';
 import { useEffect } from 'react';
 import CarrotCounter from './CarrotCounter';
+import { useSync } from './auth';
 
 import carrotIcon from './assets/carrots/carrot.svg';
 
@@ -22,6 +23,9 @@ function Home() {
   // Sometimes it's useful for debugging
   // window.recomputeCurrentState = useNeomeStore(s => s.recomputeCurrentState);
   // window.events = useNeomeStore(s => s.events);
+  // const sync = useSync();
+  // window.sync = sync;
+  useSync;
 
   const navigate = useNavigate();
   useEffect(() => {

@@ -5,6 +5,8 @@ interface BaseEvent {
   id: EventId;
 }
 
+type BaseDeprecatedEvent = BaseEvent;
+
 interface BaseStoredEvent extends BaseEvent {
   isSynchronised: boolean;
 }
@@ -25,13 +27,13 @@ interface TaskCompletedEvent extends BaseStoredEvent {
 }
 
 // Deprecated
-interface OldTaskDeadlineEvent extends BaseStoredEvent {
+interface OldTaskDeadlineEvent extends BaseDeprecatedEvent {
   type: "TASK_DEADLINE";
   taskId: TaskId;
 }
 
 // Deprecated
-interface OldDayRolloverEvent extends BaseStoredEvent {
+interface OldDayRolloverEvent extends BaseDeprecatedEvent {
   type: "DAY_ROLLOVER";
   oldDate: UTCDateString;
   newDate: UTCDateString;
@@ -67,9 +69,16 @@ interface MessagesReadEvent extends BaseStoredEvent {
   version: 1;
 }
 
-// TODO(2026-02-01 20:21): add TimeZoneChangeEvent
+type Timezone = string;
+
+interface TimezoneChangeEvent extends BaseStoredEvent {
+  type: "TIMEZONE_CHANGE",
+  version: 1;
+  newTimezone: Timezone;
+}
 
 type StoredEvent =
+  | TimezoneChangeEvent
   | MessagesReadEvent
   | NewTaskEvent
   | TaskUpdateEvent
