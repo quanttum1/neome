@@ -42,3 +42,5 @@ of this expression of the new next task and new previous task
 (2026-06-29 12:03:36): if you extent an overdue task, it's still shown as overdue
 
 (2026-07-03 00:09:58): fix the error `Reward not set` when modifying a habit
+
+(2026-07-03 15:02:49): make a readme for the repository
