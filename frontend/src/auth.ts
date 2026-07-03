@@ -145,18 +145,77 @@ export function useUsername() {
   return useAuthStore(s => s.username);
 }
 
-export function useSync() {
-  const addEvent = useNeomeStore(s => s.addEvent);
-  const recomputeCurrentState = useNeomeStore(s => s.recomputeCurrentState);
-  const events = useNeomeStore(s => s.events);
-  const markEventSyncronised = useNeomeStore(s => s.markEventSyncronised);
+// export function useSync() {
+//   const addEvent = useNeomeStore(s => s.addEvent);
+//   const recomputeCurrentState = useNeomeStore(s => s.recomputeCurrentState);
+//   const events = useNeomeStore(s => s.events);
+//   const markEventSyncronised = useNeomeStore(s => s.markEventSyncronised);
+//
+//   const token = useAuthStore(s => s.token);
+//   const lastSyncTime = useAuthStore(s => s.lastSyncTime);
+//   const setLastSyncTime = useAuthStore(s => s.setLastSyncTime);
+//
+//   return async () => {
+//     // TODO(2026-07-03 00:03): lock: the fuction should return, if it's already running
+//
+//     if (token == undefined) return;
+//
+//     const eventsToPush = events
+//       .filter((e: LocalEvent) => 'isSynchronised' in e && e.isSynchronised === false)
+//       .map((e: any) => { // I use type `any`, 'cause TS is a bit stupid
+//         const { isSynchronised, ...rest } = e;
+//         return rest;
+//         isSynchronised; // Stupid JS linter
+//       });
+//
+//     const response = await fetch(`${API_BASE}/sync`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${token}`,
+//       },
+//
+//       body: JSON.stringify({
+//         lastSyncTime,
+//         events: eventsToPush,
+//       }),
+//     });
+//
+//     if (!response.ok) return;
+//
+//     const body = await response.json();
+//     const { newSyncTime, newEvents } = body;
+//
+//     setLastSyncTime(newSyncTime);
+//
+//     for (const e of eventsToPush) {
+//       markEventSyncronised(e.id);
+//     }
+//
+//     for (const e of newEvents) {
+//       addEvent({ ...e, isSynchronised: true });
+//     }
+//
+//     // TODO(2026-07-03 12:31:25): sync: if all the new events are added after existing ones call `updateCurrentState`
+//     // instead of `recomputeCurrentState`. this way a cached state will be used instead of recomputing everything from scratch
+//     recomputeCurrentState();
+//   };
+// }
 
-  const token = useAuthStore(s => s.token);
-  const lastSyncTime = useAuthStore(s => s.lastSyncTime);
-  const setLastSyncTime = useAuthStore(s => s.setLastSyncTime);
+let lock: boolean = false;
+export async function sync() {
+  while (lock) await new Promise(r => setTimeout(r, 10));
+  lock = true;
 
-  return async () => {
-    // TODO(2026-07-03 00:03): lock: the fuction should return, if it's already running
+  try {
+    const addEvent = useNeomeStore.getState().addEvent;
+    const recomputeCurrentState = useNeomeStore.getState().recomputeCurrentState;
+    const events = useNeomeStore.getState().events;
+    const markEventSyncronised = useNeomeStore.getState().markEventSyncronised;
+
+    const token = useAuthStore.getState().token;
+    const lastSyncTime = useAuthStore.getState().lastSyncTime;
+    const setLastSyncTime = useAuthStore.getState().setLastSyncTime;
 
     if (token == undefined) return;
 
@@ -196,6 +255,15 @@ export function useSync() {
       addEvent({ ...e, isSynchronised: true });
     }
 
+    // TODO(2026-07-03 12:31:25): sync: if all the new events are added after existing ones call `updateCurrentState`
+    // instead of `recomputeCurrentState`. this way a cached state will be used instead of recomputing everything from scratch
     recomputeCurrentState();
-  };
+  } catch (error) {
+    console.error(error);
+  } finally {
+    lock = false;
+  }
 }
+
+sync();
+setInterval(sync, 10000);

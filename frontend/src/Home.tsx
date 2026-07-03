@@ -5,7 +5,6 @@ import { Link } from 'react-router';
 import { useNavigate } from 'react-router';
 import { useEffect } from 'react';
 import CarrotCounter from './CarrotCounter';
-import { useSync } from './auth';
 
 import carrotIcon from './assets/carrots/carrot.svg';
 
@@ -25,7 +24,6 @@ function Home() {
   // window.events = useNeomeStore(s => s.events);
   // const sync = useSync();
   // window.sync = sync;
-  useSync;
 
   const navigate = useNavigate();
   useEffect(() => {

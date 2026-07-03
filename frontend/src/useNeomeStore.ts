@@ -13,6 +13,7 @@ import { createMessagesReadEvent } from "./factories/createEvents";
 import { createTimezoneChangeEvent } from "./factories/createEvents";
 import applyEvent from "./applyEvent";
 import { getTaskById } from "./applyEvent";
+import { sync } from './auth';
 
 function compareEvents(a: LocalEvent, b: LocalEvent): number {
   if (a.time < b.time) return -1;
@@ -135,6 +136,7 @@ const useNeomeStore = create<NeomeStore>()(
       addEventAndUpdateState: (event) => {
         get().addEvent(event);
         get().updateCurrentState();
+        sync();
       },
 
 
@@ -203,6 +205,7 @@ const useNeomeStore = create<NeomeStore>()(
       markMessagesRead: () => {
         get().ensureEventsNotEmpty();
         get().addEventAndUpdateState(createMessagesReadEvent());
+        sync();
       },
 
 

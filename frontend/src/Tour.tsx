@@ -80,6 +80,7 @@ function Page({ visible, children }: PageProps) {
   );
 }
 
+// TODO(2026-07-03 14:58:11): update tour
 export default function Tour({ isOpen, onClose }: any) {
   const [tourPage, setTourPage] = useState(0);
 
