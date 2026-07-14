@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router';
 import useNeomeStore from '../useNeomeStore';
 import { getCreateTaskError } from '../factories/createTask';
 import { UTCToLocalInput } from '../utc';
+import { localInputToUTC } from '../utc';
 
 export default function OpenTask() {
   const { taskId } = useParams();
@@ -40,7 +41,7 @@ export default function OpenTask() {
 
     const newTask = {
       name: nameRef.current.value,
-      deadline: deadlineRef.current.value,
+      deadline: localInputToUTC(deadlineRef.current.value),
       deleteOnDeadline: deleteOnDeadlineRef.current.checked,
       ...(!('version' in task) || task.version == 2 ? {
         reward: Number(rewardRef.current?.value),
