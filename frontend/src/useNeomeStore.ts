@@ -14,6 +14,7 @@ import { createTimezoneChangeEvent } from "./factories/createEvents";
 import applyEvent from "./applyEvent";
 import { getTaskById } from "./applyEvent";
 import { sync } from './auth';
+import { v4 as uuidv4 } from "uuid";
 
 function compareEvents(a: LocalEvent, b: LocalEvent): number {
   if (a.time < b.time) return -1;
@@ -34,6 +35,7 @@ function getInitialState(): State {
   return {
     date: undefined,
     timezone: undefined,
+    isDstBroken: true,
 
     totalCarrots: 0,
     dailyCarrots: 0,
@@ -103,7 +105,7 @@ const useNeomeStore = create<NeomeStore>()(
         const events = get().events;
         if (!events.length) {
           set({ events });
-          events.push(createTimezoneChangeEvent(getTimezone(), now()));
+          events.push(createTimezoneChangeEvent(getTimezone(), now(), true));
         }
       },
 
@@ -215,7 +217,7 @@ const useNeomeStore = create<NeomeStore>()(
     }),
     {
       name: 'neome',
-      version: 1.2,
+      version: 1.39,
       migrate: (state: any, oldVersion) => {
 
         if (oldVersion <= 0.21) {
@@ -256,6 +258,15 @@ const useNeomeStore = create<NeomeStore>()(
           const { initialDate, initialTimezone, ...newState } = state;
           state = newState;
           initialTimezone; initialDate;
+        }
+
+        if (oldVersion <= 1.39) {
+          state.events.push({
+            id: uuidv4(),
+            time: now(),
+            type: "DST_FIXED_MIGRATION",
+            isSynchronised: false,
+          });
         }
 
         // if you decide to make a big change in NeomeStore, consider to change version to 2,

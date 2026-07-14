@@ -4,6 +4,7 @@ type FixedArray<T, N extends number, R extends T[] = []> =
 interface State {
   date: UTCDateString | undefined;
   timezone: TimezoneString | undefined;
+  isDstBroken: boolean; // whether `utcWithSameLocalTime` or `utcWithSameLocalTimeBroken` should be used, needed for backward compatibility
 
   totalCarrots: number;
   dailyCarrots: number;

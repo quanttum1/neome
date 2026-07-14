@@ -1,6 +1,6 @@
 import { now } from "../utc";
 import { nextUTCDay } from "../utc";
-import { localTime } from "../utc";
+import { utcWithSameLocalTime } from "../utc";
 import { v5 as uuidv5 } from "uuid";
 
 export function createNewTaskEvent(task: Task): NewTaskEvent {
@@ -56,14 +56,14 @@ export function createTaskUpdateEvent(id: TaskId, newTask: Task): TaskUpdateEven
   };
 }
 
-export function createDayRolloverEvent(oldDate: UTCDateString, timezone: TimezoneString)
+export function createDayRolloverEvent(oldDate: UTCDateString, timezone: TimezoneString, isDstBroken: boolean)
 : DayRolloverEvent {
   const newDate = nextUTCDay(oldDate);
 
   const DAY_ROLLOVER_NAMESPACE = "e9b3b2da-9927-43f3-a17a-6165601db43b";
   return {
     id: uuidv5(`${oldDate} ${timezone}`, DAY_ROLLOVER_NAMESPACE),
-    time: localTime(newDate, timezone),
+    time: utcWithSameLocalTime(newDate, timezone, isDstBroken),
     type: "DAY_ROLLOVER",
     version: 2,
     oldDate: oldDate,
@@ -114,7 +114,9 @@ export function createMessagesReadEvent(): MessagesReadEvent {
   };
 }
 
-export function createTimezoneChangeEvent(newTimezone: Timezone, time: UTCString | undefined = undefined): TimezoneChangeEvent {
+export function createTimezoneChangeEvent(
+  newTimezone: Timezone, time: UTCString | undefined = undefined, makeDstWorking: boolean = false
+): TimezoneChangeEvent {
   return {
     id: crypto.randomUUID(),
     time: time ?? now(),
@@ -122,5 +124,6 @@ export function createTimezoneChangeEvent(newTimezone: Timezone, time: UTCString
     version: 1,
     newTimezone,
     isSynchronised: false,
+    ...(makeDstWorking ? { makeDstWorking: true } : {})
   };
 }

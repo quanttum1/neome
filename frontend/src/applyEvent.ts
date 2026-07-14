@@ -3,7 +3,7 @@ import { produce } from "immer";
 import { v5 as uuidv5 } from "uuid";
 import { createTaskDeadlineEvent } from "./factories/createEvents";
 import { isWeekMaskDay } from "./weekMask";
-import { localTime } from "./utc";
+import { utcWithSameLocalTime } from "./utc";
 import { nextUTCDay } from "./utc";
 import { createDayRolloverEvent } from "./factories/createEvents";
 import { createTaskDeadlineMessage } from "./factories/createMessage";
@@ -54,7 +54,7 @@ function createTaskFromHabitIfNeeded(habit: Habit, date: UTCDateString, draft: S
         version: 3,
         id: uuidv5(`${habit.id} ${date}`, HABIT_NAMESPACE),
         name: habit.name,
-        deadline: localTime(nextUTCDay(date), timezone),
+        deadline: utcWithSameLocalTime(nextUTCDay(date), timezone, draft.isDstBroken),
         isPinned: false,
         deleteOnDeadline: true,
         isOverdue: false,
@@ -71,7 +71,7 @@ function createTaskFromHabitIfNeeded(habit: Habit, date: UTCDateString, draft: S
         name: habit.name,
         reward: habit.reward,
         penalty: habit.penalty,
-        deadline: localTime(nextUTCDay(date), timezone),
+        deadline: utcWithSameLocalTime(nextUTCDay(date), timezone, draft.isDstBroken),
         isPinned: false,
       };
 
@@ -159,7 +159,7 @@ function applyEvent(event: LocalEvent, state: State): [State, LocalEvent[]] {
         const timezone = draft.timezone;
         if (timezone === undefined) throw new Error("Unreachable: timezone === undefined");
 
-        newEvents.push(createDayRolloverEvent(event.newDate, timezone));
+        newEvents.push(createDayRolloverEvent(event.newDate, timezone, draft.isDstBroken));
         break;
       }
 
@@ -213,9 +213,16 @@ function applyEvent(event: LocalEvent, state: State): [State, LocalEvent[]] {
         draft.timezone = event.newTimezone;
 
         if (draft.date === undefined) {
+          if ('makeDstWorking' in event) draft.isDstBroken = false;
           draft.date = startOfUTCDay(event.time);
-          newEvents.push(createDayRolloverEvent(startOfUTCDay(event.time), draft.timezone));
+          newEvents.push(createDayRolloverEvent(startOfUTCDay(event.time), draft.timezone, draft.isDstBroken));
         }
+        break;
+      }
+
+      case "DST_FIXED_MIGRATION": {
+        draft.isDstBroken = false;
+        console.log(event.time, "hello");
         break;
       }
 
