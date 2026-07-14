@@ -32,14 +32,12 @@ export default function OpenHabit() {
     setError("");
 
     if (!nameRef.current) return setError("Name is not set");
-    if (!rewardRef.current) return setError("Reward is not set");
-    if (!penaltyRef.current) return setError("Penalty is not set");
 
     const newHabit = {
       name: nameRef.current.value,
       daysOfWeek: daysOfWeek,
-      reward: Number(rewardRef.current.value),
-      penalty: -Number(penaltyRef.current.value),
+      reward: Number(rewardRef.current?.value),
+      penalty: -Number(penaltyRef.current?.value),
     };
 
     const error = getCreateHabitError(newHabit);
