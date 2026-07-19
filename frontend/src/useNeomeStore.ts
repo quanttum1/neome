@@ -104,8 +104,9 @@ const useNeomeStore = create<NeomeStore>()(
       ensureEventsNotEmpty: () => {
         const events = get().events;
         if (!events.length) {
-          set({ events });
           events.push(createTimezoneChangeEvent(getTimezone(), now(), true));
+          set({ events });
+          console.log("events are ok");
         }
       },
 

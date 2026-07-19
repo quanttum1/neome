@@ -217,6 +217,7 @@ export async function sync() {
     const lastSyncTime = useAuthStore.getState().lastSyncTime;
     const setLastSyncTime = useAuthStore.getState().setLastSyncTime;
 
+    useNeomeStore.getState().ensureEventsNotEmpty();
     if (token == undefined) return;
 
     const eventsToPush = events
@@ -265,5 +266,5 @@ export async function sync() {
   }
 }
 
-sync();
+window.addEventListener("load", sync);
 setInterval(sync, 10000);
