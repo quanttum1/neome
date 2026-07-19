@@ -63,6 +63,7 @@ function sortTasks(state: State) {
 }
 
 let updatedState = false;
+let updateLock = false;
 
 const useNeomeStore = create<NeomeStore>()(
   persist(
@@ -76,11 +77,19 @@ const useNeomeStore = create<NeomeStore>()(
       // Don't read the state directly outside useNeomeStore, use getState instead
       currentState: getInitialState(),
 
+
       markEventSyncronised: (id: EventId) => {
         let events = get().events;
         events = events.map((e: LocalEvent) => e.id != id ? e : { ...e, isSynchronised: true });
         set({ events });
       },
+
+      markEventsNotSynchronised: () => {
+        let events = get().events;
+        events = events.map((e: LocalEvent) => 'isSynchronised' in e ? { ...e, isSynchronised: false } : e );
+        set({ events });
+      },
+
 
       getWeeklyCarrots: () => {
         let result = 0;
@@ -138,12 +147,17 @@ const useNeomeStore = create<NeomeStore>()(
 
       addEventAndUpdateState: (event) => {
         get().addEvent(event);
+        let [newState, _newEvents] = applyEvent(event, get().currentState);
+        set({ currentState: sortTasks(newState) });
         get().updateCurrentState();
         sync();
       },
 
 
       updateCurrentState: async () => {
+        while (updateLock) await new Promise<void>(r => setTimeout(r, 0));
+        updateLock = true;
+
         get().ensureEventsNotEmpty();
         const { events, stateLastUpdated, currentState } = get();
         if (stateLastUpdated == undefined) return get().recomputeCurrentState();
@@ -152,6 +166,7 @@ const useNeomeStore = create<NeomeStore>()(
         for (let i = events.length - 1; i >= 0; i--) {
           indexToApplyFrom = i;
           if (events[i]!.time < stateLastUpdated) break;
+          await new Promise<void>(r => setTimeout(r, 0));
         }
 
         let newState = currentState;
@@ -163,13 +178,18 @@ const useNeomeStore = create<NeomeStore>()(
           for (const e of newEvents) {
             if (get().addEvent(e) <= i) i++;
           }
+          await new Promise<void>(r => setTimeout(r, 0));
         }
 
         newState = sortTasks(newState);
         set({ currentState: newState, stateLastUpdated: now() });
+        updateLock = false;
       },
 
       recomputeCurrentState: async () => {
+        while (updateLock) await new Promise<void>(r => setTimeout(r, 0));
+        updateLock = true;
+
         get().ensureEventsNotEmpty();
         set({ events: get().events.filter(e => 'isSynchronised' in e) });
         let state = getInitialState();
@@ -191,6 +211,7 @@ const useNeomeStore = create<NeomeStore>()(
 
         state = sortTasks(state);
         set({ currentState: state, stateLastUpdated: now() });
+        updateLock = false;
       },
 
 

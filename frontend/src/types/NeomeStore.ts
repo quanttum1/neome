@@ -11,6 +11,7 @@ interface NeomeStore {
   // TODO(2026-01-16 15:04:01): add `snapshot` and `snapshotTime` to `NeomeStore`
 
   markEventSyncronised: (id: EventId) => void;
+  markEventsNotSynchronised: () => void;
 
   getWeeklyCarrots: () => number;
 
