@@ -222,7 +222,6 @@ function applyEvent(event: LocalEvent, state: State): [State, LocalEvent[]] {
 
       case "DST_FIXED_MIGRATION": {
         draft.isDstBroken = false;
-        console.log(event.time, "hello");
         break;
       }
 
