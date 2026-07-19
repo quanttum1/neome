@@ -20,8 +20,8 @@ interface NeomeStore {
   addEvent: (event: LocalEvent) => number;
   addEventAndUpdateState: (event: LocalEvent) => void;
 
-  updateCurrentState: () => void; // Applies events with time > stateLastUpdated
-  recomputeCurrentState: () => void; // Replays from scratch
+  updateCurrentState: () => Promise<void>; // Applies events with time > stateLastUpdated
+  recomputeCurrentState: () => Promise<void>; // Replays from scratch
 
   addTask: (task: Task) => void;
   completeTask: (id: TaskId) => void;

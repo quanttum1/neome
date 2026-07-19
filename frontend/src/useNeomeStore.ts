@@ -143,13 +143,33 @@ const useNeomeStore = create<NeomeStore>()(
       },
 
 
-      updateCurrentState: () => {
+      updateCurrentState: async () => {
         get().ensureEventsNotEmpty();
-        // TODO(2026-06-22 23:27): make updateCurrentState work again
-        return get().recomputeCurrentState();
+        const { events, stateLastUpdated, currentState } = get();
+        if (stateLastUpdated == undefined) return get().recomputeCurrentState();
+
+        let indexToApplyFrom = 0;
+        for (let i = events.length - 1; i >= 0; i--) {
+          indexToApplyFrom = i;
+          if (events[i]!.time < stateLastUpdated) break;
+        }
+
+        let newState = currentState;
+        for (let i = indexToApplyFrom; i < events.length; i++) {
+          if (events[i]!.time > now()) break;
+          let newEvents: LocalEvent[] = [];
+          [ newState, newEvents ] = applyEvent(events[i]!, newState);
+
+          for (const e of newEvents) {
+            if (get().addEvent(e) <= i) i++;
+          }
+        }
+
+        newState = sortTasks(newState);
+        set({ currentState: newState, stateLastUpdated: now() });
       },
 
-      recomputeCurrentState: () => {
+      recomputeCurrentState: async () => {
         get().ensureEventsNotEmpty();
         set({ events: get().events.filter(e => 'isSynchronised' in e) });
         let state = getInitialState();
@@ -166,6 +186,7 @@ const useNeomeStore = create<NeomeStore>()(
           for (const e of newEvents) {
             if (get().addEvent(e) <= i) i++;
           }
+          await new Promise<void>(r => setTimeout(r, 0));
         }
 
         state = sortTasks(state);
